@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --font-kannada: 'Noto Sans Kannada', 'Segoe UI', sans-serif;
+    --font-outfit: 'Outfit', sans-serif;
+}
+
+body {
+    font-family: var(--font-outfit), var(--font-kannada);
+    background-color: #f8fafc;
+}
+
+.kannada-text {
+    font-family: var(--font-kannada);
+}
+
+/* Glassmorphism card utility */
+.glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+}
+
+/* Custom pulsing alert for low stock */
+@keyframes pulse-red {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+    }
+}
+
+.pulse-alert {
+    animation: pulse-red 2s infinite ease-in-out;
+}
+
+/* Loading spinner */
+.spinner {
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border-left-color: #3b82f6;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Print Stylesheet for PDF/Receipt Generation */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #printableReceipt, #printableReceipt * {
+        visibility: visible;
+    }
+    #printableReceipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        border: 2px dashed #000;
+        background: white;
+        box-shadow: none;
+    }
+}

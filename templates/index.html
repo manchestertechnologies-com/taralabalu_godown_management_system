@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ದಾಸ್ತಾನು ನಿರ್ವಹಣಾ ವ್ಯವಸ್ಥೆ | Inventory Management</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header Banner -->
+    <header class="bg-gradient-to-r from-emerald-800 to-emerald-950 text-white shadow-lg border-b border-emerald-700 print:hidden">
+        <div class="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <!-- Warehouse SVG Icon -->
+                <svg class="h-8 w-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-wide kannada-text">ದಾಸ್ತಾನು ನಿರ್ವಹಣಾ ವ್ಯವಸ್ಥೆ</h1>
+                    <p class="text-xs text-emerald-300 font-medium">Taralabalu Godown Management System</p>
+                </div>
+            </div>
+            
+            <!-- Global Role Switcher -->
+            <div class="flex bg-emerald-900/60 p-1 rounded-xl border border-emerald-700/50">
+                <button id="btnRoleGodown" onclick="switchRole('godown')" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 bg-emerald-600 text-white shadow-md">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <span class="kannada-text">ಕೇಂದ್ರ ಗೋದಾಮು ಸಿಬ್ಬಂದಿ</span>
+                </button>
+                <button id="btnRoleHostel" onclick="switchRole('hostel')" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 text-emerald-100 hover:text-white">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="kannada-text">ವಸತಿ ನಿಲಯದ ಗುಮಾಸ್ತ</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Global Low Stock Warning Banner -->
+    <div id="globalAlertBanner" class="bg-red-50 border-b border-red-200 text-red-800 py-3 px-4 hidden print:hidden">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <span class="flex h-3 w-3 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                </span>
+                <p class="text-sm font-semibold kannada-text" id="globalAlertText">ಗಮನಿಸಿ: ಕೆಲವು ಶಾಖೆಗಳಲ್ಲಿ ದಾಸ್ತಾನು ಕೊರತೆಯಿದೆ!</p>
+            </div>
+            <button onclick="scrollToAlerts()" class="text-xs bg-red-600 text-white font-bold px-3 py-1 rounded-lg hover:bg-red-700 transition kannada-text">ವಿವರ ನೋಡಿ</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        
+        <!-- ==================== CENTRAL GODOWN DASHBOARD ==================== -->
+        <div id="godownDashboard" class="space-y-8">
+            <!-- Stats & Quick Alerts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Godown Balances Card -->
+                <div class="glass-card rounded-2xl p-6 lg:col-span-2">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
+                        <span class="p-2 bg-emerald-100 rounded-lg text-emerald-800">📦</span>
+                        <span class="kannada-text">ಗೋದಾಮಿನ ಒಟ್ಟು ಲಭ್ಯ ದಾಸ್ತಾನು (Central Stock Balances)</span>
+                    </h2>
+                    <div class="overflow-x-auto max-h-[300px] overflow-y-auto pr-1">
+                        <table class="min-w-full divide-y divide-slate-200 text-sm">
+                            <thead>
+                                <tr class="bg-slate-100/50">
+                                    <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಕೋಡ್</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ವಸ್ತುವಿನ ಹೆಸರು</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಘಟಕ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblGodownBalances" class="divide-y divide-slate-100 font-medium">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Active Alerts Card -->
+                <div class="glass-card rounded-2xl p-6 border-red-100 bg-gradient-to-b from-white to-red-50/20">
+                    <h2 class="text-lg font-bold text-red-800 flex items-center gap-2 mb-4">
+                        <span class="p-2 bg-red-100 rounded-lg text-red-800">⚠️</span>
+                        <span class="kannada-text">ಶಾಖೆಗಳ ದಾಸ್ತಾನು ಕೊರತೆ ಎಚ್ಚರಿಕೆ (Low Stock Alerts)</span>
+                    </h2>
+                    <div id="godownAlertsList" class="space-y-3 max-h-[250px] overflow-y-auto pr-1">
+                        <!-- Dynamic Alert Cards -->
+                        <p class="text-sm text-slate-500 text-center py-6 kannada-text">ಯಾವುದೇ ಕೊರತೆ ಇಲ್ಲ.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operations Section (Tabbed Forms) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Action Card 1: Stock Inward (From Donors) -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                        <span class="text-lg">📥</span>
+                        <span class="kannada-text">ದಾನಿಗಳು/ಅಂಗಡಿಯಿಂದ ಸ್ವೀಕೃತಿ (Stock Inward)</span>
+                    </h3>
+                    <form id="formReceiveStock" onsubmit="handleReceiveStock(event)" class="space-y-4 text-sm">
+                        <div>
+                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
+                            <select id="selectRecItem" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                <!-- Seeded Items -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ದಾನಿಗಳು/ಅಂಗಡಿ ಆಯ್ಕೆ ಮಾಡಿ</label>
+                            <select id="selectRecDonor" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                <!-- Seeded Donors -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಸ್ವೀಕರಿಸಿದ ಪ್ರಮಾಣ</label>
+                            <input type="number" step="0.01" id="inputRecQty" placeholder="ಪ್ರಮಾಣ ದಾಖಲಿಸಿ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-slate-600 font-semibold mb-1 kannada-text">ದರ (Std Rate)</label>
+                                <input type="number" step="0.01" id="inputRecRate" placeholder="ದರ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಸ್ವರೂಪ</label>
+                                <select id="selectRecType" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="Donation">ದೇಣಿಗೆ (Donation)</option>
+                                    <option value="Purchase">ಖರೀದಿ (Purchase)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ದಿನಾಂಕ</label>
+                            <input type="date" id="inputRecDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg transition-all shadow-md flex justify-center items-center gap-2">
+                            <span class="kannada-text">ದಾಸ್ತಾನು ಸೇರಿಸಿ</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Action Card 2: Indents Processing (Review and sanction) -->
+                <div class="glass-card rounded-2xl p-6 md:col-span-2">
+                    <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                        <span class="text-lg">📋</span>
+                        <span class="kannada-text">ಬಂದಿರುವ ಇಂಡೆಂಟ್‌ಗಳ ಪರಿಶೀಲನೆ (Review Pending Indents)</span>
+                    </h3>
+                    <div class="overflow-x-auto max-h-[350px] overflow-y-auto pr-1">
+                        <table class="min-w-full divide-y divide-slate-200 text-sm">
+                            <thead>
+                                <tr class="bg-slate-100/50">
+                                    <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ವಸತಿ ನಿಲಯ</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ವಸ್ತು</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಕೋರಿದ ಪ್ರಮಾಣ</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಅನುಮೋದಿಸು</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblPendingIndents" class="divide-y divide-slate-100 font-medium">
+                                <!-- Dynamic pending indents -->
+                                <tr><td colspan="4" class="text-center py-6 text-slate-400 kannada-text">ಯಾವುದೇ ಇಂಡೆಂಟ್‌ಗಳು ಬಾಕಿ ಇಲ್ಲ.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operations Settings Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- System Settings Buttons -->
+                <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                            <span class="text-lg">⚙️</span>
+                            <span class="kannada-text">ದಾಸ್ತಾನು ಸೇರ್ಪಡೆಗಳು (Master Registrations)</span>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <button onclick="toggleModal('modalAddMasterItem', true)" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-lg transition-all flex justify-between px-4 items-center">
+                                <span class="kannada-text">ಹೊಸ ವಸ್ತು ನೋಂದಣಿ</span>
+                                <span>➕</span>
+                            </button>
+                            <button onclick="toggleModal('modalAddDonor', true)" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-lg transition-all flex justify-between px-4 items-center">
+                                <span class="kannada-text">ಹೊಸ ದಾನಿ ನೋಂದಣಿ</span>
+                                <span>➕</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-xs">
+                        <span class="font-bold text-emerald-800 block mb-1 kannada-text">ಕೇಂದ್ರೀಕೃತ ನಿರ್ವಹಣೆ:</span>
+                        <p class="text-slate-600 leading-relaxed kannada-text">ನಾಮಕರಣ ಮತ್ತು ಕೋಡ್ ವ್ಯತ್ಯಾಸಗಳನ್ನು ತಡೆಯಲು ಹೊಸ ವಸ್ತುಗಳನ್ನು ಕೇಂದ್ರ ಸಿಬ್ಬಂದಿ ಮಾತ್ರ ನಮೂದಿಸಬಹುದು.</p>
+                    </div>
+                </div>
+                <!-- Inward Logs -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-md font-bold text-slate-800 mb-3 flex items-center gap-2 border-b pb-2">
+                        <span>📥</span>
+                        <span class="kannada-text">ಇತ್ತೀಚಿನ ಆಮದು ಇತಿಹಾಸ (Recent Inwards Log)</span>
+                    </h3>
+                    <div class="overflow-x-auto max-h-[160px] overflow-y-auto">
+                        <table class="min-w-full divide-y divide-slate-200 text-xs">
+                            <thead>
+                                <tr class="bg-slate-100/50">
+                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 kannada-text">ದಿನಾಂಕ</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 kannada-text">ವಸ್ತು</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 kannada-text">ಪ್ರಮಾಣ</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 kannada-text">ಮೂಲ (Donor)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblInwardStockHistory" class="divide-y divide-slate-100 font-medium">
+                                <!-- Dynamic inward logs -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Godown Transfer & Receipts Logs -->
+            <div class="glass-card rounded-2xl p-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span>📋</span>
+                    <span class="kannada-text">ಇತ್ತೀಚಿನ ವರ್ಗಾವಣೆಗಳ ದಾಖಲೆ (Recent Transfers Log)</span>
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200 text-sm">
+                        <thead>
+                            <tr class="bg-slate-100/50">
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ವರ್ಗಾವಣೆ ಐಡಿ</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ವಸತಿ ನಿಲಯ</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ವಸ್ತುವಿನ ಹೆಸರು</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಅನುಮೋದಿತ ಪ್ರಮಾಣ</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ದಿನಾಂಕ</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಸ್ಥಿತಿ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblGodownTransfers" class="divide-y divide-slate-100 font-medium">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ==================== HOSTEL CLERK DASHBOARD ==================== -->
+        <div id="hostelDashboard" class="space-y-8 hidden">
+            <!-- Hostel Selection Header -->
+            <div class="glass-card rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gradient-to-r from-emerald-50 to-white border-emerald-100 print:hidden">
+                <div class="flex items-center gap-3">
+                    <span class="p-3 bg-emerald-100 rounded-xl text-emerald-800 text-xl">🏢</span>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 kannada-text">ವಸತಿ ನಿಲಯದ ದಾಸ್ತಾನು ವೀಕ್ಷಣೆ</h2>
+                        <p class="text-xs text-slate-500">Hostel Inventory & Management</p>
+                    </div>
+                </div>
+                <div class="w-full sm:w-auto">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 kannada-text">ವಸತಿ ನಿಲಯ ಆಯ್ಕೆ ಮಾಡಿ</label>
+                    <select id="selectActiveHostel" onchange="loadHostelDashboardData()" class="w-full sm:w-72 p-2.5 bg-white border-2 border-emerald-500 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold text-slate-700">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Main Stock & Pending Verification -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Hostel Balance Stock -->
+                <div class="glass-card rounded-2xl p-6 lg:col-span-2">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span class="p-2 bg-emerald-100 rounded-lg text-emerald-800">🛒</span>
+                        <span class="kannada-text">ಪ್ರಸ್ತುತ ದಾಸ್ತಾನು ಶಿಲ್ಕು (Current Stock Balance)</span>
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200 text-sm">
+                            <thead>
+                                <tr class="bg-slate-100/50">
+                                    <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ವಸ್ತು ಕೋಡ್</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ವಸ್ತುವಿನ ಹೆಸರು</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಲಭ್ಯವಿರುವ ಪ್ರಮಾಣ</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಸ್ಥಿತಿ ಎಚ್ಚರಿಕೆ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblHostelStock" class="divide-y divide-slate-100 font-medium">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Two-Way Verification: Pending Shipments -->
+                <div class="glass-card rounded-2xl p-6 border-amber-100 bg-gradient-to-b from-white to-amber-50/10">
+                    <h3 class="text-lg font-bold text-amber-800 flex items-center gap-2 mb-4">
+                        <span class="p-2 bg-amber-100 rounded-lg text-amber-800">🔔</span>
+                        <span class="kannada-text">ಪೆಂಡಿಂಗ್ ಸ್ವೀಕೃತಿ ದೃಢೀಕರಣ (Pending Shipments)</span>
+                    </h3>
+                    <div id="hostelPendingTransfersList" class="space-y-4 max-h-[300px] overflow-y-auto pr-1">
+                        <!-- Dynamic list of pending transfers with acknowledge button -->
+                        <p class="text-sm text-slate-500 text-center py-6 kannada-text">ಯಾವುದೇ ಪೆಂಡಿಂಗ್ ವರ್ಗಾವಣೆಗಳಿಲ್ಲ.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operations: Usage Logs & Indent Submissions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Action 1: Raise Indent -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                        <span class="text-lg">📝</span>
+                        <span class="kannada-text">ಹೊಸ ಇಂಡೆಂಟ್ ಸಲ್ಲಿಸು (Submit Indent)</span>
+                    </h3>
+                    <form id="formSubmitIndent" onsubmit="handleSubmitIndent(event)" class="space-y-4 text-sm">
+                        <div>
+                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
+                            <select id="selectIndentItem" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                <!-- Dynamic Master Items -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಕೋರಿದ ಪ್ರಮಾಣ</label>
+                            <input type="number" step="0.01" id="inputIndentQty" placeholder="ಪ್ರಮಾಣ ದಾಖಲಿಸಿ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಟಿಪ್ಪಣಿ (Remarks)</label>
+                            <input type="text" id="inputIndentRemarks" placeholder="ವಿವರ ನಮೂದಿಸಿ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2.5 rounded-lg transition-all shadow-md">
+                            <span class="kannada-text font-bold">ಇಂಡೆಂಟ್ ಸಲ್ಲಿಸು</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Action 2: Record daily usage -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                        <span class="text-lg">🍳</span>
+                        <span class="kannada-text">ದೈನಂದಿನ ಬಳಕೆ ದಾಖಲಿಸು (Daily Usage Log)</span>
+                    </h3>
+                    <form id="formDailyUsage" onsubmit="handleDailyUsage(event)" class="space-y-4 text-sm">
+                        <div>
+                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
+                            <select id="selectUsageItem" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                <!-- Dynamic list based on what is in stock -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಬಳಸಿದ ಪ್ರಮಾಣ</label>
+                            <input type="number" step="0.01" id="inputUsageQty" placeholder="ಬಳಸಿದ ಪ್ರಮಾಣ ದಾಖಲಿಸಿ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ದಿನಾಂಕ</label>
+                            <input type="date" id="inputUsageDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                        </div>
+                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-lg transition-all shadow-md flex justify-center items-center gap-2">
+                            <span class="kannada-text font-bold">ಬಳಕೆ ನಮೂದಿಸಿ</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Usage history logs -->
+                <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-md font-bold text-slate-800 mb-3 flex items-center gap-2 border-b pb-2">
+                            <span>📝</span>
+                            <span class="kannada-text">ದೈನಂದಿನ ಬಳಕೆ ಇತಿಹಾಸ (Consumption Logs)</span>
+                        </h3>
+                        <div class="overflow-x-auto max-h-[170px] overflow-y-auto">
+                            <table class="min-w-full divide-y divide-slate-200 text-xs">
+                                <thead>
+                                    <tr class="bg-slate-100/50">
+                                        <th class="px-2 py-2 text-left font-semibold text-slate-600 kannada-text">ದಿನಾಂಕ</th>
+                                        <th class="px-2 py-2 text-left font-semibold text-slate-600 kannada-text">ವಸ್ತು</th>
+                                        <th class="px-2 py-2 text-left font-semibold text-slate-600 kannada-text">ಬಳಕೆ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblHostelUsageLogs" class="divide-y divide-slate-100 font-medium">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Receipt Download History -->
+            <div class="glass-card rounded-2xl p-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span>🧾</span>
+                    <span class="kannada-text">ಸ್ವೀಕರಿಸಿದ ಸರಕುಗಳ ವಿವರ ಮತ್ತು ರಸೀದಿಗಳು (Received History & Receipts)</span>
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200 text-sm">
+                        <thead>
+                            <tr class="bg-slate-100/50">
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಇಂಡೆಂಟ್ ಸಂಖ್ಯೆ</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ವಸ್ತುವಿನ ಹೆಸರು</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಸ್ವೀಕರಿಸಿದ ಪ್ರಮಾಣ</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಸ್ವೀಕೃತಿ ದಿನಾಂಕ</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ರಸೀದಿ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblHostelReceiptsLogs" class="divide-y divide-slate-100 font-medium">
+                            <!-- Dynamic rows with Print button -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-6 mt-12 border-t border-slate-800 text-sm print:hidden">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="kannada-text">ಶ್ರೀ ತರಳಬಾಳು ಜಗದ್ಗುರು ವಿದ್ಯಾಪೀಠ, ಸಿರಿಗೆರೆ</p>
+            <p class="text-xs">&copy; 2026 Taralabalu Godown System. All Rights Reserved. Supabase Database integration.</p>
+        </div>
+    </footer>
+
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- Modal: Add Master Item -->
+    <div id="modalAddMasterItem" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full mx-4 overflow-hidden">
+            <div class="bg-slate-900 text-white p-5 flex justify-between items-center">
+                <h3 class="font-bold text-lg kannada-text">ಹೊಸ ವಸ್ತು ನೋಂದಣಿ (Add Item)</h3>
+                <button onclick="toggleModal('modalAddMasterItem', false)" class="text-slate-400 hover:text-white font-bold text-xl">&times;</button>
+            </div>
+            <form onsubmit="handleRegisterItem(event)" class="p-6 space-y-4 text-sm">
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಕೋಡ್ (Unique ID)</label>
+                    <input type="number" id="inputItemCode" placeholder="ಉದಾ: 110" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತುವಿನ ಹೆಸರು (ಕನ್ನಡ)</label>
+                    <input type="text" id="inputItemNameKan" placeholder="ಉದಾ: ಹೆಸರು ಬೇಳೆ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತುವಿನ ಹೆಸರು (English)</label>
+                    <input type="text" id="inputItemNameEng" placeholder="e.g. Green Gram" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಿಭಾಗ (Category)</label>
+                        <input type="text" id="inputItemCategory" placeholder="ಬೇಳೆಕಾಳು" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
+                    </div>
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಿಭಾಗ ಕೋಡ್</label>
+                        <input type="text" id="inputItemCatCode" placeholder="C03" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1 kannada-text">ನಿಗದಿತ ದರ (Std Rate)</label>
+                        <input type="number" step="0.1" id="inputItemRate" placeholder="120" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
+                    </div>
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಅಳತೆಯ ಘಟಕ (Unit)</label>
+                        <select id="selectItemUnit" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
+                            <option value="ಕೆಜಿ (KG)">ಕೆಜಿ (KG)</option>
+                            <option value="ಲೀಟರ್ (Ltr)">ಲೀಟರ್ (Ltr)</option>
+                            <option value="ಗ್ರಾಂ (Gram)">ಗ್ರಾಂ (Gram)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-3 justify-end pt-4 border-t">
+                    <button type="button" onclick="toggleModal('modalAddMasterItem', false)" class="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 font-bold kannada-text">ರದ್ದುಮಾಡು</button>
+                    <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-950 text-white rounded-lg font-bold shadow-md kannada-text">ದಾಖಲಿಸು</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Add Donor -->
+    <div id="modalAddDonor" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full mx-4 overflow-hidden">
+            <div class="bg-slate-900 text-white p-5 flex justify-between items-center">
+                <h3 class="font-bold text-lg kannada-text">ಹೊಸ ದಾನಿ/ಅಂಗಡಿ ನೋಂದಣಿ (Add Donor)</h3>
+                <button onclick="toggleModal('modalAddDonor', false)" class="text-slate-400 hover:text-white font-bold text-xl">&times;</button>
+            </div>
+            <form onsubmit="handleRegisterDonor(event)" class="p-6 space-y-4 text-sm">
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ದಾನಿ/ಅಂಗಡಿ ಕೋಡ್ (Unique ID)</label>
+                    <input type="number" id="inputDonorID" placeholder="ಉದಾ: 2004" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಹೆಸರು (Donor/Shop Name)</label>
+                    <input type="text" id="inputDonorName" placeholder="ಉದಾ: ಜಯದೇವಪ್ಪ ಎಸ್." class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಸ್ಥಳ / ವಿಳಾಸ</label>
+                    <input type="text" id="inputDonorPlace" placeholder="ಸಿರಿಗೆರೆ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ</label>
+                    <input type="text" id="inputDonorMobile" placeholder="9876543210" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
+                </div>
+                <div class="flex gap-3 justify-end pt-4 border-t">
+                    <button type="button" onclick="toggleModal('modalAddDonor', false)" class="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 font-bold kannada-text">ರದ್ದುಮಾಡು</button>
+                    <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-950 text-white rounded-lg font-bold shadow-md kannada-text">ದಾಖಲಿಸು</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Printable Receipt View (in Kannada) -->
+    <div id="modalReceipt" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-lg w-full mx-4 overflow-hidden">
+            <div class="bg-emerald-900 text-white p-5 flex justify-between items-center print:hidden">
+                <h3 class="font-bold text-lg kannada-text">ಸ್ವೀಕೃತಿ ರಸೀದಿ ಮುದ್ರಣ (Print Receipt)</h3>
+                <button onclick="toggleModal('modalReceipt', false)" class="text-slate-300 hover:text-white font-bold text-xl">&times;</button>
+            </div>
+            
+            <div class="p-6">
+                <!-- Printable Area -->
+                <div id="printableReceipt" class="bg-white p-6 border-2 border-dashed border-slate-400 rounded-xl space-y-6 text-slate-800">
+                    <div class="text-center space-y-1">
+                        <h2 class="text-lg font-extrabold tracking-wide kannada-text text-emerald-800">ಶ್ರೀ ತರಳಬಾಳು ಜಗದ್ಗುರು ವಿದ್ಯಾಪೀಠ, ಸಿರಿಗೆರೆ</h2>
+                        <p class="text-sm font-semibold kannada-text text-slate-700">ವಸತಿ ನಿಲಯ ಸ್ವೀಕೃತಿ ರಸೀದಿ (Hostel Receipt Slip)</p>
+                        <div class="border-b border-slate-300 pt-2"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-y-3 text-sm kannada-text">
+                        <span class="text-slate-500 font-medium">ರಸೀದಿ ಸಂಖ್ಯೆ (Indent No):</span>
+                        <span class="font-bold text-slate-800" id="lblRecNum">-</span>
+                        
+                        <span class="text-slate-500 font-medium">ಸ್ವೀಕರಿಸಿದ ವಸತಿ ನಿಲಯ:</span>
+                        <span class="font-bold text-slate-800" id="lblRecHostel">-</span>
+                        
+                        <span class="text-slate-500 font-medium">ದಾಖಲಾದ ದಿನಾಂಕ:</span>
+                        <span class="font-bold text-slate-800" id="lblRecDateSent">-</span>
+
+                        <span class="text-slate-500 font-medium">ಸ್ವೀಕೃತಿ ದಿನಾಂಕ:</span>
+                        <span class="font-bold text-slate-800" id="lblRecDate">-</span>
+                        
+                        <span class="text-slate-500 font-medium">ವಸ್ತುವಿನ ವಿವರ:</span>
+                        <span class="font-bold text-slate-800" id="lblRecItem">-</span>
+
+                        <span class="text-slate-500 font-medium">ಸ್ವೀಕರಿಸಿದ ಒಟ್ಟು ಪ್ರಮಾಣ:</span>
+                        <span class="font-bold text-slate-800 text-lg" id="lblRecQty">-</span>
+                    </div>
+
+                    <div class="pt-8 flex justify-between items-end text-sm kannada-text">
+                        <div>
+                            <div class="w-32 border-b border-slate-300"></div>
+                            <p class="text-xs text-slate-500 mt-1">ಗೋದಾಮು ಸಿಬ್ಬಂದಿ ಸಹಿ</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="w-32 border-b border-slate-300 ml-auto"></div>
+                            <p class="text-xs text-slate-500 mt-1">ವಸತಿ ನಿಲಯದ ಗುಮಾಸ್ತರ ಸಹಿ</p>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-200 pt-3 text-center text-[10px] text-slate-400 kannada-text">
+                        ಇದು ವ್ಯವಸ್ಥೆಯಿಂದ ಸ್ವಯಂ ಚಾಲಿತವಾಗಿ ಸೃಜಿಸಲ್ಪಟ್ಟ ಅಂಗೀಕಾರ ರಸೀದಿಯಾಗಿದೆ.
+                    </div>
+                </div>
+                
+                <!-- Action buttons -->
+                <div class="flex gap-3 justify-end pt-5 border-t mt-6 print:hidden">
+                    <button type="button" onclick="toggleModal('modalReceipt', false)" class="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 font-bold text-sm kannada-text">ಮುಚ್ಚು</button>
+                    <button type="button" onclick="window.print()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold shadow-md text-sm flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        <span class="kannada-text">ರಸೀದಿ ಮುದ್ರಿಸು / PDF</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== CONTROLLER SCRIPT (JS) ==================== -->
+    <script>
+        // State variables
+        let currentRole = 'godown';
+        let masterItems = [];
+        let donors = [];
+        let institutions = [];
+        let indents = [];
+        let hostelStock = [];
+        let dailyUsage = [];
+        
+        // Setup default dates
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('inputRecDate').value = today;
+            document.getElementById('inputUsageDate').value = today;
+            
+            // Initial data pull
+            loadGodownDashboardData();
+        });
+
+        // Switch View Role
+        function switchRole(role) {
+            currentRole = role;
+            const btnGodown = document.getElementById('btnRoleGodown');
+            const btnHostel = document.getElementById('btnRoleHostel');
+            
+            const divGodown = document.getElementById('godownDashboard');
+            const divHostel = document.getElementById('hostelDashboard');
+            
+            if (role === 'godown') {
+                btnGodown.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 bg-emerald-600 text-white shadow-md";
+                btnHostel.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 text-emerald-100 hover:text-white";
+                
+                divGodown.classList.remove('hidden');
+                divHostel.classList.add('hidden');
+                loadGodownDashboardData();
+            } else {
+                btnHostel.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 bg-emerald-600 text-white shadow-md";
+                btnGodown.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 text-emerald-100 hover:text-white";
+                
+                divHostel.classList.remove('hidden');
+                divGodown.classList.add('hidden');
+                
+                // Fetch institutions list first if empty
+                if (institutions.length === 0) {
+                    fetch('/api/institutions')
+                        .then(res => res.json())
+                        .then(data => {
+                            institutions = data;
+                            const select = document.getElementById('selectActiveHostel');
+                            select.innerHTML = data.map(inst => `<option value="${inst.Inst_ID}">${inst.Institution}</option>`).join('');
+                            loadHostelDashboardData();
+                        });
+                } else {
+                    loadHostelDashboardData();
+                }
+            }
+        }
+
+        // Modal triggers
+        function toggleModal(modalId, show) {
+            const modal = document.getElementById(modalId);
+            if (show) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // --- DATA LOADERS ---
+
+        // Fetch & Populate Central Godown Data
+        function loadGodownDashboardData() {
+            // Check alerts first to display banner if needed
+            fetch('/api/low-stock-alerts')
+                .then(res => res.json())
+                .then(alerts => {
+                    const alertBanner = document.getElementById('globalAlertBanner');
+                    const alertText = document.getElementById('globalAlertText');
+                    const alertsList = document.getElementById('godownAlertsList');
+                    
+                    if (alerts.length > 0) {
+                        alertBanner.classList.remove('hidden');
+                        alertText.innerText = `ಗಮನಿಸಿ: ${alerts.length} ವಸ್ತುಗಳು ಶಾಖೆಗಳಲ್ಲಿ ಕೊರತೆಯಿವೆ!`;
+                        
+                        alertsList.innerHTML = alerts.map(alert => `
+                            <div class="p-3 bg-red-50 border border-red-200 rounded-xl flex justify-between items-center text-xs pulse-alert">
+                                <div>
+                                    <h4 class="font-bold text-red-800 kannada-text">${alert.Institution}</h4>
+                                    <p class="text-slate-600 font-semibold kannada-text">${alert.Grocery_Items_Kan} (ಕೋಡ್: ${alert.Grocery_Code})</p>
+                                </div>
+                                <span class="font-extrabold text-red-700 bg-red-100 px-2.5 py-1 rounded-lg">
+                                    ${alert.CurrentBalance} ${alert.Qtl_Kg_Ltr}
+                                </span>
+                            </div>
+                        `).join('');
+                    } else {
+                        alertBanner.classList.add('hidden');
+                        alertsList.innerHTML = `<p class="text-sm text-slate-500 text-center py-6 kannada-text">ಯಾವುದೇ ಕೊರತೆ ಇಲ್ಲ.</p>`;
+                    }
+                });
+
+            // Load Master Items
+            fetch('/api/grocery-items')
+                .then(res => res.json())
+                .then(items => {
+                    masterItems = items;
+                    populateDropdown('selectRecItem', items, 'Grocery_Code', 'Grocery_Items_Kan');
+                    
+                    const tbody = document.getElementById('tblGodownBalances');
+                    if (items.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-400 kannada-text">ಯಾವುದೇ ಮಾಹಿತಿ ಇಲ್ಲ.</td></tr>`;
+                    } else {
+                        tbody.innerHTML = items.map(item => `
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="px-4 py-3 font-mono text-slate-600">${item.Grocery_Code}</td>
+                                <td class="px-4 py-3 text-slate-800 kannada-text font-bold">${item.Grocery_Items_Kan}</td>
+                                <td class="px-4 py-3 ${item.Tot_Stock <= 0 ? 'text-slate-400' : 'text-emerald-700 font-bold'}">${item.Tot_Stock}</td>
+                                <td class="px-4 py-3 text-slate-500 kannada-text">${item.Qtl_Kg_Ltr}</td>
+                            </tr>
+                        `).join('');
+                    }
+                });
+
+            // Load Donors
+            fetch('/api/donors')
+                .then(res => res.json())
+                .then(data => {
+                    donors = data;
+                    populateDropdown('selectRecDonor', data, 'Shop_Donor_ID', 'Shop_Donor_Name');
+                });
+
+            // Load Inwards History Log
+            fetch('/api/godown-stock')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('tblInwardStockHistory');
+                    if (data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-2 text-slate-400 kannada-text">ಯಾವುದೇ ಸ್ವೀಕೃತಿಗಳಿಲ್ಲ.</td></tr>`;
+                    } else {
+                        tbody.innerHTML = data.map(log => `
+                            <tr>
+                                <td class="px-3 py-2 text-slate-500">${log.Date1}</td>
+                                <td class="px-3 py-2 text-slate-800 font-bold kannada-text">${log.Grocery_Items_Kan}</td>
+                                <td class="px-3 py-2 font-bold">${log.Stock} ${log.Qtl_Kg_Ltr}</td>
+                                <td class="px-3 py-2 text-slate-600 truncate max-w-[120px]" title="${log.Shop_Donor_Name}">${log.Shop_Donor_Name || 'ದೇಣಿಗೆ'}</td>
+                            </tr>
+                        `).join('');
+                    }
+                });
+
+            // Load Transfers / Indents Log (All)
+            fetch('/api/indents')
+                .then(res => res.json())
+                .then(data => {
+                    indents = data;
+                    
+                    // Render Pending Indents
+                    const pendingTbody = document.getElementById('tblPendingIndents');
+                    const pendingList = data.filter(ind => ind.Sanctioned === 'Pending');
+                    if (pendingList.length === 0) {
+                        pendingTbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-slate-400 kannada-text">ಯಾವುದೇ ಇಂಡೆಂಟ್‌ಗಳು ಬಾಕಿ ಇಲ್ಲ.</td></tr>`;
+                    } else {
+                        pendingTbody.innerHTML = pendingList.map(ind => `
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="px-4 py-3 text-slate-700 font-semibold kannada-text">${ind.Institution}</td>
+                                <td class="px-4 py-3 text-slate-800 font-bold kannada-text">${ind.Grocery_Items_Kan}</td>
+                                <td class="px-4 py-3 font-bold">${ind.Quantity} ${ind.Qtl_Kg_Ltr}</td>
+                                <td class="px-4 py-3">
+                                    <button onclick="approveIndent(${ind.Rec}, ${ind.Quantity})" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm">
+                                        ಅನುಮೋದಿಸು & ಕಳುಹಿಸು
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+
+                    // Render Godown Transfers History
+                    const transfersTbody = document.getElementById('tblGodownTransfers');
+                    const processedTransfers = data.filter(ind => ind.Sanctioned !== 'Pending');
+                    if (processedTransfers.length === 0) {
+                        transfersTbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-400 kannada-text">ಯಾವುದೇ ವರ್ಗಾವಣೆಗಳು ನಡೆದಿಲ್ಲ.</td></tr>`;
+                    } else {
+                        transfersTbody.innerHTML = processedTransfers.map(t => {
+                            let statusClass = "bg-amber-100 text-amber-800";
+                            let statusText = "ಕಳುಹಿಸಲಾಗಿದೆ (Sent)";
+                            if (t.Sanctioned === 'Received') {
+                                statusClass = "bg-emerald-100 text-emerald-800";
+                                statusText = "ಸ್ವೀಕರಿಸಲಾಗಿದೆ (Received)";
+                            }
+                            return `
+                                <tr class="hover:bg-slate-50/50">
+                                    <td class="px-4 py-3 font-mono text-slate-500">${t.Indent_no}</td>
+                                    <td class="px-4 py-3 text-slate-700 kannada-text">${t.Institution}</td>
+                                    <td class="px-4 py-3 text-slate-800 font-bold kannada-text">${t.Grocery_Items_Kan}</td>
+                                    <td class="px-4 py-3 font-extrabold">${t.Sanctioned_Quantity} ${t.Qtl_Kg_Ltr}</td>
+                                    <td class="px-4 py-3 text-slate-500 font-mono">${t.Sanctioned_on || t.Indent_Date}</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 text-xs font-bold rounded-lg ${statusClass} kannada-text">${statusText}</span>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('');
+                    }
+                });
+        }
+
+        // Fetch & Populate Hostel Data
+        function loadHostelDashboardData() {
+            const activeHostelId = document.getElementById('selectActiveHostel').value;
+            if (!activeHostelId) return;
+            
+            // Populate Indent Item Dropdown with master items list
+            fetch('/api/grocery-items')
+                .then(res => res.json())
+                .then(items => {
+                    populateDropdown('selectIndentItem', items, 'Grocery_Code', 'Grocery_Items_Kan');
+                });
+
+            // 1. Fetch hostel stock
+            fetch(`/api/hostel-stock/${activeHostelId}`)
+                .then(res => res.json())
+                .then(stock => {
+                    hostelStock = stock;
+                    const tbody = document.getElementById('tblHostelStock');
+                    
+                    // Also update daily usage item selector with items actually in stock in hostel
+                    populateDropdown('selectUsageItem', stock, 'Grocery_Code', 'Grocery_Items_Kan');
+
+                    if (stock.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-400 kannada-text">ವಸತಿ ನಿಲಯದಲ್ಲಿ ಯಾವುದೇ ದಾಸ್ತಾನು ಲಭ್ಯವಿಲ್ಲ.</td></tr>`;
+                    } else {
+                        tbody.innerHTML = stock.map(item => {
+                            let alertBadge = ``;
+                            let rowClass = ``;
+                            if (item.CurrentBalance < 10) {
+                                alertBadge = `<span class="px-2 py-1 text-xs font-bold bg-red-100 text-red-800 rounded-lg kannada-text pulse-alert">ದಾಸ್ತಾನು ಕೊರತೆ</span>`;
+                                rowClass = `bg-red-50/20`;
+                            } else {
+                                alertBadge = `<span class="px-2 py-1 text-xs font-bold bg-emerald-100 text-emerald-800 rounded-lg kannada-text">ಸಾಕಷ್ಟು ಇದೆ</span>`;
+                            }
+                            return `
+                                <tr class="hover:bg-slate-50/50 ${rowClass}">
+                                    <td class="px-4 py-3 font-mono text-slate-500">${item.Grocery_Code}</td>
+                                    <td class="px-4 py-3 text-slate-800 kannada-text font-bold">${item.Grocery_Items_Kan}</td>
+                                    <td class="px-4 py-3 text-slate-700 font-extrabold">${item.CurrentBalance} ${item.Qtl_Kg_Ltr}</td>
+                                    <td class="px-4 py-3">${alertBadge}</td>
+                                </tr>
+                            `;
+                        }).join('');
+                    }
+                });
+
+            // 2. Fetch indents and pending transfers
+            fetch(`/api/indents?hostel_id=${activeHostelId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const pendingContainer = document.getElementById('hostelPendingTransfersList');
+                    const receiptsTbody = document.getElementById('tblHostelReceiptsLogs');
+                    
+                    const pendingList = data.filter(t => t.Sanctioned === 'Sent');
+                    const completedList = data.filter(t => t.Sanctioned === 'Received');
+                    
+                    // Render pending list
+                    if (pendingList.length === 0) {
+                        pendingContainer.innerHTML = `<p class="text-sm text-slate-500 text-center py-6 kannada-text">ಯಾವುದೇ ಪೆಂಡಿಂಗ್ ವರ್ಗಾವಣೆಗಳಿಲ್ಲ.</p>`;
+                    } else {
+                        pendingContainer.innerHTML = pendingList.map(t => `
+                            <div class="p-4 bg-amber-50/60 border-2 border-dashed border-amber-200 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                                <div>
+                                    <span class="text-xs font-bold text-amber-800 block kannada-text">ವರ್ಗಾವಣೆ ದಿನಾಂಕ: ${t.Sanctioned_on}</span>
+                                    <span class="text-md font-bold text-slate-800 kannada-text block">${t.Grocery_Items_Kan}</span>
+                                    <span class="text-sm font-semibold text-slate-600">ಪ್ರಮಾಣ: ${t.Sanctioned_Quantity} ${t.Qtl_Kg_Ltr}</span>
+                                </div>
+                                <button onclick="acknowledgeDelivery(${t.Rec})" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-1">
+                                    <span>✓</span>
+                                    <span class="kannada-text">ಸ್ವೀಕೃತಿ ದೃಢೀಕರಿಸು</span>
+                                </button>
+                            </div>
+                        `).join('');
+                    }
+
+                    // Render completed logs with Receipt print button
+                    if (completedList.length === 0) {
+                        receiptsTbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-400 kannada-text">ಯಾವುದೇ ಸ್ವೀಕೃತಿಗಳಿಲ್ಲ.</td></tr>`;
+                    } else {
+                        receiptsTbody.innerHTML = completedList.map(t => `
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="px-4 py-3 font-mono text-slate-500">${t.Indent_no}</td>
+                                <td class="px-4 py-3 text-slate-800 kannada-text font-bold">${t.Grocery_Items_Kan}</td>
+                                <td class="px-4 py-3 font-bold text-slate-700">${t.Sanctioned_Quantity} ${t.Qtl_Kg_Ltr}</td>
+                                <td class="px-4 py-3 text-slate-500 font-mono">${t.Sanctioned_on}</td>
+                                <td class="px-4 py-3">
+                                    <button onclick="openReceiptModal(${JSON.stringify(t).replace(/"/g, '&quot;')})" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1 transition-all">
+                                        📄 <span class="kannada-text">ರಸೀದಿ</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                });
+
+            // 3. Fetch daily usage history
+            fetch(`/api/daily-usage/${activeHostelId}`)
+                .then(res => res.json())
+                .then(usage => {
+                    const tbody = document.getElementById('tblHostelUsageLogs');
+                    if (usage.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-slate-400 kannada-text">ಇನ್ನೂ ಯಾವುದೇ ಬಳಕೆ ದಾಖಲಿಸಿಲ್ಲ.</td></tr>`;
+                    } else {
+                        tbody.innerHTML = usage.map(u => `
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="px-2 py-2 text-slate-500 font-mono">${u.Date1}</td>
+                                <td class="px-2 py-2 text-slate-800 kannada-text font-bold">${u.Grocery_Items_Kan}</td>
+                                <td class="px-2 py-2 text-red-600 font-extrabold">-${u.QuantityUsed} ${u.Qtl_Kg_Ltr}</td>
+                            </tr>
+                        `).join('');
+                    }
+                });
+        }
+
+        // Helper: populate dropdown
+        function populateDropdown(selectId, items, keyField, valField) {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            select.innerHTML = items.map(item => `<option value="${item[keyField]}">${item[valField]} (ಕೋಡ್: ${item[keyField]})</option>`).join('');
+        }
+
+        // --- SUBMISSION HANDLERS ---
+
+        // 1. Add Master Item
+        function handleRegisterItem(e) {
+            e.preventDefault();
+            const payload = {
+                Grocery_Code: parseInt(document.getElementById('inputItemCode').value),
+                Grocery_Items_Kan: document.getElementById('inputItemNameKan').value,
+                Grocery_Items_Eng: document.getElementById('inputItemNameEng').value,
+                Grocery_Category: document.getElementById('inputItemCategory').value,
+                Category_Code: document.getElementById('inputItemCatCode').value,
+                Std_Rate: parseFloat(document.getElementById('inputItemRate').value || 0),
+                Qtl_Kg_Ltr: document.getElementById('selectItemUnit').value
+            };
+
+            fetch('/api/grocery-items', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('ದೋಷ: ' + data.error);
+                } else {
+                    alert('ವಸ್ತು ಯಶಸ್ವಿಯಾಗಿ ನೋಂದಣಿಯಾಗಿದೆ (Item Registered Successfully!)');
+                    toggleModal('modalAddMasterItem', false);
+                    document.getElementById('formReceiveStock').reset();
+                    loadGodownDashboardData();
+                }
+            });
+        }
+
+        // 2. Add Donor
+        function handleRegisterDonor(e) {
+            e.preventDefault();
+            const payload = {
+                Shop_Donor_ID: parseInt(document.getElementById('inputDonorID').value),
+                Shop_Donor_Name: document.getElementById('inputDonorName').value,
+                Place: document.getElementById('inputDonorPlace').value,
+                Mobile: document.getElementById('inputDonorMobile').value
+            };
+
+            fetch('/api/donors', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('ದೋಷ: ' + data.error);
+                } else {
+                    alert('ದಾನಿ/ಅಂಗಡಿ ಯಶಸ್ವಿಯಾಗಿ ನೋಂದಣಿಯಾಗಿದೆ (Registered Successfully!)');
+                    toggleModal('modalAddDonor', false);
+                    loadGodownDashboardData();
+                }
+            });
+        }
+
+        // 3. Receive Inward Stock
+        function handleReceiveStock(e) {
+            e.preventDefault();
+            const payload = {
+                Grocery_Code: parseInt(document.getElementById('selectRecItem').value),
+                Shop_Donor_ID: parseInt(document.getElementById('selectRecDonor').value),
+                Quantity: parseFloat(document.getElementById('inputRecQty').value),
+                Purchase_Rate: parseFloat(document.getElementById('inputRecRate').value || 0),
+                Purchased_Donation: document.getElementById('selectRecType').value,
+                Date: document.getElementById('inputRecDate').value
+            };
+
+            fetch('/api/godown-stock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('ದೋಷ: ' + data.error);
+                } else {
+                    alert('ದಾಸ್ತಾನು ಆಮದು ದಾಖಲಿಸಲಾಗಿದೆ (Stock inward saved successfully!)');
+                    document.getElementById('inputRecQty').value = '';
+                    loadGodownDashboardData();
+                }
+            });
+        }
+
+        // 4. Approve & Issue Indent (Godown action)
+        function approveIndent(indentRec, quantity) {
+            const sanctioned = prompt("ಅನುಮೋದಿಸಬೇಕಾದ ಪ್ರಮಾಣ ದಾಖಲಿಸಿ (Enter sanctioned quantity):", quantity);
+            if (sanctioned === null || sanctioned === "") return;
+            
+            fetch(`/api/indents/${indentRec}/approve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Sanctioned_Quantity: parseFloat(sanctioned) })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('ದೋಷ: ' + data.error);
+                } else {
+                    alert('ಇಂಡೆಂಟ್ ಅನುಮೋದಿಸಲಾಗಿದೆ ಮತ್ತು ಸರಕನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ (Indent approved and stock issued!)');
+                    loadGodownDashboardData();
+                }
+            });
+        }
+
+        // 5. Submit Indent Request (Hostel action)
+        function handleSubmitIndent(e) {
+            e.preventDefault();
+            const activeHostelId = document.getElementById('selectActiveHostel').value;
+            const payload = {
+                Inst_ID: parseInt(activeHostelId),
+                Grocery_Code: parseInt(document.getElementById('selectIndentItem').value),
+                Quantity: parseFloat(document.getElementById('inputIndentQty').value),
+                Remarks: document.getElementById('inputIndentRemarks').value
+            };
+
+            fetch('/api/indents', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('ದೋಷ: ' + data.error);
+                } else {
+                    alert('ಇಂಡೆಂಟ್ ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಕೆಯಾಗಿದೆ (Indent request submitted successfully!)');
+                    document.getElementById('inputIndentQty').value = '';
+                    document.getElementById('inputIndentRemarks').value = '';
+                    loadHostelDashboardData();
+                }
+            });
+        }
+
+        // 6. Acknowledge Delivery (Hostel action - two-way verification)
+        function acknowledgeDelivery(indentRec) {
+            if (!confirm('ಈ ಸರಕು ನಿಮ್ಮ ವಸತಿ ನಿಲಯಕ್ಕೆ ತಲುಪಿದೆ ಎಂದು ದೃಢೀಕರಿಸಲು ಬಯಸುವಿರಾ? (Do you want to confirm delivery receipt?)')) {
+                return;
+            }
+
+            fetch(`/api/indents/${indentRec}/acknowledge`, {
+                method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('ದೋಷ: ' + data.error);
+                } else {
+                    alert('ಸ್ವೀಕೃತಿ ದೃಢೀಕರಣ ಯಶಸ್ವಿಯಾಗಿದೆ! ದಾಸ್ತಾನು ನವೀಕರಿಸಲ್ಪಟ್ಟಿದೆ. (Receipt Acknowledged!)');
+                    loadHostelDashboardData();
+                }
+            });
+        }
+
+        // 7. Record Daily Usage (Hostel action)
+        function handleDailyUsage(e) {
+            e.preventDefault();
+            const activeHostelId = document.getElementById('selectActiveHostel').value;
+            const payload = {
+                Inst_ID: parseInt(activeHostelId),
+                Grocery_Code: parseInt(document.getElementById('selectUsageItem').value),
+                Quantity: parseFloat(document.getElementById('inputUsageQty').value),
+                Date: document.getElementById('inputUsageDate').value
+            };
+
+            fetch('/api/daily-usage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('ದೋಷ: ' + data.error);
+                } else {
+                    alert('ಬಳಕೆ ದಾಖಲಿಸಲಾಗಿದೆ (Usage logged successfully!)');
+                    document.getElementById('inputUsageQty').value = '';
+                    loadHostelDashboardData();
+                }
+            });
+        }
+
+        // --- RECEIPT MODAL ---
+        function openReceiptModal(indent) {
+            document.getElementById('lblRecHostel').innerText = indent.Institution;
+            document.getElementById('lblRecNum').innerText = indent.Indent_no;
+            document.getElementById('lblRecDateSent').innerText = indent.Indent_Date;
+            document.getElementById('lblRecDate').innerText = indent.Sanctioned_on;
+            document.getElementById('lblRecItem').innerText = `${indent.Grocery_Items_Kan} (ಕೋಡ್: ${indent.Grocery_Code})`;
+            document.getElementById('lblRecQty').innerText = `${indent.Sanctioned_Quantity} ${indent.Qtl_Kg_Ltr}`;
+            
+            toggleModal('modalReceipt', true);
+        }
+
+        // Global scroll to alerts list
+        function scrollToAlerts() {
+            if (currentRole === 'godown') {
+                document.getElementById('godownAlertsList').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                switchRole('godown');
+                setTimeout(() => {
+                    document.getElementById('godownAlertsList').scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            }
+        }
+    </script>
+</body>
+</html>
