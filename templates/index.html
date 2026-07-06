@@ -129,6 +129,10 @@
                         <span class="p-2 bg-emerald-100 rounded-lg text-emerald-800">📦</span>
                         <span class="kannada-text">ಗೋದಾಮಿನ ಒಟ್ಟು ಲಭ್ಯ ದಾಸ್ತಾನು (Central Stock Balances)</span>
                     </h2>
+                    <!-- Search box for 654+ items -->
+                    <div class="mb-4">
+                        <input type="text" id="txtSearchGodownBalances" oninput="filterTable('txtSearchGodownBalances', 'tblGodownBalances', 1)" placeholder="ಹುಡುಕಿ / Search grocery item..." class="w-full sm:w-80 px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50">
+                    </div>
                     <div class="overflow-x-auto max-h-[300px] overflow-y-auto pr-1">
                         <table class="min-w-full divide-y divide-slate-200 text-sm">
                             <thead>
@@ -137,6 +141,7 @@
                                     <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ವಸ್ತುವಿನ ಹೆಸರು</th>
                                     <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು</th>
                                     <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಘಟಕ</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text col-remove hidden">ಅಳಿಸು</th>
                                 </tr>
                             </thead>
                             <tbody id="tblGodownBalances" class="divide-y divide-slate-100 font-medium">
@@ -170,6 +175,7 @@
                     <form id="formReceiveStock" onsubmit="handleReceiveStock(event)" class="space-y-4 text-sm">
                         <div>
                             <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
+                            <input type="text" oninput="filterDropdown(this, 'selectRecItem')" placeholder="ವಸ್ತು ಹುಡುಕಿ / Search item..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs mb-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-slate-50/50">
                             <select id="selectRecItem" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                                 <!-- Seeded Items -->
                             </select>
@@ -516,6 +522,10 @@
                         <span class="p-2 bg-emerald-100 rounded-lg text-emerald-800">🛒</span>
                         <span class="kannada-text">ಪ್ರಸ್ತುತ ದಾಸ್ತಾನು ಶಿಲ್ಕು (Current Stock Balance)</span>
                     </h3>
+                    <!-- Search box for hostel stock -->
+                    <div class="mb-4">
+                        <input type="text" id="txtSearchHostelBalances" oninput="filterTable('txtSearchHostelBalances', 'tblHostelStock', 1)" placeholder="ಹುಡುಕಿ / Search hostel item..." class="w-full sm:w-80 px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50">
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-slate-200 text-sm">
                             <thead>
@@ -557,6 +567,7 @@
                     <form id="formSubmitIndent" onsubmit="handleSubmitIndent(event)" class="space-y-4 text-sm">
                         <div>
                             <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
+                            <input type="text" oninput="filterDropdown(this, 'selectIndentItem')" placeholder="ವಸ್ತು ಹುಡುಕಿ / Search item..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs mb-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-slate-50/50">
                             <select id="selectIndentItem" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                                 <!-- Dynamic Master Items -->
                             </select>
@@ -584,6 +595,7 @@
                     <form id="formDailyUsage" onsubmit="handleDailyUsage(event)" class="space-y-4 text-sm">
                         <div>
                             <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
+                            <input type="text" oninput="filterDropdown(this, 'selectUsageItem')" placeholder="ವಸ್ತು ಹುಡುಕಿ / Search item..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs mb-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-slate-50/50">
                             <select id="selectUsageItem" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                                 <!-- Dynamic list based on what is in stock -->
                             </select>
@@ -1117,6 +1129,16 @@
                 if (formVeg) formVeg.parentElement.classList.add('hidden');
                 if (tblVegLogs) tblVegLogs.parentElement.parentElement.className = "glass-card rounded-2xl p-6 lg:col-span-3";
             }
+            
+            // Toggle Delete column visibility
+            const colRemoveHeaders = document.querySelectorAll('.col-remove');
+            colRemoveHeaders.forEach(el => {
+                if (role === 'head') {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
         }
 
         // Switch View Role
@@ -1235,7 +1257,7 @@
                     
                     const tbody = document.getElementById('tblGodownBalances');
                     if (items.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-400 kannada-text">ಯಾವುದೇ ಮಾಹಿತಿ ಇಲ್ಲ.</td></tr>`;
+                        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-400 kannada-text">ಯಾವುದೇ ಮಾಹಿತಿ ಇಲ್ಲ.</td></tr>`;
                     } else {
                         tbody.innerHTML = items.map(item => `
                             <tr class="hover:bg-slate-50/50">
@@ -1243,6 +1265,11 @@
                                 <td class="px-4 py-3 text-slate-800 kannada-text font-bold">${getItemName(item)}</td>
                                 <td class="px-4 py-3 ${item.Tot_Stock <= 0 ? 'text-slate-400' : 'text-emerald-700 font-bold'}">${item.Tot_Stock}</td>
                                 <td class="px-4 py-3 text-slate-500 kannada-text">${item.Qtl_Kg_Ltr}</td>
+                                <td class="px-4 py-3 col-remove ${loggedInUser.role === 'head' ? '' : 'hidden'}">
+                                    <button onclick="deleteMasterItem(${item.Grocery_Code})" class="text-red-600 hover:text-red-800 transition font-black text-xs px-2 py-1 bg-red-50 hover:bg-red-100 rounded-lg flex items-center gap-1">
+                                        <span>❌</span> <span class="kannada-text">ಅಳಿಸು</span>
+                                    </button>
+                                </td>
                             </tr>
                         `).join('');
                     }
@@ -1673,6 +1700,73 @@
                 }
                 return `<option value="${item[keyField]}">${displayName} (${codeLabel}: ${item[keyField]})</option>`;
             }).join('');
+
+            // Invalidate cached options for custom select filter
+            delete select.dataset.allOptions;
+        }
+
+        // Live table filtering helper
+        function filterTable(inputId, tableId, colIndex) {
+            const q = document.getElementById(inputId).value.toLowerCase();
+            const tbody = document.getElementById(tableId);
+            if (!tbody) return;
+            const rows = tbody.getElementsByTagName('tr');
+            for (let row of rows) {
+                const cell = row.getElementsByTagName('td')[colIndex];
+                if (cell) {
+                    const txt = cell.textContent || cell.innerText;
+                    if (txt.toLowerCase().indexOf(q) > -1) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        // Live select dropdown filtering helper
+        function filterDropdown(input, selectId) {
+            const q = input.value.toLowerCase();
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            
+            // Cache options to prevent losing items during filter backspaces
+            if (!select.dataset.allOptions) {
+                const opts = Array.from(select.options).map(o => ({ value: o.value, text: o.text }));
+                select.dataset.allOptions = JSON.stringify(opts);
+            }
+            
+            const allOpts = JSON.parse(select.dataset.allOptions);
+            const filtered = allOpts.filter(o => o.text.toLowerCase().indexOf(q) > -1);
+            
+            const currentVal = select.value;
+            select.innerHTML = filtered.map(o => `<option value="${o.value}">${o.text}</option>`).join('');
+            
+            if (filtered.some(o => o.value === currentVal)) {
+                select.value = currentVal;
+            }
+        }
+
+        // Delete Master Item (Head Office exclusive)
+        function deleteMasterItem(code) {
+            const confirmMsg = currentLang === 'en' 
+                ? 'Are you sure you want to delete this master item?' 
+                : 'ಈ ವಸ್ತುವನ್ನು ಮಾಸ್ಟರ್ ಪಟ್ಟಿಯಿಂದ ಅಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?';
+            if (!confirm(confirmMsg)) return;
+
+            fetch(`/api/grocery-items/${code}`, {
+                method: 'DELETE'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('ದೋಷ: ' + data.error);
+                } else {
+                    const successMsg = currentLang === 'en' ? 'Item deleted successfully!' : 'ವಸ್ತು ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ!';
+                    alert(successMsg);
+                    loadGodownDashboardData();
+                }
+            });
         }
 
         // --- SUBMISSION HANDLERS ---

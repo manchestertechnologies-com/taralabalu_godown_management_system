@@ -189,6 +189,17 @@ def add_grocery_item():
         
     return jsonify({'success': True})
 
+@app.route('/api/grocery-items/<int:code>', methods=['DELETE'])
+def delete_grocery_item(code):
+    if 'role' not in session or session['role'] != 'head':
+        return jsonify({'error': 'Unauthorized'}), 403
+    try:
+        db_query("DELETE FROM Grocery_Items WHERE Grocery_Code = %s", (code,), fetch=False)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 # 2. Institutions List
 @app.route('/api/institutions', methods=['GET'])
 def get_institutions():
