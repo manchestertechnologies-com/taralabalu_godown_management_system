@@ -72,7 +72,16 @@
                     <button id="btnLangKN" onclick="setLanguage('kn')" class="px-3.5 py-2 rounded-lg text-sm font-bold transition-all duration-300 bg-emerald-600 text-white shadow-md">ಕನ್ನಡ</button>
                     <button id="btnLangEN" onclick="setLanguage('en')" class="px-3.5 py-2 rounded-lg text-sm font-bold transition-all duration-300 text-emerald-100 hover:text-white">English</button>
                 </div>
+
+                <!-- Log Out Button -->
+                <a href="/logout" class="px-3.5 py-2 rounded-xl text-sm font-bold bg-red-700/90 text-white hover:bg-red-800 shadow-md transition-all duration-300 flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    <span class="kannada-text">ನಿರ್ಗಮಿಸು / Log Out</span>
+                </a>
             </div>
+
 
         </div>
     </header>
@@ -617,6 +626,14 @@
         // Language state and translations
         let currentLang = localStorage.getItem('lang') || 'kn';
         
+        // Session user info
+        const loggedInUser = {
+            username: "{{ session.get('username', '') }}",
+            role: "{{ session.get('role', '') }}",
+            inst_id: parseInt("{{ session.get('inst_id', '0') }}"),
+            name: "{{ session.get('name', '') }}"
+        };
+        
         const TRANSLATION_MAP = {
             "ದಾಸ್ತಾನು ನಿರ್ವಹಣಾ ವ್ಯವಸ್ಥೆ": "Inventory Management System",
             "ಕೇಂದ್ರ ಗೋದಾಮು ಸಿಬ್ಬಂದಿ": "Central Godown Staff",
@@ -771,6 +788,15 @@
             document.getElementById('inputRecDate').value = today;
             document.getElementById('inputUsageDate').value = today;
             
+            // Enforce multi-tenant access control based on user role
+            if (loggedInUser.role === 'hostel') {
+                // Hide role switcher to lock them into their branch store
+                document.getElementById('btnRoleGodown').parentElement.classList.add('hidden');
+                switchRole('hostel');
+            } else {
+                switchRole('godown');
+            }
+            
             // Set initial language UI
             updateUIStrings();
         });
@@ -778,6 +804,11 @@
 
         // Switch View Role
         function switchRole(role) {
+            // Security: If logged-in user is 'hostel', block access to 'godown' role
+            if (loggedInUser.role === 'hostel' && role === 'godown') {
+                return;
+            }
+            
             currentRole = role;
             const btnGodown = document.getElementById('btnRoleGodown');
             const btnHostel = document.getElementById('btnRoleHostel');
@@ -807,9 +838,20 @@
                             institutions = data;
                             const select = document.getElementById('selectActiveHostel');
                             select.innerHTML = data.map(inst => `<option value="${inst.Inst_ID}">${inst.Institution}</option>`).join('');
+                            
+                            // Multi-tenant lockdown
+                            if (loggedInUser.role === 'hostel' && loggedInUser.inst_id) {
+                                select.value = loggedInUser.inst_id;
+                                select.disabled = true;
+                            }
                             loadHostelDashboardData();
                         });
                 } else {
+                    const select = document.getElementById('selectActiveHostel');
+                    if (loggedInUser.role === 'hostel' && loggedInUser.inst_id) {
+                        select.value = loggedInUser.inst_id;
+                        select.disabled = true;
+                    }
                     loadHostelDashboardData();
                 }
             }
@@ -969,7 +1011,7 @@
 
         // Fetch & Populate Hostel Data
         function loadHostelDashboardData() {
-            const activeHostelId = document.getElementById('selectActiveHostel').value;
+            const activeHostelId = loggedInUser.role === 'hostel' ? loggedInUser.inst_id : document.getElementById('selectActiveHostel').value;
             if (!activeHostelId) return;
             
             // Populate Indent Item Dropdown with master items list
@@ -1211,7 +1253,7 @@
         // 5. Submit Indent Request (Hostel action)
         function handleSubmitIndent(e) {
             e.preventDefault();
-            const activeHostelId = document.getElementById('selectActiveHostel').value;
+            const activeHostelId = loggedInUser.role === 'hostel' ? loggedInUser.inst_id : document.getElementById('selectActiveHostel').value;
             const payload = {
                 Inst_ID: parseInt(activeHostelId),
                 Grocery_Code: parseInt(document.getElementById('selectIndentItem').value),
@@ -1260,7 +1302,7 @@
         // 7. Record Daily Usage (Hostel action)
         function handleDailyUsage(e) {
             e.preventDefault();
-            const activeHostelId = document.getElementById('selectActiveHostel').value;
+            const activeHostelId = loggedInUser.role === 'hostel' ? loggedInUser.inst_id : document.getElementById('selectActiveHostel').value;
             const payload = {
                 Inst_ID: parseInt(activeHostelId),
                 Grocery_Code: parseInt(document.getElementById('selectUsageItem').value),

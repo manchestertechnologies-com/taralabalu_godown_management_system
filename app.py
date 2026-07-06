@@ -1,12 +1,29 @@
 import os
 import urllib.parse
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, session, redirect, url_for
 from datetime import datetime
 import sqlite3
 import psycopg2
 import psycopg2.extras
 
 app = Flask(__name__)
+app.secret_key = 'taralabalu_secret_key_87924'
+
+# User credentials dictionary (Default password for all is 123)
+USERS = {
+    "godown": {"password": "123", "role": "godown", "inst_id": None, "name": "Central Godown / ಕೇಂದ್ರ ಗೋದಾಮು"},
+    "boyshostel": {"password": "123", "role": "hostel", "inst_id": 1, "name": "Stores - Boys Hostel"},
+    "girlshostel": {"password": "123", "role": "hostel", "inst_id": 2, "name": "Stores - Girls Hostel"},
+    "math": {"password": "123", "role": "hostel", "inst_id": 3, "name": "Stores - Math"},
+    "shantivanabidara": {"password": "123", "role": "hostel", "inst_id": 4, "name": "Stores - Shantivana Bidara"},
+    "shantivanagurukula": {"password": "123", "role": "hostel", "inst_id": 5, "name": "Stores - Shantivana Gurukula"},
+    "sirigerebhs": {"password": "123", "role": "hostel", "inst_id": 6, "name": "Stores - Sirigere BHS"},
+    "sirigereghs": {"password": "123", "role": "hostel", "inst_id": 7, "name": "Stores - Sirigere GHS"},
+    "storesa": {"password": "123", "role": "hostel", "inst_id": 8, "name": "Stores - A"},
+    "aooffice": {"password": "123", "role": "hostel", "inst_id": 9, "name": "Stores - AO_Office"},
+    "shraddajali": {"password": "123", "role": "hostel", "inst_id": 10, "name": "Store - Shraddhajali"}
+}
+
 
 # Supabase Connection String (Default)
 SUPABASE_URL = "postgresql://postgres:Bery8792480218@db.rsvkrseaxewamlipnuku.supabase.co:5432/postgres"
@@ -99,7 +116,37 @@ def db_query(query, args=(), fetch=True):
 
 @app.route('/')
 def index():
+    if 'username' not in session:
+        return redirect(url_for('login_page'))
     return render_template('index.html')
+
+@app.route('/login')
+@app.route('/login/<slug>')
+def login_page(slug=None):
+    if 'username' in session:
+        return redirect(url_for('index'))
+    return render_template('login.html', preselected_slug=slug)
+
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    data = request.json or {}
+    username = data.get('username', '').strip().lower()
+    password = data.get('password', '')
+    
+    if username in USERS and USERS[username]['password'] == password:
+        session['username'] = username
+        session['role'] = USERS[username]['role']
+        session['inst_id'] = USERS[username]['inst_id']
+        session['name'] = USERS[username]['name']
+        return jsonify({'success': True})
+    
+    return jsonify({'success': False, 'message': 'Invalid username or password'}), 401
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login_page'))
+
 
 # --- API ENDPOINTS ---
 

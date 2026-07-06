@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ದಾಸ್ತಾನು ಲಾಗಿನ್ | Taralabalu Inventory Login</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .kannada-text {
+            font-family: 'Noto Sans Kannada', sans-serif;
+        }
+        .english-text {
+            font-family: 'Outfit', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+
+    <!-- Background Watermark -->
+    <div class="absolute inset-0 pointer-events-none opacity-[0.03] flex items-center justify-center">
+        <img src="/static/images/watermark.jpg" alt="Watermark" class="w-full h-full object-cover">
+    </div>
+
+    <!-- Login Card -->
+    <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-emerald-100 p-8 w-full max-w-md relative z-10">
+        
+        <!-- Language Switcher in Card Header -->
+        <div class="absolute top-6 right-6 flex bg-emerald-50 p-1 rounded-xl border border-emerald-100">
+            <button id="btnLangKN" onclick="setLanguage('kn')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm">ಕನ್ನಡ</button>
+            <button id="btnLangEN" onclick="setLanguage('en')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-800 hover:bg-emerald-100">English</button>
+        </div>
+
+        <div class="flex flex-col items-center text-center mt-4 mb-6">
+            <img src="/static/images/logo.jpg" alt="Taralabalu Logo" class="w-20 h-20 rounded-full border-4 border-emerald-500 object-cover shadow-lg mb-4">
+            <h2 id="lblTitle" class="text-lg sm:text-xl font-black text-emerald-950 kannada-text leading-tight">ಶ್ರೀ ತರಲಭಳು ಜಗದ್ಗುರು ವಿದ್ಯಾಪೀಠ, ಸಿರಿಗೆರೆ</h2>
+            <p id="lblSubtitle" class="text-xs text-emerald-600 font-bold mt-1.5 kannada-text">ದಾಸ್ತಾನು ನಿರ್ವಹಣಾ ಲಾಗಿನ್ ಪೋರ್ಟಲ್</p>
+        </div>
+
+        <form id="loginForm" class="space-y-5">
+            <!-- Portal Selection Dropdown -->
+            <div>
+                <label id="lblPortal" class="block text-xs font-extrabold text-slate-700 mb-2 kannada-text">ಲಾಗಿನ್ ಪೋರ್ಟಲ್ ಆಯ್ಕೆ ಮಾಡಿ / Select Portal</label>
+                <select id="selectUsername" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+                    <option value="godown">ಕೇಂದ್ರ ಗೋದಾಮು (Central Godown)</option>
+                    <option value="boyshostel">Stores - Boys Hostel (ವಸತಿ ನಿಲಯ - ಬಾಲಕರು)</option>
+                    <option value="girlshostel">Stores - Girls Hostel (ವಸತಿ ನಿಲಯ - ಬಾಲಕಿಯರು)</option>
+                    <option value="math">Stores - Math (ಮಠ)</option>
+                    <option value="shantivanabidara">Stores - Shantivana Bidara (ಶಾಂತಿವನ ಬಿಡಾರ)</option>
+                    <option value="shantivanagurukula">Stores - Shantivana Gurukula (ಶಾಂತಿವನ ಗುರುಕುಲ)</option>
+                    <option value="sirigerebhs">Stores - Sirigere BHS (ಸಿರಿಗೆರೆ ಬಿ.ಎಚ್.ಎಸ್)</option>
+                    <option value="sirigereghs">Stores - Sirigere GHS (ಸಿರಿಗೆರೆ ಜಿ.ಎಚ್.ಎಸ್)</option>
+                    <option value="storesa">Stores - A (ಶಾಖೆ ಎ)</option>
+                    <option value="aooffice">Stores - AO_Office (ಎ.ಓ ಕಚೇರಿ)</option>
+                    <option value="shraddajali">Store - Shraddhajali (ಶ್ರದ್ಧಾಂಜಲಿ)</option>
+                </select>
+            </div>
+
+            <!-- Password Input -->
+            <div>
+                <label id="lblPassword" class="block text-xs font-extrabold text-slate-700 mb-2 kannada-text">ಗುಪ್ತಪದ / Password</label>
+                <input type="password" id="inputPassword" required placeholder="••••••••" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+            </div>
+
+            <!-- Error message container -->
+            <div id="errorBox" class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 p-3.5 rounded-xl text-center"></div>
+
+            <!-- Login Button -->
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2">
+                <span id="btnSubmitText" class="kannada-text text-sm">ಲಾಗಿನ್ ಮಾಡಿ / Log In</span>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        let currentLang = localStorage.getItem('lang') || 'kn';
+        const preselectedSlug = "{{ preselected_slug or '' }}";
+
+        const TRANSLATIONS = {
+            kn: {
+                title: "ಶ್ರೀ ತರಲಭಳು ಜಗದ್ಗುರು ವಿದ್ಯಾಪೀಠ, ಸಿರಿಗೆರೆ",
+                subtitle: "ದಾಸ್ತಾನು ನಿರ್ವಹಣಾ ಲಾಗಿನ್ ಪೋರ್ಟಲ್",
+                portal: "ಲಾಗಿನ್ ಪೋರ್ಟಲ್ ಆಯ್ಕೆ ಮಾಡಿ / Select Portal",
+                password: "ಗುಪ್ತಪದ / Password",
+                submit: "ಲಾಗಿನ್ ಮಾಡಿ",
+                invalid: "ತಪ್ಪು ಗುಪ್ತಪದ ಅಥವಾ ಬಳಕೆದಾರ ಹೆಸರು!",
+                title_page: "ದಾಸ್ತಾನು ಲಾಗಿನ್ | Taralabalu Inventory Login"
+            },
+            en: {
+                title: "Sri Taralabalu Jagadguru Vidyapeetha, Sirigere",
+                subtitle: "Inventory Management Login Portal",
+                portal: "Choose Login Portal",
+                password: "Password",
+                submit: "Log In",
+                invalid: "Invalid Username or Password!",
+                title_page: "Inventory Login | Taralabalu Math"
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Apply preselected slug from URL if any
+            if (preselectedSlug) {
+                const select = document.getElementById('selectUsername');
+                if (Array.from(select.options).some(opt => opt.value === preselectedSlug)) {
+                    select.value = preselectedSlug;
+                }
+            }
+            updateUIStrings();
+
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        });
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('lang', lang);
+            updateUIStrings();
+        }
+
+        function updateUIStrings() {
+            const data = TRANSLATIONS[currentLang];
+            document.title = data.title_page;
+            document.getElementById('lblTitle').innerText = data.title;
+            document.getElementById('lblSubtitle').innerText = data.subtitle;
+            document.getElementById('lblPortal').innerText = data.portal;
+            document.getElementById('lblPassword').innerText = data.password;
+            document.getElementById('btnSubmitText').innerText = data.submit;
+
+            // Highlight language toggle state
+            const btnKN = document.getElementById('btnLangKN');
+            const btnEN = document.getElementById('btnLangEN');
+            if (currentLang === 'kn') {
+                btnKN.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm";
+                btnEN.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-800 hover:bg-emerald-100";
+            } else {
+                btnEN.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm";
+                btnKN.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-800 hover:bg-emerald-100";
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('selectUsername').value;
+            const password = document.getElementById('inputPassword').value;
+            const errorBox = document.getElementById('errorBox');
+
+            errorBox.classList.add('hidden');
+
+            fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/';
+                } else {
+                    errorBox.innerText = TRANSLATIONS[currentLang].invalid;
+                    errorBox.classList.remove('hidden');
+                }
+            })
+            .catch(err => {
+                errorBox.innerText = "Error: " + err;
+                errorBox.classList.remove('hidden');
+            });
+        }
+    </script>
+</body>
+</html>
