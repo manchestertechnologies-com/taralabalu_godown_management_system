@@ -2,6 +2,8 @@ import os
 import sqlite3
 import urllib.parse
 import psycopg2
+from datetime import datetime
+
 
 # Supabase Connection String (Default)
 SUPABASE_URL = "postgresql://postgres:Bery8792480218@db.rsvkrseaxewamlipnuku.supabase.co:5432/postgres"
@@ -363,17 +365,19 @@ def init_db():
 
     # Institutions Seed
     institutions = [
-        ("Boys Hostel",),
-        ("Girls Hostel",),
-        ("Math",),
-        ("Shantivana Bidara",),
-        ("Shantivana Gurukula",),
-        ("Sirigere BHS",),
-        ("Sirigere GHS",),
-        ("AO_Office",),
-        ("Shraddhajali",)
+        ("Stores - Boys Hostel",),
+        ("Stores - Girls Hostel",),
+        ("Stores - Math",),
+        ("Stores - Shantivana Bidara",),
+        ("Stores - Shantivana Gurukula",),
+        ("Stores - Sirigere BHS",),
+        ("Stores - Sirigere GHS",),
+        ("Stores - A",),
+        ("Stores - AO_Office",),
+        ("Store - Shraddhajali",)
     ]
     cursor.executemany("INSERT INTO Institutions (Institution) VALUES (%s)" if db_type == "postgresql" else "INSERT INTO Institutions (Institution) VALUES (?)", institutions)
+
 
     # Shops / Donors Seed
     donors = [
@@ -391,135 +395,250 @@ def init_db():
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     """, donors)
 
-    # Dynamic CSV scanner for grocery items
+    # Dynamic CSV & Excel scanner for grocery items
     import csv
-    csv_loaded = False
-    csv_files = [f for f in os.listdir(base_dir) if f.endswith('.csv')]
+    import os
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    file_loaded = False
+    files = os.listdir(base_dir)
     
-    for f_name in csv_files:
-        csv_path = os.path.join(base_dir, f_name)
+    # Check for Excel files first, then CSV
+    xlsx_files = [f for f in files if f.endswith('.xlsx') and not f.startswith('~$')]
+    csv_files = [f for f in files if f.endswith('.csv')]
+    
+    # 1. Try Excel files
+    for f_name in xlsx_files:
+        xlsx_path = os.path.join(base_dir, f_name)
         try:
-            with open(csv_path, mode='r', encoding='utf-8') as f:
-                reader = csv.DictReader(f)
-                headers = reader.fieldnames
-                # Validate if it looks like a grocery items CSV
-                if headers and any(h.lower().replace(" ", "_") in ['grocery_code', 'code', 'grocerycode'] for h in headers):
-                    print(f"Detected grocery dataset at '{f_name}'. Parsing and importing...")
-                    items = []
-                    for row in reader:
-                        code = 0
-                        for h in headers:
-                            if h.lower().replace(" ", "_") in ['grocery_code', 'code', 'grocerycode']:
-                                try:
-                                    code = int(float(row[h]))
-                                except:
-                                    pass
-                        if not code:
-                            continue
-                            
-                        # Extract Kannada name
-                        name_kan = ""
-                        for h in headers:
-                            if h.lower().replace(" ", "_") in ['grocery_items_kan', 'grocery_items_kannada', 'item_name_kannada', 'kannada_name', 'items_kan']:
-                                name_kan = row[h]
-                        if not name_kan:
-                            for h in headers:
-                                if 'name' in h.lower() or 'item' in h.lower():
-                                    name_kan = row[h]
-                                    break
-                                    
-                        # Extract English name
-                        name_eng = ""
-                        for h in headers:
-                            if h.lower().replace(" ", "_") in ['grocery_items_eng', 'grocery_items_english', 'item_name_english', 'english_name', 'items_eng']:
-                                name_eng = row[h]
-                                
-                        # Category
-                        category = "ಧಾನ್ಯಗಳು"
-                        for h in headers:
-                            if 'category' in h.lower():
-                                category = row[h]
-                                
-                        # Unit
-                        unit = "ಕೆಜಿ (KG)"
-                        for h in headers:
-                            if h.lower().replace(" ", "_") in ['qtl_kg_ltr', 'unit', 'unit_type']:
-                                unit = row[h]
-                                
-                        # Rate
-                        rate = 0.0
-                        for h in headers:
-                            if h.lower().replace(" ", "_") in ['std_rate', 'rate', 'standard_rate']:
-                                try:
-                                    rate = float(row[h])
-                                except:
-                                    pass
-                                    
-                        # Branch stock parsing
-                        boys_qty = 0.0
-                        girls_qty = 0.0
-                        math_qty = 0.0
-                        shantivan_qty = 0.0
-                        ao_office_qty = 0.0
-                        shraddanjali_qty = 0.0
-                        hunnime_qty = 0.0
-                        
-                        for h in headers:
-                            hl = h.lower()
-                            if 'boys' in hl:
-                                try: boys_qty = float(row[h])
-                                except: pass
-                            elif 'girls' in hl:
-                                try: girls_qty = float(row[h])
-                                except: pass
-                            elif 'math' in hl:
-                                try: math_qty = float(row[h])
-                                except: pass
-                            elif 'shantivan' in hl:
-                                try: shantivan_qty = float(row[h])
-                                except: pass
-                            elif 'office' in hl or 'ao' in hl:
-                                try: ao_office_qty = float(row[h])
-                                except: pass
-                            elif 'shraddanjali' in hl or 'shraddhajali' in hl:
-                                try: shraddanjali_qty = float(row[h])
-                                except: pass
-                            elif 'hunnime' in hl:
-                                try: hunnime_qty = float(row[h])
-                                except: pass
-                                
-                        tot_qty = boys_qty + girls_qty + math_qty + shantivan_qty + ao_office_qty + shraddanjali_qty + hunnime_qty
-                        
-                        items.append((
-                            code, name_kan, name_eng, category, 'C01', rate, unit,
-                            shraddanjali_qty, hunnime_qty, boys_qty, girls_qty, math_qty, shantivan_qty, ao_office_qty,
-                            tot_qty, tot_qty, tot_qty, tot_qty + 100, 0.0, tot_qty * rate, tot_qty * rate * 1.5, 'Imported from ' + f_name, datetime.now().strftime('%Y-%m-%d')
-                        ))
+            import openpyxl
+            wb = openpyxl.load_workbook(xlsx_path, data_only=True)
+            sheet_name = 'Grocery_Items' if 'Grocery_Items' in wb.sheetnames else wb.sheetnames[0]
+            print(f"Detected Excel dataset at '{f_name}' in sheet '{sheet_name}'. Parsing and importing...")
+            sheet = wb[sheet_name]
+            rows = list(sheet.iter_rows(values_only=True))
+            if not rows:
+                continue
+            
+            headers = [str(cell).strip() for cell in rows[0] if cell is not None]
+            h_map = {h.lower().replace(" ", "_"): idx for idx, h in enumerate(headers)}
+            
+            # Verify if it looks like a grocery items sheet (has code column)
+            if any(h in h_map for h in ['grocery_code', 'code', 'grocerycode']):
+                items = []
+                for row in rows[1:]:
+                    if not row or all(cell is None for cell in row):
+                        continue
                     
-                    if items:
-                        # Clear default items and insert new ones
-                        cursor.execute("DELETE FROM Grocery_Items;")
-                        cursor.executemany("""
-                            INSERT INTO Grocery_Items
-                            (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
-                             Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
-                             Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
-                            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-                        """ if db_type == "postgresql" else """
-                            INSERT INTO Grocery_Items
-                            (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
-                             Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
-                             Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
-                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-                        """, items)
-                        print(f"Successfully loaded {len(items)} items from CSV file: {f_name}")
-                        csv_loaded = True
-                        break
+                    # Code
+                    code_idx = h_map.get('grocery_code') or h_map.get('code') or h_map.get('grocerycode')
+                    try:
+                        code = int(float(row[code_idx]))
+                    except:
+                        continue
+                    
+                    # Kannada name
+                    name_kan = ""
+                    name_idx = h_map.get('grocery_items') or h_map.get('grocery_items_kan') or h_map.get('item_name') or h_map.get('item_name_kannada')
+                    if name_idx is not None:
+                        name_kan = str(row[name_idx] or '')
+                    
+                    # English name
+                    name_eng = ""
+                    name_eng_idx = h_map.get('grocery_items_eng') or h_map.get('item_name_english') or h_map.get('english_name')
+                    if name_eng_idx is not None:
+                        name_eng = str(row[name_eng_idx] or '')
+                        
+                    # Category
+                    category = "ಧಾನ್ಯಗಳು"
+                    cat_idx = h_map.get('grocery_category') or h_map.get('category')
+                    if cat_idx is not None:
+                        category = str(row[cat_idx] or 'ಧಾನ್ಯಗಳು')
+                        
+                    # Cat Code
+                    cat_code = "C01"
+                    cat_code_idx = h_map.get('category_code')
+                    if cat_code_idx is not None:
+                        cat_code = str(row[cat_code_idx] or 'C01')
+                        
+                    # Unit
+                    unit = "ಕೆಜಿ (KG)"
+                    unit_idx = h_map.get('qtl_kg_ltr') or h_map.get('unit')
+                    if unit_idx is not None:
+                        unit = str(row[unit_idx] or 'ಕೆಜಿ (KG)')
+                        
+                    # Rate
+                    rate = 0.0
+                    rate_idx = h_map.get('std_rate') or h_map.get('rate')
+                    if rate_idx is not None:
+                        try: rate = float(row[rate_idx] or 0.0)
+                        except: pass
+                        
+                    # Helper to get values
+                    def get_val(keys, default=0.0):
+                        for k in keys:
+                            k_mod = k.lower().replace(" ", "_")
+                            if k_mod in h_map:
+                                val = row[h_map[k_mod]]
+                                try: return float(val or default)
+                                except: pass
+                        return default
+                        
+                    shraddanjali = get_val(['shraddanjali', 'shraddanjali_qty', 'shraddhajali', 'store_-_shraddhajali'])
+                    hunnime = get_val(['hunnime', 'hunnime_qty', 'stores_-_a'])
+                    boys = get_val(['boys_hostel', 'boys_hostel_qty', 'boys', 'stores_-_boys_hostel', 'stores_-_sirigere_bhs'])
+                    girls = get_val(['girls_hostel', 'girls_hostel_qty', 'girls', 'stores_-_girls_hostel', 'stores_-_sirigere_ghs'])
+                    math_val = get_val(['math', 'math_qty', 'stores_-_math'])
+                    shantivan = get_val(['shantivana', 'shantivan_qty_a', 'shantivan', 'stores_-_shantivana_bidara', 'stores_-_shantivana_gurukula'])
+                    ao_office = get_val(['ao_office', 'ao_office_qty', 'office', 'stores_-_ao_office'])
+                    
+                    tot_qty = get_val(['tot_quantity', 'total_quantity']) or (shraddanjali + hunnime + boys + girls + math_val + shantivan + ao_office)
+                    open_stock = get_val(['opening_stock']) or tot_qty
+                    close_stock = get_val(['closing_stock']) or tot_qty
+                    tot_stock = get_val(['tot_stock']) or tot_qty
+                    tot_issue = get_val(['tot_issue']) or 0.0
+                    stock_amt = get_val(['stock_amt']) or (tot_qty * rate)
+                    budget = get_val(['budget', 'total_budget']) or (tot_qty * rate * 1.5)
+                    remarks_idx = h_map.get('remarks')
+                    remarks = str(row[remarks_idx] or '') if remarks_idx is not None else 'Imported from Excel'
+                    
+                    items.append((
+                        code, name_kan, name_eng, category, cat_code, rate, unit,
+                        shraddanjali, hunnime, boys, girls, math_val, shantivan, ao_office,
+                        tot_qty, open_stock, close_stock, tot_stock, tot_issue, stock_amt, budget, remarks, datetime.now().strftime('%Y-%m-%d')
+                    ))
+                
+                if items:
+                    cursor.execute("DELETE FROM Grocery_Items;")
+                    cursor.executemany("""
+                        INSERT INTO Grocery_Items
+                        (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
+                         Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
+                         Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
+                        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    """ if db_type == "postgresql" else """
+                        INSERT INTO Grocery_Items
+                        (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
+                         Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
+                         Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    """, items)
+                    print(f"Successfully loaded {len(items)} items from Excel sheet: {sheet_name}")
+                    file_loaded = True
+                    break
         except Exception as e:
-            print(f"Error parsing CSV '{f_name}': {e}")
-
-    if not csv_loaded:
-        print("No CSV file found or parsing failed. Seeding default dummy items instead.")
+            print(f"Failed to parse Excel file '{f_name}': {e}")
+            
+    # 2. Try CSV files if no Excel loaded
+    if not file_loaded:
+        for f_name in csv_files:
+            csv_path = os.path.join(base_dir, f_name)
+            try:
+                with open(csv_path, mode='r', encoding='utf-8') as f:
+                    reader = csv.DictReader(f)
+                    headers = reader.fieldnames
+                    if headers and any(h.lower().replace(" ", "_") in ['grocery_code', 'code', 'grocerycode'] for h in headers):
+                        print(f"Detected CSV dataset at '{f_name}'. Parsing and importing...")
+                        items = []
+                        for row in reader:
+                            code = 0
+                            for h in headers:
+                                if h.lower().replace(" ", "_") in ['grocery_code', 'code', 'grocerycode']:
+                                    try: code = int(float(row[h]))
+                                    except: pass
+                            if not code:
+                                continue
+                            
+                            # Kannada name
+                            name_kan = ""
+                            for h in headers:
+                                if h.lower().replace(" ", "_") in ['grocery_items_kan', 'grocery_items_kannada', 'item_name_kannada', 'kannada_name', 'items_kan', 'grocery_items']:
+                                    name_kan = row[h]
+                            if not name_kan:
+                                for h in headers:
+                                    if 'name' in h.lower() or 'item' in h.lower():
+                                        name_kan = row[h]
+                                        break
+                                        
+                            # English name
+                            name_eng = ""
+                            for h in headers:
+                                if h.lower().replace(" ", "_") in ['grocery_items_eng', 'grocery_items_english', 'item_name_english', 'english_name', 'items_eng']:
+                                    name_eng = row[h]
+                                    
+                            # Category
+                            category = "ಧಾನ್ಯಗಳು"
+                            for h in headers:
+                                if 'category' in h.lower():
+                                    category = row[h]
+                                    
+                            # Unit
+                            unit = "ಕೆಜಿ (KG)"
+                            for h in headers:
+                                if h.lower().replace(" ", "_") in ['qtl_kg_ltr', 'unit', 'unit_type']:
+                                    unit = row[h]
+                                    
+                            # Rate
+                            rate = 0.0
+                            for h in headers:
+                                if h.lower().replace(" ", "_") in ['std_rate', 'rate', 'standard_rate']:
+                                    try: rate = float(row[h])
+                                    except: pass
+                                    
+                            # Quantities helper
+                            def get_val_csv(keys, default=0.0):
+                                for k in keys:
+                                    for h in headers:
+                                        if h.lower().replace(" ", "_") == k.lower().replace(" ", "_"):
+                                            try: return float(row[h] or default)
+                                            except: pass
+                                return default
+                                
+                            shraddanjali = get_val_csv(['shraddanjali', 'shraddanjali_qty', 'shraddhajali', 'store_-_shraddhajali'])
+                            hunnime = get_val_csv(['hunnime', 'hunnime_qty', 'stores_-_a'])
+                            boys = get_val_csv(['boys_hostel', 'boys_hostel_qty', 'boys', 'stores_-_boys_hostel', 'stores_-_sirigere_bhs'])
+                            girls = get_val_csv(['girls_hostel', 'girls_hostel_qty', 'girls', 'stores_-_girls_hostel', 'stores_-_sirigere_ghs'])
+                            math_val = get_val_csv(['math', 'math_qty', 'stores_-_math'])
+                            shantivan = get_val_csv(['shantivana', 'shantivan_qty_a', 'shantivan', 'stores_-_shantivana_bidara', 'stores_-_shantivana_gurukula'])
+                            ao_office = get_val_csv(['ao_office', 'ao_office_qty', 'office', 'stores_-_ao_office'])
+                            
+                            tot_qty = get_val_csv(['tot_quantity', 'total_quantity']) or (shraddanjali + hunnime + boys + girls + math_val + shantivan + ao_office)
+                            open_stock = get_val_csv(['opening_stock']) or tot_qty
+                            close_stock = get_val_csv(['closing_stock']) or tot_qty
+                            tot_stock = get_val_csv(['tot_stock']) or tot_qty
+                            tot_issue = get_val_csv(['tot_issue']) or 0.0
+                            stock_amt = get_val_csv(['stock_amt']) or (tot_qty * rate)
+                            budget = get_val_csv(['budget', 'total_budget']) or (tot_qty * rate * 1.5)
+                            remarks = row.get('remarks') or 'Imported from CSV'
+                            
+                            items.append((
+                                code, name_kan, name_eng, category, 'C01', rate, unit,
+                                shraddanjali, hunnime, boys, girls, math_val, shantivan, ao_office,
+                                tot_qty, open_stock, close_stock, tot_stock, tot_issue, stock_amt, budget, remarks, datetime.now().strftime('%Y-%m-%d')
+                            ))
+                            
+                        if items:
+                            cursor.execute("DELETE FROM Grocery_Items;")
+                            cursor.executemany("""
+                                INSERT INTO Grocery_Items
+                                (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
+                                 Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
+                                 Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
+                                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                            """ if db_type == "postgresql" else """
+                                INSERT INTO Grocery_Items
+                                (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
+                                 Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
+                                 Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
+                                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                            """, items)
+                            print(f"Successfully loaded {len(items)} items from CSV file: {f_name}")
+                            file_loaded = True
+                            break
+            except Exception as e:
+                print(f"Error parsing CSV '{f_name}': {e}")
+                
+    if not file_loaded:
+        print("No CSV or Excel file found or parsing failed. Seeding default dummy items instead.")
         # Seeding default items list
         items = [
             (101, 'ಅಕ್ಕಿ (Rice)', 'Rice', 'ಧಾನ್ಯಗಳು', 'C01', 45.0, 'ಕೆಜಿ (KG)', 200.0, 100.0, 1500.0, 1200.0, 500.0, 300.0, 100.0, 3900.0, 2000.0, 3900.0, 5000.0, 1100.0, 49500.0, 100000.0, 'ದಿನನಿತ್ಯದ ಅಡುಗೆಗೆ', '2026-07-06'),
@@ -543,6 +662,7 @@ def init_db():
              Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         """, items)
+
 
 
     # Stock Inward Logs Seed

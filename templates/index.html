@@ -49,21 +49,31 @@
                 </div>
             </div>
             
-            <!-- Global Role Switcher -->
-            <div class="flex bg-emerald-900/60 p-1 rounded-xl border border-emerald-700/50">
-                <button id="btnRoleGodown" onclick="switchRole('godown')" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 bg-emerald-600 text-white shadow-md">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                    <span class="kannada-text">ಕೇಂದ್ರ ಗೋದಾಮು ಸಿಬ್ಬಂದಿ</span>
-                </button>
-                <button id="btnRoleHostel" onclick="switchRole('hostel')" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 text-emerald-100 hover:text-white">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                    <span class="kannada-text">ವಸತಿ ನಿಲಯದ ಗುಮಾಸ್ತ</span>
-                </button>
+            <!-- Global Switchers Wrapper -->
+            <div class="flex flex-wrap items-center gap-3">
+                <!-- Global Role Switcher -->
+                <div class="flex bg-emerald-900/60 p-1 rounded-xl border border-emerald-700/50">
+                    <button id="btnRoleGodown" onclick="switchRole('godown')" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 bg-emerald-600 text-white shadow-md">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        <span class="kannada-text">ಕೇಂದ್ರ ಗೋದಾಮು ಸಿಬ್ಬಂದಿ</span>
+                    </button>
+                    <button id="btnRoleHostel" onclick="switchRole('hostel')" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 text-emerald-100 hover:text-white">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <span class="kannada-text">ವಸತಿ ನಿಲಯದ ಗುಮಾಸ್ತ</span>
+                    </button>
+                </div>
+
+                <!-- Language Toggle Switcher -->
+                <div class="flex bg-emerald-900/60 p-1 rounded-xl border border-emerald-700/50">
+                    <button id="btnLangKN" onclick="setLanguage('kn')" class="px-3.5 py-2 rounded-lg text-sm font-bold transition-all duration-300 bg-emerald-600 text-white shadow-md">ಕನ್ನಡ</button>
+                    <button id="btnLangEN" onclick="setLanguage('en')" class="px-3.5 py-2 rounded-lg text-sm font-bold transition-all duration-300 text-emerald-100 hover:text-white">English</button>
+                </div>
             </div>
+
         </div>
     </header>
 
@@ -604,6 +614,148 @@
 
     <!-- ==================== CONTROLLER SCRIPT (JS) ==================== -->
     <script>
+        // Language state and translations
+        let currentLang = localStorage.getItem('lang') || 'kn';
+        
+        const TRANSLATION_MAP = {
+            "ದಾಸ್ತಾನು ನಿರ್ವಹಣಾ ವ್ಯವಸ್ಥೆ": "Inventory Management System",
+            "ಕೇಂದ್ರ ಗೋದಾಮು ಸಿಬ್ಬಂದಿ": "Central Godown Staff",
+            "ವಸತಿ ನಿಲಯದ ಗುಮಾಸ್ತ": "Hostel Clerk",
+            "ಗೋದಾಮಿನ ಒಟ್ಟು ಲಭ್ಯ ದಾಸ್ತಾನು (Central Stock Balances)": "Central Stock Balances",
+            "ಗೋದಾಮಿನ ಒಟ್ಟು ಲಭ್ಯ ದಾಸ್ತಾನು": "Central Stock Balances",
+            "ಶಾಖೆಗಳ ದಾಸ್ತಾನು ಕೊರತೆ ಎಚ್ಚರಿಕೆ (Low Stock Alerts)": "Branch Low Stock Alerts",
+            "ಶಾಖೆಗಳ ದಾಸ್ತಾನು ಕೊರತೆ ಎಚ್ಚರಿಕೆ": "Branch Low Stock Alerts",
+            "ದಾನಿಗಳು/ಅಂಗಡಿಯಿಂದ ಸ್ವೀಕೃತಿ (Inward Stock Receipt)": "Receive Inward Stock",
+            "ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ:": "Select Item:",
+            "ದಾನಿಗಳು/ಅಂಗಡಿ ಆಯ್ಕೆ ಮಾಡಿ:": "Select Donor/Shop:",
+            "ಸ್ವೀಕರಿಸಿದ ಪ್ರಮಾಣ:": "Received Quantity:",
+            "ದರ (Std Rate):": "Standard Rate:",
+            "ಸ್ವರೂಪ:": "Type:",
+            "ದೇಣಿಗೆ": "Donation",
+            "ಖರೀದಿ": "Purchase",
+            "ದಿನಾಂಕ:": "Date:",
+            "ದಾಸ್ತಾನು ಸೇರಿಸಿ": "Add Stock",
+            "ಕೋಡ್": "Code",
+            "ವಸ್ತುವಿನ ಹೆಸರು": "Item Name",
+            "ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು": "Available Stock",
+            "ಘಟಕ": "Unit",
+            "ಬಂದಿರುವ ಇಂಡೆಂಟ್‌ಗಳ ಪರಿಶೀಲನೆ (Review Indents)": "Review Pending Indents",
+            "ಹೊಸ ವಸ್ತು ನೋಂದಣಿ": "Register New Item",
+            "ಹೊಸ ದಾನಿ ನೋಂದಣಿ": "Register New Donor",
+            "ದಾಸ್ತಾನು ಸೇರ್ಪಡೆಗಳು (Registrations)": "Master Registrations",
+            "ಇತ್ತೀಚಿನ ಆಮದು ಇತಿಹಾಸ (Inward History)": "Recent Inward Stock Logs",
+            "ಇತ್ತೀಚಿನ ವರ್ಗಾವಣೆಗಳ ದಾಖಲೆ (Transfers Log)": "Recent Transfers History",
+            "ವಸತಿ ನಿಲಯದ ದಾಸ್ತಾನು ವೀಕ್ಷಣೆ (Hostel View)": "Hostel Stock View",
+            "ವಸತಿ ನಿಲಯ ಆಯ್ಕೆ ಮಾಡಿ:": "Select Store/Hostel:",
+            "ಪ್ರಸ್ತುತ ದಾಸ್ತಾನು ಶಿಲ್ಕು": "Current Stock Balance",
+            "ಪೆಂಡಿಂಗ್ ಸ್ವೀಕೃತಿ ದೃಢೀಕರಣ (Pending Shipments)": "Pending Shipments",
+            "ಹೊಸ ಇಂಡೆಂಟ್ ಸಲ್ಲಿಸು (Submit Indent)": "Submit New Indent",
+            "ಕೋರಿದ ಪ್ರಮಾಣ:": "Requested Quantity:",
+            "ಟಿಪ್ಪಣಿ:": "Remarks:",
+            "ಇಂಡೆಂಟ್ ಸಲ್ಲಿಸು": "Submit Indent",
+            "ದೈನಂದಿನ ಬಳಕೆ ದಾಖಲಿಸು (Log Daily Consumption)": "Log Daily Usage",
+            "ಬಳಸಿದ ಪ್ರಮಾಣ:": "Used Quantity:",
+            "ಬಳಕೆ ದಾಖಲಿಸು": "Log Usage",
+            "ದೈನಂದಿನ ಬಳಕೆ ಇತಿಹಾಸ (Consumption History)": "Usage History Log",
+            "ಸ್ವೀಕರಿಸಿದ ಸರಕುಗಳ ವಿವರ ಮತ್ತು ರಸೀದಿಗಳು": "Received History & Receipts",
+            "ರಸೀದಿ ಸಂಖ್ಯೆ": "Receipt No",
+            "ಸ್ವೀಕರಿಸಿದ ವಸತಿ ನಿಲಯ": "Receiving Hostel",
+            "ದಾಖಲಾದ ದಿನಾಂಕ": "Date Sent",
+            "ಸ್ವೀಕೃತಿ ದಿನಾಂಕ": "Date Received",
+            "ರಸೀದಿ": "Receipt",
+            "ಕೋಡ್:": "Code:",
+            "ಹೆಸರು (ಕನ್ನಡ):": "Name (Kannada):",
+            "ಹೆಸರು (ಇಂಗ್ಲಿಷ್):": "Name (English):",
+            "ವರ್ಗ:": "Category:",
+            "ವಿಭಾಗ ಕೋಡ್:": "Category Code:",
+            "ದರ (Standard Rate):": "Rate (Standard):",
+            "ಅಳತೆಯ ಘಟಕ:": "Unit of Measure:",
+            "ದಾನಿ/ಅಂಗಡಿ ಹೆಸರು (ಕನ್ನಡ):": "Donor/Shop Name (Kannada):",
+            "ದಾನಿ/ಅಂಗಡಿ ಹೆಸರು (ಇಂಗ್ಲಿಷ್):": "Donor/Shop Name (English):",
+            "ಸ್ಥಳ (ಕನ್ನಡ):": "Place (Kannada):",
+            "ಸ್ಥಳ (ಇಂಗ್ಲಿಷ್):": "Place (English):",
+            "ತಾಲೂಕು (ಕನ್ನಡ):": "Taluk (Kannada):",
+            "ತಾಲೂಕು (ಇಂಗ್ಲಿಷ್):": "Taluk (English):",
+            "ಜಿಲ್ಲೆ (ಕನ್ನಡ):": "District (Kannada):",
+            "ಜಿಲ್ಲೆ (ಇಂಗ್ಲಿಷ್):": "District (English):",
+            "ಪಿನ್ ಕೋಡ್:": "Pin Code:",
+            "ಮೊಬೈಲ್ ಸಂಖ್ಯೆ:": "Mobile Number:",
+            "ಶರಾ:": "Remarks:",
+            "ನೋಂದಾಯಿಸು": "Register",
+            "ಹೊಸ ಇಂಡೆಂಟ್ ಸಲ್ಲಿಕೆ": "Submit Indent",
+            "ದೈನಂದಿನ ದಾಸ್ತಾನು ಬಳಕೆ ದಾಖಲೆ": "Log Daily Consumption",
+            "ದಾಸ್ತಾನು ಪರಿಶೀಲನೆ": "Stock Verification",
+            "ಕೇಂದ್ರೀಕೃತ ನಿರ್ವಹಣೆ: ನಾಮಕರಣ ಮತ್ತು ಕೋಡ್ ವ್ಯತ್ಯಾಸಗಳನ್ನು ತಡೆಯಲು ಹೊಸ ವಸ್ತುಗಳನ್ನು ಕೇಂದ್ರ ಸಿಬ್ಬಂದಿ ಮಾತ್ರ ನಮೂದಿಸಬಹುದು.": "Central Management: New items can only be registered by central staff to prevent code discrepancies.",
+            "ಯಾವುದೇ ಇಂಡೆಂಟ್‌ಗಳು ಬಾಕಿ ಇಲ್ಲ.": "No pending indents.",
+            "ಯಾವುದೇ ಪೆಂಡಿಂಗ್ ವರ್ಗಾವಣೆಗಳಿಲ್ಲ.": "No pending shipments.",
+            "ಇನ್ನೂ ಯಾವುದೇ ಬಳಕೆ ದಾಖಲಿಸಿಲ್ಲ.": "No usage logged yet.",
+            "ಯಾವುದೇ ಮಾಹಿತಿ ಇಲ್ಲ.": "No records found.",
+            "ಅನುಮೋದಿಸು & ಕಳುಹಿಸು": "Approve & Issue",
+            "ಸ್ವೀಕೃತಿ ದೃಢೀಕರಿಸು": "Acknowledge Receipt"
+        };
+        
+        function translateDOM(node = document.body) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                let text = node.nodeValue.trim();
+                if (currentLang === 'en') {
+                    for (const [knVal, enVal] of Object.entries(TRANSLATION_MAP)) {
+                        if (text === knVal) {
+                            node.nodeValue = node.nodeValue.replace(knVal, enVal);
+                        }
+                    }
+                } else {
+                    for (const [knVal, enVal] of Object.entries(TRANSLATION_MAP)) {
+                        if (text === enVal) {
+                            node.nodeValue = node.nodeValue.replace(enVal, knVal);
+                        }
+                    }
+                }
+            } else {
+                if (node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE') {
+                    for (let child of node.childNodes) {
+                        translateDOM(child);
+                    }
+                }
+            }
+        }
+        
+        function getItemName(item) {
+            if (!item) return '';
+            if (currentLang === 'en') {
+                return item.Grocery_Items_Eng || item.Grocery_Items_Kan || '';
+            }
+            return item.Grocery_Items_Kan || item.Grocery_Items_Eng || '';
+        }
+        
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('lang', lang);
+            updateUIStrings();
+        }
+        
+        function updateUIStrings() {
+            // Translate all text nodes in the DOM
+            translateDOM();
+            
+            // Highlight language toggle state
+            const btnKN = document.getElementById('btnLangKN');
+            const btnEN = document.getElementById('btnLangEN');
+            if (currentLang === 'kn') {
+                btnKN.className = "px-3.5 py-2 rounded-lg text-sm font-bold transition-all duration-300 bg-emerald-600 text-white shadow-md";
+                btnEN.className = "px-3.5 py-2 rounded-lg text-sm font-bold transition-all duration-300 text-emerald-100 hover:text-white";
+            } else {
+                btnEN.className = "px-3.5 py-2 rounded-lg text-sm font-bold transition-all duration-300 bg-emerald-600 text-white shadow-md";
+                btnKN.className = "px-3.5 py-2 rounded-lg text-sm font-bold transition-all duration-300 text-emerald-100 hover:text-white";
+            }
+            
+            // Refresh lists
+            if (currentRole === 'godown') {
+                loadGodownDashboardData();
+            } else {
+                loadHostelDashboardData();
+            }
+        }
+
         // State variables
         let currentRole = 'godown';
         let masterItems = [];
@@ -619,9 +771,10 @@
             document.getElementById('inputRecDate').value = today;
             document.getElementById('inputUsageDate').value = today;
             
-            // Initial data pull
-            loadGodownDashboardData();
+            // Set initial language UI
+            updateUIStrings();
         });
+
 
         // Switch View Role
         function switchRole(role) {
@@ -686,19 +839,23 @@
                     
                     if (alerts.length > 0) {
                         alertBanner.classList.remove('hidden');
-                        alertText.innerText = `ಗಮನಿಸಿ: ${alerts.length} ವಸ್ತುಗಳು ಶಾಖೆಗಳಲ್ಲಿ ಕೊರತೆಯಿವೆ!`;
+                        const alertLabel = currentLang === 'en' ? `Attention: ${alerts.length} items are low in stores!` : `ಗಮನಿಸಿ: ${alerts.length} ವಸ್ತುಗಳು ಶಾಖೆಗಳಲ್ಲಿ ಕೊರತೆಯಿವೆ!`;
+                        alertText.innerText = alertLabel;
                         
-                        alertsList.innerHTML = alerts.map(alert => `
+                        alertsList.innerHTML = alerts.map(alert => {
+                            const codeLabel = currentLang === 'en' ? `Code` : `ಕೋಡ್`;
+                            return `
                             <div class="p-3 bg-red-50 border border-red-200 rounded-xl flex justify-between items-center text-xs pulse-alert">
                                 <div>
                                     <h4 class="font-bold text-red-800 kannada-text">${alert.Institution}</h4>
-                                    <p class="text-slate-600 font-semibold kannada-text">${alert.Grocery_Items_Kan} (ಕೋಡ್: ${alert.Grocery_Code})</p>
+                                    <p class="text-slate-600 font-semibold kannada-text">${getItemName(alert)} (${codeLabel}: ${alert.Grocery_Code})</p>
                                 </div>
                                 <span class="font-extrabold text-red-700 bg-red-100 px-2.5 py-1 rounded-lg">
                                     ${alert.CurrentBalance} ${alert.Qtl_Kg_Ltr}
                                 </span>
                             </div>
-                        `).join('');
+                            `;
+                        }).join('');
                     } else {
                         alertBanner.classList.add('hidden');
                         alertsList.innerHTML = `<p class="text-sm text-slate-500 text-center py-6 kannada-text">ಯಾವುದೇ ಕೊರತೆ ಇಲ್ಲ.</p>`;
@@ -719,7 +876,7 @@
                         tbody.innerHTML = items.map(item => `
                             <tr class="hover:bg-slate-50/50">
                                 <td class="px-4 py-3 font-mono text-slate-600">${item.Grocery_Code}</td>
-                                <td class="px-4 py-3 text-slate-800 kannada-text font-bold">${item.Grocery_Items_Kan}</td>
+                                <td class="px-4 py-3 text-slate-800 kannada-text font-bold">${getItemName(item)}</td>
                                 <td class="px-4 py-3 ${item.Tot_Stock <= 0 ? 'text-slate-400' : 'text-emerald-700 font-bold'}">${item.Tot_Stock}</td>
                                 <td class="px-4 py-3 text-slate-500 kannada-text">${item.Qtl_Kg_Ltr}</td>
                             </tr>
@@ -746,7 +903,7 @@
                         tbody.innerHTML = data.map(log => `
                             <tr>
                                 <td class="px-3 py-2 text-slate-500">${log.Date1}</td>
-                                <td class="px-3 py-2 text-slate-800 font-bold kannada-text">${log.Grocery_Items_Kan}</td>
+                                <td class="px-3 py-2 text-slate-800 font-bold kannada-text">${getItemName(log)}</td>
                                 <td class="px-3 py-2 font-bold">${log.Stock} ${log.Qtl_Kg_Ltr}</td>
                                 <td class="px-3 py-2 text-slate-600 truncate max-w-[120px]" title="${log.Shop_Donor_Name}">${log.Shop_Donor_Name || 'ದೇಣಿಗೆ'}</td>
                             </tr>
@@ -769,7 +926,7 @@
                         pendingTbody.innerHTML = pendingList.map(ind => `
                             <tr class="hover:bg-slate-50/50">
                                 <td class="px-4 py-3 text-slate-700 font-semibold kannada-text">${ind.Institution}</td>
-                                <td class="px-4 py-3 text-slate-800 font-bold kannada-text">${ind.Grocery_Items_Kan}</td>
+                                <td class="px-4 py-3 text-slate-800 font-bold kannada-text">${getItemName(ind)}</td>
                                 <td class="px-4 py-3 font-bold">${ind.Quantity} ${ind.Qtl_Kg_Ltr}</td>
                                 <td class="px-4 py-3">
                                     <button onclick="approveIndent(${ind.Rec}, ${ind.Quantity})" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm">
@@ -788,16 +945,16 @@
                     } else {
                         transfersTbody.innerHTML = processedTransfers.map(t => {
                             let statusClass = "bg-amber-100 text-amber-800";
-                            let statusText = "ಕಳುಹಿಸಲಾಗಿದೆ (Sent)";
+                            let statusText = currentLang === 'en' ? "Sent" : "ಕಳುಹಿಸಲಾಗಿದೆ (Sent)";
                             if (t.Sanctioned === 'Received') {
                                 statusClass = "bg-emerald-100 text-emerald-800";
-                                statusText = "ಸ್ವೀಕರಿಸಲಾಗಿದೆ (Received)";
+                                statusText = currentLang === 'en' ? "Received" : "ಸ್ವೀಕರಿಸಲಾಗಿದೆ (Received)";
                             }
                             return `
                                 <tr class="hover:bg-slate-50/50">
                                     <td class="px-4 py-3 font-mono text-slate-500">${t.Indent_no}</td>
                                     <td class="px-4 py-3 text-slate-700 kannada-text">${t.Institution}</td>
-                                    <td class="px-4 py-3 text-slate-800 font-bold kannada-text">${t.Grocery_Items_Kan}</td>
+                                    <td class="px-4 py-3 text-slate-800 font-bold kannada-text">${getItemName(t)}</td>
                                     <td class="px-4 py-3 font-extrabold">${t.Sanctioned_Quantity} ${t.Qtl_Kg_Ltr}</td>
                                     <td class="px-4 py-3 text-slate-500 font-mono">${t.Sanctioned_on || t.Indent_Date}</td>
                                     <td class="px-4 py-3">
@@ -839,15 +996,17 @@
                             let alertBadge = ``;
                             let rowClass = ``;
                             if (item.CurrentBalance < 10) {
-                                alertBadge = `<span class="px-2 py-1 text-xs font-bold bg-red-100 text-red-800 rounded-lg kannada-text pulse-alert">ದಾಸ್ತಾನು ಕೊರತೆ</span>`;
+                                const alertLabel = currentLang === 'en' ? "Low Stock" : "ದಾಸ್ತಾನು ಕೊರತೆ";
+                                alertBadge = `<span class="px-2 py-1 text-xs font-bold bg-red-100 text-red-800 rounded-lg kannada-text pulse-alert">${alertLabel}</span>`;
                                 rowClass = `bg-red-50/20`;
                             } else {
-                                alertBadge = `<span class="px-2 py-1 text-xs font-bold bg-emerald-100 text-emerald-800 rounded-lg kannada-text">ಸಾಕಷ್ಟು ಇದೆ</span>`;
+                                const okLabel = currentLang === 'en' ? "In Stock" : "ಸಾಕಷ್ಟು ಇದೆ";
+                                alertBadge = `<span class="px-2 py-1 text-xs font-bold bg-emerald-100 text-emerald-800 rounded-lg kannada-text">${okLabel}</span>`;
                             }
                             return `
                                 <tr class="hover:bg-slate-50/50 ${rowClass}">
                                     <td class="px-4 py-3 font-mono text-slate-500">${item.Grocery_Code}</td>
-                                    <td class="px-4 py-3 text-slate-800 kannada-text font-bold">${item.Grocery_Items_Kan}</td>
+                                    <td class="px-4 py-3 text-slate-800 kannada-text font-bold">${getItemName(item)}</td>
                                     <td class="px-4 py-3 text-slate-700 font-extrabold">${item.CurrentBalance} ${item.Qtl_Kg_Ltr}</td>
                                     <td class="px-4 py-3">${alertBadge}</td>
                                 </tr>
@@ -870,38 +1029,46 @@
                     if (pendingList.length === 0) {
                         pendingContainer.innerHTML = `<p class="text-sm text-slate-500 text-center py-6 kannada-text">ಯಾವುದೇ ಪೆಂಡಿಂಗ್ ವರ್ಗಾವಣೆಗಳಿಲ್ಲ.</p>`;
                     } else {
-                        pendingContainer.innerHTML = pendingList.map(t => `
+                        pendingContainer.innerHTML = pendingList.map(t => {
+                            const dateLabel = currentLang === 'en' ? `Transfer Date` : `ವರ್ಗಾವಣೆ ದಿನಾಂಕ`;
+                            const qtyLabel = currentLang === 'en' ? `Qty` : `ಪ್ರಮಾಣ`;
+                            const ackLabel = currentLang === 'en' ? `Acknowledge Delivery` : `ಸ್ವೀಕೃತಿ ದೃಢೀಕರಿಸು`;
+                            return `
                             <div class="p-4 bg-amber-50/60 border-2 border-dashed border-amber-200 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                                 <div>
-                                    <span class="text-xs font-bold text-amber-800 block kannada-text">ವರ್ಗಾವಣೆ ದಿನಾಂಕ: ${t.Sanctioned_on}</span>
-                                    <span class="text-md font-bold text-slate-800 kannada-text block">${t.Grocery_Items_Kan}</span>
-                                    <span class="text-sm font-semibold text-slate-600">ಪ್ರಮಾಣ: ${t.Sanctioned_Quantity} ${t.Qtl_Kg_Ltr}</span>
+                                    <span class="text-xs font-bold text-amber-800 block kannada-text">${dateLabel}: ${t.Sanctioned_on}</span>
+                                    <span class="text-md font-bold text-slate-800 kannada-text block">${getItemName(t)}</span>
+                                    <span class="text-sm font-semibold text-slate-600">${qtyLabel}: ${t.Sanctioned_Quantity} ${t.Qtl_Kg_Ltr}</span>
                                 </div>
                                 <button onclick="acknowledgeDelivery(${t.Rec})" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-1">
                                     <span>✓</span>
-                                    <span class="kannada-text">ಸ್ವೀಕೃತಿ ದೃಢೀಕರಿಸು</span>
+                                    <span class="kannada-text">${ackLabel}</span>
                                 </button>
                             </div>
-                        `).join('');
+                            `;
+                        }).join('');
                     }
 
                     // Render completed logs with Receipt print button
                     if (completedList.length === 0) {
                         receiptsTbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-400 kannada-text">ಯಾವುದೇ ಸ್ವೀಕೃತಿಗಳಿಲ್ಲ.</td></tr>`;
                     } else {
-                        receiptsTbody.innerHTML = completedList.map(t => `
+                        receiptsTbody.innerHTML = completedList.map(t => {
+                            const btnLabel = currentLang === 'en' ? "Receipt" : "ರಸೀದಿ";
+                            return `
                             <tr class="hover:bg-slate-50/50">
                                 <td class="px-4 py-3 font-mono text-slate-500">${t.Indent_no}</td>
-                                <td class="px-4 py-3 text-slate-800 kannada-text font-bold">${t.Grocery_Items_Kan}</td>
+                                <td class="px-4 py-3 text-slate-800 kannada-text font-bold">${getItemName(t)}</td>
                                 <td class="px-4 py-3 font-bold text-slate-700">${t.Sanctioned_Quantity} ${t.Qtl_Kg_Ltr}</td>
                                 <td class="px-4 py-3 text-slate-500 font-mono">${t.Sanctioned_on}</td>
                                 <td class="px-4 py-3">
                                     <button onclick="openReceiptModal(${JSON.stringify(t).replace(/"/g, '&quot;')})" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1 transition-all">
-                                        📄 <span class="kannada-text">ರಸೀದಿ</span>
+                                        📄 <span class="kannada-text">${btnLabel}</span>
                                     </button>
                                 </td>
                             </tr>
-                        `).join('');
+                            `;
+                        }).join('');
                     }
                 });
 
@@ -916,7 +1083,7 @@
                         tbody.innerHTML = usage.map(u => `
                             <tr class="hover:bg-slate-50/50">
                                 <td class="px-2 py-2 text-slate-500 font-mono">${u.Date1}</td>
-                                <td class="px-2 py-2 text-slate-800 kannada-text font-bold">${u.Grocery_Items_Kan}</td>
+                                <td class="px-2 py-2 text-slate-800 kannada-text font-bold">${getItemName(u)}</td>
                                 <td class="px-2 py-2 text-red-600 font-extrabold">-${u.QuantityUsed} ${u.Qtl_Kg_Ltr}</td>
                             </tr>
                         `).join('');
@@ -1124,7 +1291,8 @@
             document.getElementById('lblRecNum').innerText = indent.Indent_no;
             document.getElementById('lblRecDateSent').innerText = indent.Indent_Date;
             document.getElementById('lblRecDate').innerText = indent.Sanctioned_on;
-            document.getElementById('lblRecItem').innerText = `${indent.Grocery_Items_Kan} (ಕೋಡ್: ${indent.Grocery_Code})`;
+            const codeLabel = currentLang === 'en' ? `Code` : `ಕೋಡ್`;
+            document.getElementById('lblRecItem').innerText = `${getItemName(indent)} (${codeLabel}: ${indent.Grocery_Code})`;
             document.getElementById('lblRecQty').innerText = `${indent.Sanctioned_Quantity} ${indent.Qtl_Kg_Ltr}`;
             
             toggleModal('modalReceipt', true);

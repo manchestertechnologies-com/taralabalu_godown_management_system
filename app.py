@@ -13,16 +13,18 @@ SUPABASE_URL = "postgresql://postgres:Bery8792480218@db.rsvkrseaxewamlipnuku.sup
 
 # Mapping of Inst_ID to its corresponding stock column name in Grocery_Items table
 INST_ID_TO_COLUMN = {
-    1: "Boys_Hostel_Qty",
-    2: "Girls_Hostel_Qty",
-    3: "Math_Qty",
-    4: "Shantivan_Qty_a",
-    5: "Shantivan_Qty_a", # Both Shantivana share the same column
-    6: "Boys_Hostel_Qty",  # Sirigere BHS mapped to Boys Hostel
-    7: "Girls_Hostel_Qty", # Sirigere GHS mapped to Girls Hostel
-    8: "AO_Office_Qty",
-    9: "Shraddanjali_Qty"
+    1: "Boys_Hostel_Qty",      # Stores - Boys Hostel
+    2: "Girls_Hostel_Qty",     # Stores - Girls Hostel
+    3: "Math_Qty",             # Stores - Math
+    4: "Shantivan_Qty_a",      # Stores - Shantivana Bidara
+    5: "Shantivan_Qty_a",      # Stores - Shantivana Gurukula
+    6: "Boys_Hostel_Qty",      # Stores - Sirigere BHS
+    7: "Girls_Hostel_Qty",     # Stores - Sirigere GHS
+    8: "Hunnime_Qty",          # Stores - A
+    9: "AO_Office_Qty",        # Stores - AO_Office
+    10: "Shraddanjali_Qty"     # Store - Shraddhajali
 }
+
 
 def get_db_connection():
     conn_str = os.environ.get('DATABASE_URL', SUPABASE_URL)
