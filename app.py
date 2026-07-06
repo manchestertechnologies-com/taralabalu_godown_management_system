@@ -44,29 +44,35 @@ INST_ID_TO_COLUMN = {
 
 
 def get_db_connection():
-    conn_str = os.environ.get('DATABASE_URL', SUPABASE_URL)
-    # Handle brackets if literally passed in connection URL
-    conn_str = conn_str.replace(":[Bery8792480218]@", ":Bery8792480218@")
-    
-    try:
-        result = urllib.parse.urlparse(conn_str)
-        username = result.username
-        password = result.password
-        database = result.path[1:]
-        hostname = result.hostname
-        port = result.port
-        
-        conn = psycopg2.connect(
-            database=database,
-            user=username,
-            password=password,
-            host=hostname,
-            port=port,
-            connect_timeout=3
-        )
-        return conn, "postgresql"
-    except Exception as e:
-        # Fallback to local SQLite using absolute path
+    # Only connect to PostgreSQL if DATABASE_URL is defined (Production/Render)
+    if 'DATABASE_URL' in os.environ:
+        conn_str = os.environ['DATABASE_URL']
+        conn_str = conn_str.replace(":[Bery8792480218]@", ":Bery8792480218@")
+        try:
+            result = urllib.parse.urlparse(conn_str)
+            username = result.username
+            password = result.password
+            database = result.path[1:]
+            hostname = result.hostname
+            port = result.port
+            
+            conn = psycopg2.connect(
+                database=database,
+                user=username,
+                password=password,
+                host=hostname,
+                port=port,
+                connect_timeout=3
+            )
+            return conn, "postgresql"
+        except Exception as e:
+            # Fallback to local SQLite using absolute path
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            db_path = os.path.join(base_dir, 'database.db')
+            conn = sqlite3.connect(db_path)
+            return conn, "sqlite"
+    else:
+        # Locally: Always use SQLite database (database.db)
         base_dir = os.path.dirname(os.path.abspath(__file__))
         db_path = os.path.join(base_dir, 'database.db')
         conn = sqlite3.connect(db_path)
