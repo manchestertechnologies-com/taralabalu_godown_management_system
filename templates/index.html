@@ -106,7 +106,22 @@
         
         <!-- ==================== CENTRAL GODOWN DASHBOARD ==================== -->
         <div id="godownDashboard" class="space-y-8">
-            <!-- Stats & Quick Alerts Grid -->
+            <!-- Navigation Tabs for Godown Operations -->
+            <div class="flex border-b border-slate-200 gap-1 overflow-x-auto scrollbar-none pb-1 print:hidden">
+                <button id="tabGodownStock" onclick="switchGodownTab('stock')" class="px-5 py-2.5 text-sm font-extrabold rounded-t-xl transition-all bg-white border border-b-0 border-slate-200 text-emerald-800 shadow-sm border-t-4 border-t-emerald-600 flex items-center gap-1.5">
+                    <span>📦</span> <span class="kannada-text">ದಾಸ್ತಾನು ನಿರ್ವಹಣೆ (Groceries Stock)</span>
+                </button>
+                <button id="tabGodownVegetables" onclick="switchGodownTab('vegetables')" class="px-5 py-2.5 text-sm font-extrabold rounded-t-xl transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-50 flex items-center gap-1.5">
+                    <span>🥦</span> <span class="kannada-text">ತರಕಾರಿ ನಿರ್ವಹಣೆ (Vegetables Log)</span>
+                </button>
+                <button id="tabGodownBills" onclick="switchGodownTab('bills')" class="px-5 py-2.5 text-sm font-extrabold rounded-t-xl transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-50 flex items-center gap-1.5">
+                    <span>🧾</span> <span class="kannada-text">ಬಿಲ್ಲುಗಳು ಮತ್ತು ಪಾವತಿ (Bills & Payments)</span>
+                </button>
+            </div>
+
+            <!-- Groceries Stock Section -->
+            <div id="sectGodownStock" class="space-y-8">
+                <!-- Stats & Quick Alerts Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Godown Balances Card -->
                 <div class="glass-card rounded-2xl p-6 lg:col-span-2">
@@ -290,6 +305,187 @@
                     </table>
                 </div>
             </div>
+            <!-- End of Groceries Stock Section -->
+            </div>
+
+            <!-- ==================== VEGETABLES TAB ==================== -->
+            <div id="sectGodownVegetables" class="space-y-8 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Record Vegetable Form Card -->
+                    <div class="glass-card rounded-2xl p-6">
+                        <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                            <span class="text-lg">🥦</span>
+                            <span class="kannada-text">ತರಕಾರಿ ದಾಖಲು (Log Vegetable Inward)</span>
+                        </h3>
+                        <form id="formAddVegetable" onsubmit="handleLogVegetable(event)" class="space-y-4 text-sm">
+                            <div>
+                                <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸತಿ ನಿಲಯ / ಶಾಖೆ</label>
+                                <select id="selectVegHostel" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ತರಕಾರಿ ಹೆಸರು/ಕೋಡ್</label>
+                                    <input type="text" id="inputVegCode" placeholder="ಉದಾ: Tomato" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಪ್ರಮಾಣ (Qty)</label>
+                                    <input type="number" step="0.01" id="inputVegQty" placeholder="kg" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಬಿಲ್ಲು ಸಂಖ್ಯೆ</label>
+                                    <input type="text" id="inputVegBillNo" placeholder="Bill No" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಬಿಲ್ಲು ದಿನಾಂಕ</label>
+                                    <input type="date" id="inputVegBillDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ದರ (Rate)</label>
+                                    <input type="number" step="0.01" id="inputVegRate" placeholder="Rate/kg" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಸ್ವರೂಪ</label>
+                                    <select id="selectVegType" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                        <option value="Purchase">ಖರೀದಿ (Purchase)</option>
+                                        <option value="Donation">ದೇಣಿಗೆ (Donation)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಿತರಣಾ ಸ್ಥಳ (Issue Place)</label>
+                                <input type="text" id="inputVegIssuePlace" placeholder="Boys Hostel Kitchen" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಟಿಪ್ಪಣಿ (Remarks)</label>
+                                <input type="text" id="inputVegRemarks" placeholder="Remarks" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg transition-all shadow-md flex justify-center items-center gap-2">
+                                <span class="kannada-text">ದಾಸ್ತಾನು ಸೇರಿಸಿ</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Vegetable Logs Table Card -->
+                    <div class="glass-card rounded-2xl p-6 lg:col-span-2">
+                        <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                            <span class="text-lg">📊</span>
+                            <span class="kannada-text">ತರಕಾರಿ ವಿತರಣಾ ಇತಿಹಾಸ (Vegetables Delivery Log)</span>
+                        </h3>
+                        <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1">
+                            <table class="min-w-full divide-y divide-slate-200 text-sm">
+                                <thead>
+                                    <tr class="bg-slate-100/50">
+                                        <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ದಿನಾಂಕ</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಶಾಖೆ/ವಸತಿ ನಿಲಯ</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ವಸ್ತು</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಪ್ರಮಾಣ</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ದರ</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಒಟ್ಟು ಮೊತ್ತ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblVegetableLogs" class="divide-y divide-slate-100 font-medium">
+                                    <!-- Dynamic rows -->
+                                    <tr><td colspan="6" class="text-center py-6 text-slate-400 kannada-text">ಯಾವುದೇ ತರಕಾರಿ ದಾಖಲೆಗಳಿಲ್ಲ.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== BILLS TAB ==================== -->
+            <div id="sectGodownBills" class="space-y-8 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Record Bill Form Card -->
+                    <div class="glass-card rounded-2xl p-6">
+                        <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                            <span class="text-lg">🧾</span>
+                            <span class="kannada-text">ಬಿಲ್ಲು ಮತ್ತು ಪಾವತಿ ದಾಖಲಿಸು (Log Bill Payment)</span>
+                        </h3>
+                        <form id="formAddBill" onsubmit="handleLogBill(event)" class="space-y-4 text-sm">
+                            <div>
+                                <label class="block text-slate-600 font-semibold mb-1 kannada-text">ದಾನಿಗಳು/ಅಂಗಡಿ</label>
+                                <select id="selectBillDonor" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಬಿಲ್ಲು ಸಂಖ್ಯೆ</label>
+                                    <input type="text" id="inputBillNo" placeholder="Bill No" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಬಿಲ್ಲು ದಿನಾಂಕ</label>
+                                    <input type="date" id="inputBillDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಬಿಲ್ಲು ಮೊತ್ತ</label>
+                                    <input type="number" step="0.01" id="inputBillAmount" placeholder="Amount" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಪಾವತಿಸಿದವರು</label>
+                                    <input type="text" id="inputBillPaidBy" placeholder="Paid By" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಚೆಕ್ ಸಂಖ್ಯೆ (Ch No)</label>
+                                    <input type="text" id="inputBillChNo" placeholder="Cheque No" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಚೆಕ್ ದಿನಾಂಕ</label>
+                                    <input type="date" id="inputBillChDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಚೆಕ್ ಮೊತ್ತ (Ch Amount)</label>
+                                <input type="number" step="0.01" id="inputBillChAmount" placeholder="Cheque Amount" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಟಿಪ್ಪಣಿ (Remarks)</label>
+                                <input type="text" id="inputBillRemarks" placeholder="Remarks" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg transition-all shadow-md flex justify-center items-center gap-2">
+                                <span class="kannada-text">ದಾಸ್ತಾನು ಸೇರಿಸಿ</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Bills Registry Table Card -->
+                    <div class="glass-card rounded-2xl p-6 lg:col-span-2">
+                        <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                            <span class="text-lg">📊</span>
+                            <span class="kannada-text">ಬಿಲ್ಲುಗಳ ನೋಂದಣಿ ಪಟ್ಟಿ (Bills Payment Registry)</span>
+                        </h3>
+                        <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1">
+                            <table class="min-w-full divide-y divide-slate-200 text-sm">
+                                <thead>
+                                    <tr class="bg-slate-100/50">
+                                        <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಬಿಲ್ಲು ಸಂಖ್ಯೆ</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ದಿನಾಂಕ</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ದಾನಿಗಳು/ಅಂಗಡಿ</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಬಿಲ್ಲು ಮೊತ್ತ</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಚೆಕ್ ವಿವರ</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಪಾವತಿ ಸ್ಥಿತಿ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblBillsLogs" class="divide-y divide-slate-100 font-medium">
+                                    <!-- Dynamic rows -->
+                                    <tr><td colspan="6" class="text-center py-6 text-slate-400 kannada-text">ಯಾವುದೇ ಬಿಲ್ಲುಗಳ ದಾಖಲೆಗಳಿಲ್ಲ.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -450,6 +646,31 @@
                         </thead>
                         <tbody id="tblHostelReceiptsLogs" class="divide-y divide-slate-100 font-medium">
                             <!-- Dynamic rows with Print button -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Hostel Vegetable Delivery Log Card -->
+            <div class="glass-card rounded-2xl p-6 mt-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span>🥦</span>
+                    <span class="kannada-text">ತರಕಾರಿ ವಿತರಣಾ ಇತಿಹಾಸ (Vegetables Delivery Log)</span>
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200 text-sm">
+                        <thead>
+                            <tr class="bg-slate-100/50">
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ದಿನಾಂಕ</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ತರಕಾರಿ ಹೆಸರು</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಪ್ರಮಾಣ</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ದರ</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 kannada-text">ಒಟ್ಟು ಮೊತ್ತ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblHostelVegetableLogs" class="divide-y divide-slate-100 font-medium">
+                            <!-- Dynamic rows -->
+                            <tr><td colspan="5" class="text-center py-6 text-slate-400 kannada-text">ಯಾವುದೇ ತರಕಾರಿ ದಾಖಲೆಗಳಿಲ್ಲ.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -814,6 +1035,14 @@
             document.getElementById('inputRecDate').value = today;
             document.getElementById('inputUsageDate').value = today;
             
+            // Set form date defaults for vegetables and bills if elements exist
+            const vegBillDate = document.getElementById('inputVegBillDate');
+            if (vegBillDate) vegBillDate.value = today;
+            const billDate = document.getElementById('inputBillDate');
+            if (billDate) billDate.value = today;
+            const billChDate = document.getElementById('inputBillChDate');
+            if (billChDate) billChDate.value = today;
+            
             // Enforce multi-tenant access control based on user role
             if (loggedInUser.role === 'hostel') {
                 // Hide role switcher to lock them into their branch store
@@ -958,6 +1187,74 @@
                 .then(data => {
                     donors = data;
                     populateDropdown('selectRecDonor', data, 'Shop_Donor_ID', 'Shop_Donor_Name');
+                    populateDropdown('selectBillDonor', data, 'Shop_Donor_ID', 'Shop_Donor_Name');
+                });
+
+            // Load Institutions for Vegetables selector
+            fetch('/api/institutions')
+                .then(res => res.json())
+                .then(data => {
+                    institutions = data;
+                    const select = document.getElementById('selectVegHostel');
+                    if (select) {
+                        select.innerHTML = data.map(inst => `<option value="${inst.Inst_ID}">${inst.Institution}</option>`).join('');
+                    }
+                });
+
+            // Load Vegetables delivery history
+            fetch('/api/vegetables')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('tblVegetableLogs');
+                    if (!tbody) return;
+                    if (data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-400 kannada-text">ಯಾವುದೇ ತರಕಾರಿ ದಾಖಲೆಗಳಿಲ್ಲ.</td></tr>`;
+                    } else {
+                        tbody.innerHTML = data.map(v => `
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="px-4 py-3 text-slate-500 font-mono">${v.Purchase_On}</td>
+                                <td class="px-4 py-3 text-slate-700 font-bold kannada-text">${v.Institution}</td>
+                                <td class="px-4 py-3 text-slate-800 font-bold">${v.V_Code}</td>
+                                <td class="px-4 py-3 font-semibold">${v.Quantity} kg</td>
+                                <td class="px-4 py-3 font-semibold">₹${v.Rate}</td>
+                                <td class="px-4 py-3 text-emerald-700 font-extrabold">₹${(v.Quantity * v.Rate).toFixed(2)}</td>
+                            </tr>
+                        `).join('');
+                    }
+                });
+
+            // Load Bills registry
+            fetch('/api/bills')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('tblBillsLogs');
+                    if (!tbody) return;
+                    if (data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-400 kannada-text">ಯಾವುದೇ ಬಿಲ್ಲುಗಳ ದಾಖಲೆಗಳಿಲ್ಲ.</td></tr>`;
+                    } else {
+                        tbody.innerHTML = data.map(b => {
+                            const remaining = b.Bill_Amount - b.Ch_Amount;
+                            let statusClass = "bg-emerald-100 text-emerald-800";
+                            let statusText = currentLang === 'en' ? "Paid" : "ಪಾವತಿಸಲಾಗಿದೆ (Paid)";
+                            if (remaining > 0) {
+                                statusClass = "bg-amber-100 text-amber-800";
+                                statusText = currentLang === 'en' ? "Pending" : "ಬಾಕಿ ಇದೆ (Pending)";
+                            }
+                            const chqInfo = b.Ch_No ? `${b.Ch_No} (₹${b.Ch_Amount})` : '-';
+                            return `
+                                <tr class="hover:bg-slate-50/50">
+                                    <td class="px-4 py-3 font-mono text-slate-500">${b.Bill_No}</td>
+                                    <td class="px-4 py-3 text-slate-500 font-mono">${b.Bill_Date}</td>
+                                    <td class="px-4 py-3 text-slate-700 font-bold kannada-text">${b.Shop_Donor_Name || 'ದೇಣಿಗೆ'}</td>
+                                    <td class="px-4 py-3 font-extrabold text-slate-800">₹${b.Bill_Amount.toFixed(2)}</td>
+                                    <td class="px-4 py-3 text-slate-600 font-semibold text-xs">${chqInfo}</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 text-xs font-bold rounded-lg ${statusClass} kannada-text">${statusText}</span>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('');
+                    }
                 });
 
             // Load Inwards History Log
@@ -1157,6 +1454,143 @@
                         `).join('');
                     }
                 });
+
+            // 4. Fetch hostel vegetables delivery log
+            fetch(`/api/vegetables?inst_id=${activeHostelId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('tblHostelVegetableLogs');
+                    if (!tbody) return;
+                    if (data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-400 kannada-text">ಯಾವುದೇ ತರಕಾರಿ ದಾಖಲೆಗಳಿಲ್ಲ.</td></tr>`;
+                    } else {
+                        tbody.innerHTML = data.map(v => `
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="px-4 py-3 text-slate-500 font-mono">${v.Purchase_On}</td>
+                                <td class="px-4 py-3 text-slate-800 font-bold">${v.V_Code}</td>
+                                <td class="px-4 py-3 font-semibold">${v.Quantity} kg</td>
+                                <td class="px-4 py-3 font-semibold">₹${v.Rate}</td>
+                                <td class="px-4 py-3 text-emerald-700 font-extrabold">₹${(v.Quantity * v.Rate).toFixed(2)}</td>
+                            </tr>
+                        `).join('');
+                    }
+                });
+        }
+
+        // Switch between Godown Tabs (Stock vs Vegetables vs Bills)
+        let activeGodownTab = 'stock';
+        function switchGodownTab(tab) {
+            activeGodownTab = tab;
+            const tabStock = document.getElementById('tabGodownStock');
+            const tabVeg = document.getElementById('tabGodownVegetables');
+            const tabBills = document.getElementById('tabGodownBills');
+            
+            const sectStock = document.getElementById('sectGodownStock');
+            const sectVeg = document.getElementById('sectGodownVegetables');
+            const sectBills = document.getElementById('sectGodownBills');
+            
+            if (!tabStock || !tabVeg || !tabBills) return;
+            
+            // Reset tab styles
+            [tabStock, tabVeg, tabBills].forEach(btn => {
+                btn.className = "px-5 py-2.5 text-sm font-extrabold rounded-t-xl transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-50 flex items-center gap-1.5";
+            });
+            
+            // Hide all sections
+            sectStock.classList.add('hidden');
+            sectVeg.classList.add('hidden');
+            sectBills.classList.add('hidden');
+            
+            if (tab === 'stock') {
+                tabStock.className = "px-5 py-2.5 text-sm font-extrabold rounded-t-xl transition-all bg-white border border-b-0 border-slate-200 text-emerald-800 shadow-sm border-t-4 border-t-emerald-600 flex items-center gap-1.5";
+                sectStock.classList.remove('hidden');
+            } else if (tab === 'vegetables') {
+                tabVeg.className = "px-5 py-2.5 text-sm font-extrabold rounded-t-xl transition-all bg-white border border-b-0 border-slate-200 text-emerald-800 shadow-sm border-t-4 border-t-emerald-600 flex items-center gap-1.5";
+                sectVeg.classList.remove('hidden');
+            } else if (tab === 'bills') {
+                tabBills.className = "px-5 py-2.5 text-sm font-extrabold rounded-t-xl transition-all bg-white border border-b-0 border-slate-200 text-emerald-800 shadow-sm border-t-4 border-t-emerald-600 flex items-center gap-1.5";
+                sectBills.classList.remove('hidden');
+            }
+            
+            // Reload dashboard data
+            loadGodownDashboardData();
+        }
+
+        // Record Vegetable Inward
+        function handleLogVegetable(e) {
+            e.preventDefault();
+            const payload = {
+                Inst_ID: parseInt(document.getElementById('selectVegHostel').value),
+                Year1: '2026',
+                Purchase_On: new Date().toISOString().split('T')[0],
+                V_Code: document.getElementById('inputVegCode').value,
+                Quantity: parseFloat(document.getElementById('inputVegQty').value),
+                Bill_Date: document.getElementById('inputVegBillDate').value || null,
+                Bill_No: document.getElementById('inputVegBillNo').value || null,
+                Rate: parseFloat(document.getElementById('inputVegRate').value || 0.0),
+                Remarks: document.getElementById('inputVegRemarks').value || '',
+                Issue_Place: document.getElementById('inputVegIssuePlace').value || '',
+                Purchased_Donation: document.getElementById('selectVegType').value
+            };
+
+            fetch('/api/vegetables', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('ದೋಷ: ' + data.error);
+                } else {
+                    alert('ತರಕಾರಿ ವಿವರ ಯಶಸ್ವಿಯಾಗಿ ದಾಖಲಾಗಿದೆ! (Vegetable log saved!)');
+                    document.getElementById('inputVegCode').value = '';
+                    document.getElementById('inputVegQty').value = '';
+                    document.getElementById('inputVegBillNo').value = '';
+                    document.getElementById('inputVegRate').value = '';
+                    document.getElementById('inputVegIssuePlace').value = '';
+                    document.getElementById('inputVegRemarks').value = '';
+                    loadGodownDashboardData();
+                }
+            });
+        }
+
+        // Record Bill Payment
+        function handleLogBill(e) {
+            e.preventDefault();
+            const payload = {
+                Year1: '2026',
+                Shop_Donor_ID: parseInt(document.getElementById('selectBillDonor').value),
+                Bill_Date: document.getElementById('inputBillDate').value,
+                Bill_No: document.getElementById('inputBillNo').value,
+                Bill_Amount: parseFloat(document.getElementById('inputBillAmount').value),
+                Paid_By: document.getElementById('inputBillPaidBy').value || '',
+                Ch_Date: document.getElementById('inputBillChDate').value || null,
+                Ch_No: document.getElementById('inputBillChNo').value || null,
+                Ch_Amount: parseFloat(document.getElementById('inputBillChAmount').value || 0.0),
+                Remarks: document.getElementById('inputBillRemarks').value || ''
+            };
+
+            fetch('/api/bills', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('ದೋಷ: ' + data.error);
+                } else {
+                    alert('ಬಿಲ್ಲು ಯಶಸ್ವಿಯಾಗಿ ದಾಖಲಾಗಿದೆ! (Bill registered successfully!)');
+                    document.getElementById('inputBillNo').value = '';
+                    document.getElementById('inputBillAmount').value = '';
+                    document.getElementById('inputBillPaidBy').value = '';
+                    document.getElementById('inputBillChNo').value = '';
+                    document.getElementById('inputBillChAmount').value = '';
+                    document.getElementById('inputBillRemarks').value = '';
+                    loadGodownDashboardData();
+                }
+            });
         }
 
         // Helper: populate dropdown

@@ -554,5 +554,88 @@ def get_low_stock_alerts():
             
     return jsonify(alerts)
 
+# --- Vegetable Management API ---
+@app.route('/api/vegetables', methods=['GET'])
+def get_vegetables():
+    inst_id = request.args.get('inst_id')
+    if inst_id:
+        logs = db_query("""
+            SELECT v.*, i.Institution 
+            FROM Vegetable v
+            JOIN Institutions i ON v.Inst_ID = i.Inst_ID
+            WHERE v.Inst_ID = %s
+            ORDER BY v.Rec DESC
+        """, (inst_id,))
+    else:
+        logs = db_query("""
+            SELECT v.*, i.Institution 
+            FROM Vegetable v
+            JOIN Institutions i ON v.Inst_ID = i.Inst_ID
+            ORDER BY v.Rec DESC
+        """)
+    return jsonify(logs)
+
+@app.route('/api/vegetables', methods=['POST'])
+def add_vegetable():
+    data = request.json or {}
+    try:
+        db_query("""
+            INSERT INTO Vegetable 
+            (Inst_ID, Year1, Purchase_On, V_Code, Quantity, Bill_Date, Bill_No, Rate, Remarks, Issue_Place, Purchased_Donation)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            data.get('Inst_ID'),
+            data.get('Year1', '2026'),
+            data.get('Purchase_On'),
+            data.get('V_Code'),
+            data.get('Quantity', 0.0),
+            data.get('Bill_Date'),
+            data.get('Bill_No'),
+            data.get('Rate', 0.0),
+            data.get('Remarks'),
+            data.get('Issue_Place'),
+            data.get('Purchased_Donation', 'Purchase')
+        ), fetch=False)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- Bills and Payments API ---
+@app.route('/api/bills', methods=['GET'])
+def get_bills():
+    logs = db_query("""
+        SELECT b.*, sd.Shop_Donor_Name, sd.Place 
+        FROM Bills b
+        LEFT JOIN Shops_Donors sd ON b.Shop_Donor_ID = sd.Shop_Donor_ID
+        ORDER BY b.Rec DESC
+    """)
+    return jsonify(logs)
+
+@app.route('/api/bills', methods=['POST'])
+def add_bill():
+    data = request.json or {}
+    try:
+        db_query("""
+            INSERT INTO Bills 
+            (Year1, Shop_Donor_ID, Bill_Date, Bill_No, Bill_Amount, Paid_By, Ch_Date, Ch_No, Ch_Amount, Remarks, DateAdded)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            data.get('Year1', '2026'),
+            data.get('Shop_Donor_ID'),
+            data.get('Bill_Date'),
+            data.get('Bill_No'),
+            data.get('Bill_Amount', 0.0),
+            data.get('Paid_By'),
+            data.get('Ch_Date'),
+            data.get('Ch_No'),
+            data.get('Ch_Amount', 0.0),
+            data.get('Remarks'),
+            datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        ), fetch=False)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
