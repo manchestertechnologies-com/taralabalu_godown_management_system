@@ -162,7 +162,7 @@
             <!-- Operations Section (Tabbed Forms) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Action Card 1: Stock Inward (From Donors) -->
-                <div class="glass-card rounded-2xl p-6">
+                <div id="cardStockInward" class="glass-card rounded-2xl p-6">
                     <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                         <span class="text-lg">📥</span>
                         <span class="kannada-text">ದಾನಿಗಳು/ಅಂಗಡಿಯಿಂದ ಸ್ವೀಕೃತಿ (Stock Inward)</span>
@@ -208,7 +208,7 @@
                 </div>
 
                 <!-- Action Card 2: Indents Processing (Review and sanction) -->
-                <div class="glass-card rounded-2xl p-6 md:col-span-2">
+                <div id="cardPendingIndents" class="glass-card rounded-2xl p-6 md:col-span-2">
                     <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                         <span class="text-lg">📋</span>
                         <span class="kannada-text">ಬಂದಿರುವ ಇಂಡೆಂಟ್‌ಗಳ ಪರಿಶೀಲನೆ (Review Pending Indents)</span>
@@ -235,7 +235,7 @@
             <!-- Operations Settings Section -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- System Settings Buttons -->
-                <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+                <div id="cardMasterRegistrations" class="glass-card rounded-2xl p-6 flex flex-col justify-between">
                     <div>
                         <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                             <span class="text-lg">⚙️</span>
@@ -1048,19 +1048,85 @@
                 // Hide role switcher to lock them into their branch store
                 document.getElementById('btnRoleGodown').parentElement.classList.add('hidden');
                 switchRole('hostel');
+            } else if (loggedInUser.role === 'godown') {
+                // Hide role switcher for clerk to lock them in clerk role
+                document.getElementById('btnRoleGodown').parentElement.classList.add('hidden');
+                switchRole('godown');
             } else {
+                // Head Office can switch roles to inspect hostels
                 switchRole('godown');
             }
+            
+            // Apply visual permissions based on role
+            applyRolePermissions();
             
             // Set initial language UI
             updateUIStrings();
         });
 
+        // Apply specific visual role restrictions
+        function applyRolePermissions() {
+            const role = loggedInUser.role;
+            
+            const cardStockInward = document.getElementById('cardStockInward');
+            const cardPendingIndents = document.getElementById('cardPendingIndents');
+            const cardMasterRegistrations = document.getElementById('cardMasterRegistrations');
+            const tabBills = document.getElementById('tabGodownBills');
+            const tabVegetables = document.getElementById('tabGodownVegetables');
+            const formVeg = document.getElementById('formAddVegetable');
+            const tblVegLogs = document.getElementById('tblVegetableLogs');
+            
+            if (role === 'godown') {
+                // Central Godown Clerk view
+                if (cardStockInward) {
+                    cardStockInward.classList.remove('hidden');
+                    cardStockInward.className = "glass-card rounded-2xl p-6 md:col-span-3";
+                }
+                if (cardPendingIndents) cardPendingIndents.classList.add('hidden');
+                if (cardMasterRegistrations) cardMasterRegistrations.classList.add('hidden');
+                if (tabBills) tabBills.classList.add('hidden');
+                
+                // Customize tab labels
+                const lblStockTab = document.querySelector('#tabGodownStock span.kannada-text');
+                if (lblStockTab) lblStockTab.innerText = currentLang === 'en' ? 'Stock Inward' : 'ದಾಸ್ತಾನು ಸ್ವೀಕೃತಿ (Stock Inward)';
+                
+                const lblVegTab = document.querySelector('#tabGodownVegetables span.kannada-text');
+                if (lblVegTab) lblVegTab.innerText = currentLang === 'en' ? 'Vegetables Entry' : 'ತರಕಾರಿ ದಾಖಲು (Vegetables Entry)';
+                
+                // Show vegetable entry form for clerk
+                if (formVeg) formVeg.parentElement.classList.remove('hidden');
+                if (tblVegLogs) tblVegLogs.parentElement.parentElement.className = "glass-card rounded-2xl p-6 lg:col-span-2";
+            } else if (role === 'head') {
+                // Head Office / Admin view
+                if (cardStockInward) cardStockInward.classList.add('hidden');
+                if (cardPendingIndents) {
+                    cardPendingIndents.classList.remove('hidden');
+                    cardPendingIndents.className = "glass-card rounded-2xl p-6 md:col-span-3";
+                }
+                if (cardMasterRegistrations) cardMasterRegistrations.classList.remove('hidden');
+                if (tabBills) tabBills.classList.remove('hidden');
+                
+                // Customize tab labels
+                const lblStockTab = document.querySelector('#tabGodownStock span.kannada-text');
+                if (lblStockTab) lblStockTab.innerText = currentLang === 'en' ? 'Stock & Approvals' : 'ದಾಸ್ತಾನು ಮತ್ತು ಅನುಮೋದನೆ (Stock & Approvals)';
+                
+                const lblVegTab = document.querySelector('#tabGodownVegetables span.kannada-text');
+                if (lblVegTab) lblVegTab.innerText = currentLang === 'en' ? 'Vegetables Log' : 'ತರಕಾರಿ ದಾಸ್ತಾನು ವೀಕ್ಷಣೆ (Vegetables Log)';
+                
+                // Hide vegetable data entry form for the head, only show logs
+                if (formVeg) formVeg.parentElement.classList.add('hidden');
+                if (tblVegLogs) tblVegLogs.parentElement.parentElement.className = "glass-card rounded-2xl p-6 lg:col-span-3";
+            }
+        }
 
         // Switch View Role
         function switchRole(role) {
             // Security: If logged-in user is 'hostel', block access to 'godown' role
             if (loggedInUser.role === 'hostel' && role === 'godown') {
+                return;
+            }
+            // Security: If logged-in user is 'godown', block access to 'hostel' view
+            if (loggedInUser.role === 'godown' && role === 'hostel') {
                 return;
             }
             
@@ -1077,6 +1143,7 @@
                 
                 divGodown.classList.remove('hidden');
                 divHostel.classList.add('hidden');
+                applyRolePermissions();
                 loadGodownDashboardData();
             } else {
                 btnHostel.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 bg-emerald-600 text-white shadow-md";

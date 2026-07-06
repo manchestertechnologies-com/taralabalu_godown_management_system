@@ -11,7 +11,8 @@ app.secret_key = 'taralabalu_secret_key_87924'
 
 # User credentials dictionary (Default password for all is 123)
 USERS = {
-    "godown": {"password": "123", "role": "godown", "inst_id": None, "name": "Central Godown / ಕೇಂದ್ರ ಗೋದಾಮು"},
+    "head": {"password": "123", "role": "head", "inst_id": None, "name": "Head Office / ಸಂಸ್ಥೆಯ ಮುಖ್ಯಸ್ಥರು"},
+    "godown": {"password": "123", "role": "godown", "inst_id": None, "name": "Central Godown Clerk / ಗೋದಾಮು ಗುಮಾಸ್ತ"},
     "boyshostel": {"password": "123", "role": "hostel", "inst_id": 1, "name": "Stores - Boys Hostel"},
     "girlshostel": {"password": "123", "role": "hostel", "inst_id": 2, "name": "Stores - Girls Hostel"},
     "math": {"password": "123", "role": "hostel", "inst_id": 3, "name": "Stores - Math"},
