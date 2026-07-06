@@ -47,9 +47,12 @@ def get_db_connection():
         )
         return conn, "postgresql"
     except Exception as e:
-        # Fallback to local SQLite
-        conn = sqlite3.connect('database.db')
+        # Fallback to local SQLite using absolute path
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        db_path = os.path.join(base_dir, 'database.db')
+        conn = sqlite3.connect(db_path)
         return conn, "sqlite"
+
 
 def db_query(query, args=(), fetch=True):
     conn, db_type = get_db_connection()

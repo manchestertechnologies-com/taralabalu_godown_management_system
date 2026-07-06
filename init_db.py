@@ -40,10 +40,13 @@ def get_connection():
         except Exception as e:
             print(f"PostgreSQL connection failed with URL: {cleaned_str.split('@')[-1]}. Error: {e}")
             
-    # Fallback to local SQLite
-    print("Falling back to local SQLite database 'database.db'...")
-    conn = sqlite3.connect('database.db')
+    # Fallback to local SQLite using absolute path
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(base_dir, 'database.db')
+    print(f"Falling back to local SQLite database '{db_path}'...")
+    conn = sqlite3.connect(db_path)
     return conn, "sqlite"
+
 
 def execute_ddl(cursor, db_type, query_pg, query_sqlite):
     query = query_pg if db_type == "postgresql" else query_sqlite
@@ -388,29 +391,159 @@ def init_db():
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     """, donors)
 
-    # Grocery Items Seed
-    items = [
-        (101, 'ಅಕ್ಕಿ (Rice)', 'Rice', 'ಧಾನ್ಯಗಳು', 'C01', 45.0, 'ಕೆಜಿ (KG)', 200.0, 100.0, 1500.0, 1200.0, 500.0, 300.0, 100.0, 3900.0, 2000.0, 3900.0, 5000.0, 1100.0, 49500.0, 100000.0, 'ದಿನನಿತ್ಯದ ಅಡುಗೆಗೆ', '2026-07-06'),
-        (102, 'ಗೋಧಿ ಹಿಟ್ಟು (Wheat Flour)', 'Wheat Flour', 'ಹಿಟ್ಟು', 'C02', 38.0, 'ಕೆಜಿ (KG)', 50.0, 20.0, 4.0, 250.0, 100.0, 150.0, 50.0, 624.0, 100.0, 624.0, 1000.0, 376.0, 23712.0, 50000.0, 'Low Stock Alert triggered for Boys Hostel (4.0 KG)', '2026-07-06'),
-        (103, 'ತೊಗರಿ ಬೇಳε (Toor Dal)', 'Toor Dal', 'ಬೇಳೆಕಾಳು', 'C03', 120.0, 'ಕೆಜಿ (KG)', 10.0, 50.0, 120.0, 90.0, 40.0, 5.0, 10.0, 325.0, 500.0, 325.0, 1000.0, 675.0, 39000.0, 80000.0, 'Low Stock Alert triggered for Shantivana (5.0 KG)', '2026-07-06'),
-        (104, 'ಸಕ್ಕರೆ (Sugar)', 'Sugar', 'ಸಿಹಿ ವಸ್ತು', 'C04', 40.0, 'ಕೆಜಿ (KG)', 10.0, 30.0, 80.0, 60.0, 30.0, 40.0, 20.0, 270.0, 200.0, 270.0, 500.0, 230.0, 10800.0, 25000.0, '', '2026-07-06'),
-        (105, 'ಅಡುಗೆ ಎಣ್ಣೆ (Cooking Oil)', 'Cooking Oil', 'ಎಣ್ಣೆ', 'C05', 110.0, 'ಲೀಟರ್ (Ltr)', 5.0, 10.0, 90.0, 80.0, 30.0, 20.0, 10.0, 245.0, 100.0, 245.0, 500.0, 255.0, 26950.0, 60000.0, '', '2026-07-06'),
-        (106, 'ಪುಡಿ ಉಪ್ಪು (Salt)', 'Salt', 'ಮಸಾಲೆ', 'C06', 15.0, 'ಕೆಜಿ (KG)', 2.0, 5.0, 15.0, 12.0, 10.0, 8.0, 5.0, 57.0, 50.0, 57.0, 100.0, 43.0, 855.0, 5000.0, 'Low Stock Alert triggered for Shraddanjali (2.0 KG)', '2026-07-06'),
-        (108, 'ರಾಗಿ (Ragi)', 'Ragi', 'ಧಾನ್ಯಗಳು', 'C01', 35.0, 'ಕೆಜಿ (KG)', 0.0, 0.0, 5.0, 80.0, 15.0, 50.0, 0.0, 150.0, 300.0, 150.0, 500.0, 350.0, 5250.0, 15000.0, 'Low Stock Alert triggered for Boys Hostel (5.0 KG)', '2026-07-06')
-    ]
-    cursor.executemany("""
-        INSERT INTO Grocery_Items
-        (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
-         Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
-         Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    """ if db_type == "postgresql" else """
-        INSERT INTO Grocery_Items
-        (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
-         Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
-         Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-    """, items)
+    # Dynamic CSV scanner for grocery items
+    import csv
+    csv_loaded = False
+    csv_files = [f for f in os.listdir(base_dir) if f.endswith('.csv')]
+    
+    for f_name in csv_files:
+        csv_path = os.path.join(base_dir, f_name)
+        try:
+            with open(csv_path, mode='r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                headers = reader.fieldnames
+                # Validate if it looks like a grocery items CSV
+                if headers and any(h.lower().replace(" ", "_") in ['grocery_code', 'code', 'grocerycode'] for h in headers):
+                    print(f"Detected grocery dataset at '{f_name}'. Parsing and importing...")
+                    items = []
+                    for row in reader:
+                        code = 0
+                        for h in headers:
+                            if h.lower().replace(" ", "_") in ['grocery_code', 'code', 'grocerycode']:
+                                try:
+                                    code = int(float(row[h]))
+                                except:
+                                    pass
+                        if not code:
+                            continue
+                            
+                        # Extract Kannada name
+                        name_kan = ""
+                        for h in headers:
+                            if h.lower().replace(" ", "_") in ['grocery_items_kan', 'grocery_items_kannada', 'item_name_kannada', 'kannada_name', 'items_kan']:
+                                name_kan = row[h]
+                        if not name_kan:
+                            for h in headers:
+                                if 'name' in h.lower() or 'item' in h.lower():
+                                    name_kan = row[h]
+                                    break
+                                    
+                        # Extract English name
+                        name_eng = ""
+                        for h in headers:
+                            if h.lower().replace(" ", "_") in ['grocery_items_eng', 'grocery_items_english', 'item_name_english', 'english_name', 'items_eng']:
+                                name_eng = row[h]
+                                
+                        # Category
+                        category = "ಧಾನ್ಯಗಳು"
+                        for h in headers:
+                            if 'category' in h.lower():
+                                category = row[h]
+                                
+                        # Unit
+                        unit = "ಕೆಜಿ (KG)"
+                        for h in headers:
+                            if h.lower().replace(" ", "_") in ['qtl_kg_ltr', 'unit', 'unit_type']:
+                                unit = row[h]
+                                
+                        # Rate
+                        rate = 0.0
+                        for h in headers:
+                            if h.lower().replace(" ", "_") in ['std_rate', 'rate', 'standard_rate']:
+                                try:
+                                    rate = float(row[h])
+                                except:
+                                    pass
+                                    
+                        # Branch stock parsing
+                        boys_qty = 0.0
+                        girls_qty = 0.0
+                        math_qty = 0.0
+                        shantivan_qty = 0.0
+                        ao_office_qty = 0.0
+                        shraddanjali_qty = 0.0
+                        hunnime_qty = 0.0
+                        
+                        for h in headers:
+                            hl = h.lower()
+                            if 'boys' in hl:
+                                try: boys_qty = float(row[h])
+                                except: pass
+                            elif 'girls' in hl:
+                                try: girls_qty = float(row[h])
+                                except: pass
+                            elif 'math' in hl:
+                                try: math_qty = float(row[h])
+                                except: pass
+                            elif 'shantivan' in hl:
+                                try: shantivan_qty = float(row[h])
+                                except: pass
+                            elif 'office' in hl or 'ao' in hl:
+                                try: ao_office_qty = float(row[h])
+                                except: pass
+                            elif 'shraddanjali' in hl or 'shraddhajali' in hl:
+                                try: shraddanjali_qty = float(row[h])
+                                except: pass
+                            elif 'hunnime' in hl:
+                                try: hunnime_qty = float(row[h])
+                                except: pass
+                                
+                        tot_qty = boys_qty + girls_qty + math_qty + shantivan_qty + ao_office_qty + shraddanjali_qty + hunnime_qty
+                        
+                        items.append((
+                            code, name_kan, name_eng, category, 'C01', rate, unit,
+                            shraddanjali_qty, hunnime_qty, boys_qty, girls_qty, math_qty, shantivan_qty, ao_office_qty,
+                            tot_qty, tot_qty, tot_qty, tot_qty + 100, 0.0, tot_qty * rate, tot_qty * rate * 1.5, 'Imported from ' + f_name, datetime.now().strftime('%Y-%m-%d')
+                        ))
+                    
+                    if items:
+                        # Clear default items and insert new ones
+                        cursor.execute("DELETE FROM Grocery_Items;")
+                        cursor.executemany("""
+                            INSERT INTO Grocery_Items
+                            (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
+                             Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
+                             Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
+                            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                        """ if db_type == "postgresql" else """
+                            INSERT INTO Grocery_Items
+                            (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
+                             Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
+                             Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
+                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                        """, items)
+                        print(f"Successfully loaded {len(items)} items from CSV file: {f_name}")
+                        csv_loaded = True
+                        break
+        except Exception as e:
+            print(f"Error parsing CSV '{f_name}': {e}")
+
+    if not csv_loaded:
+        print("No CSV file found or parsing failed. Seeding default dummy items instead.")
+        # Seeding default items list
+        items = [
+            (101, 'ಅಕ್ಕಿ (Rice)', 'Rice', 'ಧಾನ್ಯಗಳು', 'C01', 45.0, 'ಕೆಜಿ (KG)', 200.0, 100.0, 1500.0, 1200.0, 500.0, 300.0, 100.0, 3900.0, 2000.0, 3900.0, 5000.0, 1100.0, 49500.0, 100000.0, 'ದಿನನಿತ್ಯದ ಅಡುಗೆಗೆ', '2026-07-06'),
+            (102, 'ಗೋಧಿ ಹಿಟ್ಟು (Wheat Flour)', 'Wheat Flour', 'ಹಿಟ್ಟು', 'C02', 38.0, 'ಕೆಜಿ (KG)', 50.0, 20.0, 4.0, 250.0, 100.0, 150.0, 50.0, 624.0, 100.0, 624.0, 1000.0, 376.0, 23712.0, 50000.0, 'Low Stock Alert triggered for Boys Hostel (4.0 KG)', '2026-07-06'),
+            (103, 'ತೊಗರಿ ಬೇಳε (Toor Dal)', 'Toor Dal', 'ಬೇಳೆಕಾಳು', 'C03', 120.0, 'ಕೆಜಿ (KG)', 10.0, 50.0, 120.0, 90.0, 40.0, 5.0, 10.0, 325.0, 500.0, 325.0, 1000.0, 675.0, 39000.0, 80000.0, 'Low Stock Alert triggered for Shantivana (5.0 KG)', '2026-07-06'),
+            (104, 'ಸಕ್ಕರೆ (Sugar)', 'Sugar', 'ಸಿಹಿ ವಸ್ತು', 'C04', 40.0, 'ಕೆಜಿ (KG)', 10.0, 30.0, 80.0, 60.0, 30.0, 40.0, 20.0, 270.0, 200.0, 270.0, 500.0, 230.0, 10800.0, 25000.0, '', '2026-07-06'),
+            (105, 'ಅಡುಗೆ ಎಣ್ಣೆ (Cooking Oil)', 'Cooking Oil', 'ಎಣ್ಣೆ', 'C05', 110.0, 'ಲೀಟರ್ (Ltr)', 5.0, 10.0, 90.0, 80.0, 30.0, 20.0, 10.0, 245.0, 100.0, 245.0, 500.0, 255.0, 26950.0, 60000.0, '', '2026-07-06'),
+            (106, 'ಪುಡಿ ಉಪ್ಪು (Salt)', 'Salt', 'ಮಸಾಲೆ', 'C06', 15.0, 'ಕೆಜಿ (KG)', 2.0, 5.0, 15.0, 12.0, 10.0, 8.0, 5.0, 57.0, 50.0, 57.0, 100.0, 43.0, 855.0, 5000.0, 'Low Stock Alert triggered for Shraddanjali (2.0 KG)', '2026-07-06'),
+            (108, 'ರಾಗಿ (Ragi)', 'Ragi', 'ಧಾನ್ಯಗಳು', 'C01', 35.0, 'ಕೆಜಿ (KG)', 0.0, 0.0, 5.0, 80.0, 15.0, 50.0, 0.0, 150.0, 300.0, 150.0, 500.0, 350.0, 5250.0, 15000.0, 'Low Stock Alert triggered for Boys Hostel (5.0 KG)', '2026-07-06')
+        ]
+        cursor.executemany("""
+            INSERT INTO Grocery_Items
+            (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
+             Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
+             Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """ if db_type == "postgresql" else """
+            INSERT INTO Grocery_Items
+            (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
+             Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
+             Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        """, items)
+
 
     # Stock Inward Logs Seed
     inwards = [
