@@ -633,8 +633,23 @@
             inst_id: parseInt("{{ session.get('inst_id', '0') }}"),
             name: "{{ session.get('name', '') }}"
         };
+
+        // State variables (Declared at the top to prevent TDZ ReferenceErrors)
+        let currentRole = 'godown';
+        let masterItems = [];
+        let donors = [];
+        let institutions = [];
+        let indents = [];
+        let hostelStock = [];
+        let dailyUsage = [];
         
         const TRANSLATION_MAP = {
+            "ಪ್ರಮಾಣ ದಾಖಲಿಸಿ": "Enter quantity",
+            "ದರ": "Rate",
+            "ವಿವರ ನಮೂದಿಸಿ": "Enter details",
+            "ಬಳಸಿದ ಪ್ರಮಾಣ ದಾಖಲಿಸಿ": "Enter quantity used",
+            "ಉದಾ: ಹೆಸರು ಬೇಳೆ": "e.g. Moong Dal",
+            "ಉದಾ: ಜಯದೇವಪ್ಪ ಎಸ್.": "e.g. Jayadevappa S.",
             "ದಾಸ್ತಾನು ನಿರ್ವಹಣಾ ವ್ಯವಸ್ಥೆ": "Inventory Management System",
             "ಕೇಂದ್ರ ಗೋದಾಮು ಸಿಬ್ಬಂದಿ": "Central Godown Staff",
             "ವಸತಿ ನಿಲಯದ ಗುಮಾಸ್ತ": "Hostel Clerk",
@@ -753,6 +768,26 @@
         function updateUIStrings() {
             // Translate all text nodes in the DOM
             translateDOM();
+
+            // Translate all input placeholders
+            document.querySelectorAll('[placeholder]').forEach(el => {
+                const placeholder = el.getAttribute('placeholder');
+                if (!placeholder) return;
+                
+                if (currentLang === 'en') {
+                    for (const [knVal, enVal] of Object.entries(TRANSLATION_MAP)) {
+                        if (placeholder === knVal) {
+                            el.setAttribute('placeholder', enVal);
+                        }
+                    }
+                } else {
+                    for (const [knVal, enVal] of Object.entries(TRANSLATION_MAP)) {
+                        if (placeholder === enVal) {
+                            el.setAttribute('placeholder', knVal);
+                        }
+                    }
+                }
+            });
             
             // Highlight language toggle state
             const btnKN = document.getElementById('btnLangKN');
@@ -773,15 +808,6 @@
             }
         }
 
-        // State variables
-        let currentRole = 'godown';
-        let masterItems = [];
-        let donors = [];
-        let institutions = [];
-        let indents = [];
-        let hostelStock = [];
-        let dailyUsage = [];
-        
         // Setup default dates
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
@@ -1137,7 +1163,15 @@
         function populateDropdown(selectId, items, keyField, valField) {
             const select = document.getElementById(selectId);
             if (!select) return;
-            select.innerHTML = items.map(item => `<option value="${item[keyField]}">${item[valField]} (ಕೋಡ್: ${item[keyField]})</option>`).join('');
+            
+            const codeLabel = currentLang === 'en' ? 'Code' : 'ಕೋಡ್';
+            select.innerHTML = items.map(item => {
+                let displayName = item[valField];
+                if (valField === 'Grocery_Items_Kan') {
+                    displayName = getItemName(item);
+                }
+                return `<option value="${item[keyField]}">${displayName} (${codeLabel}: ${item[keyField]})</option>`;
+            }).join('');
         }
 
         // --- SUBMISSION HANDLERS ---
