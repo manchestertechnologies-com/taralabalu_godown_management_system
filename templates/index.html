@@ -174,11 +174,19 @@
                     </h3>
                     <form id="formReceiveStock" onsubmit="handleReceiveStock(event)" class="space-y-4 text-sm">
                         <div>
-                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
-                            <input type="text" oninput="filterDropdown(this, 'selectRecItem')" placeholder="ವಸ್ತು ಹುಡುಕಿ / Search item..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs mb-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-slate-50/50">
-                            <select id="selectRecItem" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
-                                <!-- Seeded Items -->
-                            </select>
+                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ (Select Item)</label>
+                            <div class="relative custom-combobox" id="comboRecItem">
+                                <input type="text" readonly placeholder="ಇಲ್ಲಿ ಕ್ಲಿಕ್ ಮಾಡಿ ಹುಡುಕಿ / Click to search item..." class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer font-bold select-display">
+                                <input type="hidden" id="selectRecItem" required>
+                                <div class="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl hidden popover-menu">
+                                    <div class="p-2 border-b">
+                                        <input type="text" placeholder="ಹುಡುಕಿ / Search item..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 popover-search">
+                                    </div>
+                                    <div class="max-h-[220px] overflow-y-auto p-1 space-y-0.5 options-list">
+                                        <!-- Dynamic options loaded by initCombobox -->
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-slate-600 font-semibold mb-1 kannada-text">ದಾನಿಗಳು/ಅಂಗಡಿ ಆಯ್ಕೆ ಮಾಡಿ</label>
@@ -566,11 +574,19 @@
                     </h3>
                     <form id="formSubmitIndent" onsubmit="handleSubmitIndent(event)" class="space-y-4 text-sm">
                         <div>
-                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
-                            <input type="text" oninput="filterDropdown(this, 'selectIndentItem')" placeholder="ವಸ್ತು ಹುಡುಕಿ / Search item..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs mb-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-slate-50/50">
-                            <select id="selectIndentItem" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
-                                <!-- Dynamic Master Items -->
-                            </select>
+                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ (Select Item)</label>
+                            <div class="relative custom-combobox" id="comboIndentItem">
+                                <input type="text" readonly placeholder="ಇಲ್ಲಿ ಕ್ಲಿಕ್ ಮಾಡಿ ಹುಡುಕಿ / Click to search item..." class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer font-bold select-display">
+                                <input type="hidden" id="selectIndentItem" required>
+                                <div class="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl hidden popover-menu">
+                                    <div class="p-2 border-b">
+                                        <input type="text" placeholder="ಹುಡುಕಿ / Search item..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 popover-search">
+                                    </div>
+                                    <div class="max-h-[220px] overflow-y-auto p-1 space-y-0.5 options-list">
+                                        <!-- Dynamic options loaded by initCombobox -->
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಕೋರಿದ ಪ್ರಮಾಣ</label>
@@ -594,11 +610,19 @@
                     </h3>
                     <form id="formDailyUsage" onsubmit="handleDailyUsage(event)" class="space-y-4 text-sm">
                         <div>
-                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
-                            <input type="text" oninput="filterDropdown(this, 'selectUsageItem')" placeholder="ವಸ್ತು ಹುಡುಕಿ / Search item..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs mb-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-slate-50/50">
-                            <select id="selectUsageItem" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
-                                <!-- Dynamic list based on what is in stock -->
-                            </select>
+                            <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ (Select Item)</label>
+                            <div class="relative custom-combobox" id="comboUsageItem">
+                                <input type="text" readonly placeholder="ಇಲ್ಲಿ ಕ್ಲಿಕ್ ಮಾಡಿ ಹುಡುಕಿ / Click to search item..." class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer font-bold select-display">
+                                <input type="hidden" id="selectUsageItem" required>
+                                <div class="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl hidden popover-menu">
+                                    <div class="p-2 border-b">
+                                        <input type="text" placeholder="ಹುಡುಕಿ / Search item..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 popover-search">
+                                    </div>
+                                    <div class="max-h-[220px] overflow-y-auto p-1 space-y-0.5 options-list">
+                                        <!-- Dynamic options loaded by initCombobox -->
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಬಳಸಿದ ಪ್ರಮಾಣ</label>
@@ -1253,7 +1277,7 @@
                 .then(res => res.json())
                 .then(items => {
                     masterItems = items;
-                    populateDropdown('selectRecItem', items, 'Grocery_Code', 'Grocery_Items_Kan');
+                    initCombobox('comboRecItem', 'selectRecItem', items, 'Grocery_Code', 'Grocery_Items_Kan');
                     
                     const tbody = document.getElementById('tblGodownBalances');
                     if (items.length === 0) {
@@ -1435,7 +1459,7 @@
             fetch('/api/grocery-items')
                 .then(res => res.json())
                 .then(items => {
-                    populateDropdown('selectIndentItem', items, 'Grocery_Code', 'Grocery_Items_Kan');
+                    initCombobox('comboIndentItem', 'selectIndentItem', items, 'Grocery_Code', 'Grocery_Items_Kan');
                 });
 
             // 1. Fetch hostel stock
@@ -1446,7 +1470,7 @@
                     const tbody = document.getElementById('tblHostelStock');
                     
                     // Also update daily usage item selector with items actually in stock in hostel
-                    populateDropdown('selectUsageItem', stock, 'Grocery_Code', 'Grocery_Items_Kan');
+                    initCombobox('comboUsageItem', 'selectUsageItem', stock, 'Grocery_Code', 'Grocery_Items_Kan');
 
                     if (stock.length === 0) {
                         tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-400 kannada-text">ವಸತಿ ನಿಲಯದಲ್ಲಿ ಯಾವುದೇ ದಾಸ್ತಾನು ಲಭ್ಯವಿಲ್ಲ.</td></tr>`;
@@ -1705,6 +1729,109 @@
             delete select.dataset.allOptions;
         }
 
+        // Custom searchcombobox initialization (Prevents huge select scroll headache)
+        function initCombobox(containerId, hiddenInputId, items, keyField, valField) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const displayInput = container.querySelector('.select-display');
+            const hiddenInput = document.getElementById(hiddenInputId);
+            const popover = container.querySelector('.popover-menu');
+            const searchInput = container.querySelector('.popover-search');
+            const listContainer = container.querySelector('.options-list');
+            
+            if (!displayInput || !hiddenInput || !popover || !searchInput || !listContainer) return;
+            
+            // Clean older event listeners by cloning displayInput
+            const newDisplayInput = displayInput.cloneNode(true);
+            displayInput.parentNode.replaceChild(newDisplayInput, displayInput);
+            
+            const newSearchInput = searchInput.cloneNode(true);
+            searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+            
+            // Toggle popover on click
+            newDisplayInput.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Close all other popovers first
+                document.querySelectorAll('.popover-menu').forEach(menu => {
+                    if (menu !== popover) menu.classList.add('hidden');
+                });
+                popover.classList.toggle('hidden');
+                if (!popover.classList.contains('hidden')) {
+                    newSearchInput.value = '';
+                    newSearchInput.focus();
+                    renderOptions('');
+                }
+            });
+            
+            // Filter on type
+            newSearchInput.addEventListener('input', (e) => {
+                renderOptions(e.target.value);
+            });
+            
+            // Close popover when clicking outside
+            const closeHandler = () => {
+                popover.classList.add('hidden');
+            };
+            document.removeEventListener('click', closeHandler);
+            document.addEventListener('click', closeHandler);
+            
+            popover.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            function renderOptions(query) {
+                const q = query.toLowerCase().trim();
+                const codeLabel = currentLang === 'en' ? 'Code' : 'ಕೋಡ್';
+                
+                let filtered = items;
+                if (q) {
+                    filtered = items.filter(item => {
+                        const nameKan = (item.Grocery_Items_Kan || '').toLowerCase();
+                        const nameEng = (item.Grocery_Items_Eng || '').toLowerCase();
+                        const code = String(item[keyField] || '');
+                        return nameKan.includes(q) || nameEng.includes(q) || code.includes(q);
+                    });
+                }
+                
+                // Limit rendering to the first 40 matching items to avoid DOM lag
+                const rendered = filtered.slice(0, 40);
+                
+                if (rendered.length === 0) {
+                    listContainer.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center kannada-text">ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ.</div>`;
+                    return;
+                }
+                
+                listContainer.innerHTML = rendered.map(item => {
+                    let displayName = item[valField];
+                    if (valField === 'Grocery_Items_Kan') {
+                        displayName = getItemName(item);
+                    }
+                    return `
+                        <div class="px-3 py-2 text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 rounded-lg cursor-pointer flex justify-between items-center transition" data-value="${item[keyField]}">
+                            <span>${displayName}</span>
+                            <span class="text-[10px] text-slate-400 font-mono">${codeLabel}: ${item[keyField]}</span>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Add click listeners to choices
+                listContainer.querySelectorAll('[data-value]').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const val = el.getAttribute('data-value');
+                        const text = el.querySelector('span').innerText;
+                        
+                        hiddenInput.value = val;
+                        newDisplayInput.value = text;
+                        popover.classList.add('hidden');
+                        
+                        // Dispatch custom change event
+                        hiddenInput.dispatchEvent(new Event('change'));
+                    });
+                });
+            }
+        }
+
         // Live table filtering helper
         function filterTable(inputId, tableId, colIndex) {
             const q = document.getElementById(inputId).value.toLowerCase();
@@ -1853,6 +1980,9 @@
                 } else {
                     alert('ದಾಸ್ತಾನು ಆಮದು ದಾಖಲಿಸಲಾಗಿದೆ (Stock inward saved successfully!)');
                     document.getElementById('inputRecQty').value = '';
+                    const disp = document.querySelector('#comboRecItem .select-display');
+                    if (disp) disp.value = '';
+                    document.getElementById('selectRecItem').value = '';
                     loadGodownDashboardData();
                 }
             });
@@ -1903,6 +2033,9 @@
                     alert('ಇಂಡೆಂಟ್ ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಕೆಯಾಗಿದೆ (Indent request submitted successfully!)');
                     document.getElementById('inputIndentQty').value = '';
                     document.getElementById('inputIndentRemarks').value = '';
+                    const disp = document.querySelector('#comboIndentItem .select-display');
+                    if (disp) disp.value = '';
+                    document.getElementById('selectIndentItem').value = '';
                     loadHostelDashboardData();
                 }
             });
@@ -1951,6 +2084,9 @@
                 } else {
                     alert('ಬಳಕೆ ದಾಖಲಿಸಲಾಗಿದೆ (Usage logged successfully!)');
                     document.getElementById('inputUsageQty').value = '';
+                    const disp = document.querySelector('#comboUsageItem .select-display');
+                    if (disp) disp.value = '';
+                    document.getElementById('selectUsageItem').value = '';
                     loadHostelDashboardData();
                 }
             });
