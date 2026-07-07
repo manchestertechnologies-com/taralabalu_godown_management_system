@@ -230,12 +230,6 @@
 
                     <!-- Hostel Specific Dashboard Section -->
                     <div id="gridDashboardHostelSection" class="space-y-6 hidden">
-                        <div class="flex justify-between items-center bg-white p-4 rounded-xl border">
-                            <h3 class="text-xs font-bold text-slate-500" data-kn="ದಾಸ್ತಾನು ವಿವರ ಮತ್ತು ದೈನಂದಿನ ಬಳಕೆ ನೋಂದಣಿ" data-en="Store Stock Balance & Daily Usage Registry">ದಾಸ್ತಾನು ವಿವರ ಮತ್ತು ದೈನಂದಿನ ಬಳಕೆ ನೋಂದಣಿ</h3>
-                            <button onclick="openLogConsumptionModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition">
-                                <span data-kn="➕ ದೈನಂದಿನ ಬಳಕೆ ದಾಖಲಿಸು" data-en="➕ Log Usage / Consumption">➕ ದೈನಂದಿನ ಬಳಕೆ ದಾಖಲಿಸು</span>
-                            </button>
-                        </div>
 
                         <div class="flex gap-2 no-print">
                             <button onclick="switchStoreTab('stock')" id="btnStoreTabStock" class="px-4 py-2 rounded-lg text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm" data-kn="ದಾಸ್ತಾನು ಶಿಲ್ಕು" data-en="Stock Balance">ದಾಸ್ತಾನು ಶಿಲ್ಕು</button>
@@ -1540,7 +1534,7 @@
                                 <h2 class="text-lg font-black text-slate-800 mb-1" id="lblHostelWelcome">ನಮಸ್ಕಾರ, ${loggedInUser.name}</h2>
                                 <p class="text-xs text-slate-500 font-medium" data-kn="ಇಂಡೆಂಟ್‌ಗಳನ್ನು ರಚಿಸಲು ಮತ್ತು ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಎಡಭಾಗದ ಮೆನುವನ್ನು ಬಳಸಿ." data-en="Use the sidebar navigation to create indents or view notifications.">ಇಂಡೆಂಟ್‌ಗಳನ್ನು ರಚಿಸಲು ಮತ್ತು ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಎಡಭಾಗದ ಮೆನುವನ್ನು ಬಳಸಿ.</p>
                             </div>
-                            <div class="flex gap-3">
+                            <div class="flex flex-wrap gap-3">
                                 <button onclick="showPage('indents')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-sm transition flex items-center gap-2">
                                     <span>📋</span>
                                     <span data-kn="ಇಂಡೆಂಟ್ ರಚಿಸಿ" data-en="Create Indent">ಇಂಡೆಂಟ್ ರಚಿಸಿ</span>
@@ -1548,6 +1542,10 @@
                                 <button onclick="showPage('notifications')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-5 py-3 rounded-xl transition flex items-center gap-2">
                                     <span>🔔</span>
                                     <span data-kn="ಅಧಿಸೂಚನೆಗಳು" data-en="View Notifications">ಅಧಿಸೂಚನೆಗಳು</span>
+                                </button>
+                                <button onclick="openLogConsumptionModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-sm transition flex items-center gap-2">
+                                    <span>➕</span>
+                                    <span data-kn="ದೈನಂದಿನ ಬಳಕೆ ದಾಖಲಿಸು" data-en="Log Usage / Consumption">ದೈನಂದಿನ ಬಳಕೆ ದಾಖಲಿಸು</span>
                                 </button>
                             </div>
                         </div>
