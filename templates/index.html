@@ -168,7 +168,7 @@
         <!-- Header Top Navbar -->
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 print:hidden z-10 no-print">
             <div>
-                <h1 id="lblPageHeaderTitle" class="text-md sm:text-lg font-black text-slate-800 kannada-text leading-tight" data-kn="ಮುಖ್ಯ ಮಾಹಿತಿ" data-en="Dashboard">ಮುಖ್ಯ ಮಾಹಿತಿ</h1>
+                <h1 id="lblPageHeaderTitle" class="text-md sm:text-lg font-black text-slate-800 kannada-text leading-tight">ಮುಖ್ಯ ಮಾಹಿತಿ</h1>
             </div>
             
             <div class="flex items-center gap-3">
@@ -3249,51 +3249,51 @@
         // Document Initialization
         window.addEventListener('DOMContentLoaded', () => {
             Promise.all([
-                fetch('/api/institutions').then(res => res.json()),
-                fetch('/api/donors').then(res => res.json()),
-                fetch('/api/grocery-items').then(res => res.json())
+                fetch('/api/institutions').then(res => res.ok ? res.json() : []).catch(() => []),
+                fetch('/api/donors').then(res => res.ok ? res.json() : []).catch(() => []),
+                fetch('/api/grocery-items').then(res => res.ok ? res.json() : []).catch(() => [])
             ]).then(([insts, donors, items]) => {
-                cachedInstitutions = insts;
-                cachedDonors = donors;
-                cachedItems = items;
+                cachedInstitutions = insts || [];
+                cachedDonors = donors || [];
+                cachedItems = items || [];
 
                 // Populate drop-downs
                 const storeSelect = document.getElementById('selectStoreHostel');
                 if (storeSelect) {
-                    storeSelect.innerHTML = insts.map(i => `<option value="${i.Inst_ID}">${i.Institution}</option>`).join('');
+                    storeSelect.innerHTML = cachedInstitutions.map(i => `<option value="${i.Inst_ID}">${i.Institution}</option>`).join('');
                 }
                 const vegHostelSelect = document.getElementById('selectVegHostel');
                 if (vegHostelSelect) {
-                    vegHostelSelect.innerHTML = insts.map(i => `<option value="${i.Inst_ID}">${i.Institution}</option>`).join('');
+                    vegHostelSelect.innerHTML = cachedInstitutions.map(i => `<option value="${i.Inst_ID}">${i.Institution}</option>`).join('');
                 }
                 const reportInstSelect = document.getElementById('selectReportInstitution');
                 if (reportInstSelect) {
-                    reportInstSelect.innerHTML = `<option value="">All Hostels</option>` + insts.map(i => `<option value="${i.Inst_ID}">${i.Institution}</option>`).join('');
+                    reportInstSelect.innerHTML = `<option value="">All Hostels</option>` + cachedInstitutions.map(i => `<option value="${i.Inst_ID}">${i.Institution}</option>`).join('');
                 }
                 const userHostelSelect = document.getElementById('selectUserHostel');
                 if (userHostelSelect) {
-                    userHostelSelect.innerHTML = insts.map(i => `<option value="${i.Inst_ID}">${i.Institution}</option>`).join('');
+                    userHostelSelect.innerHTML = cachedInstitutions.map(i => `<option value="${i.Inst_ID}">${i.Institution}</option>`).join('');
                 }
                 const editUserHostelSelect = document.getElementById('editUserHostel');
                 if (editUserHostelSelect) {
-                    editUserHostelSelect.innerHTML = `<option value="">None (Admin/Godown)</option>` + insts.map(i => `<option value="${i.Inst_ID}">${i.Institution}</option>`).join('');
+                    editUserHostelSelect.innerHTML = `<option value="">None (Admin/Godown)</option>` + cachedInstitutions.map(i => `<option value="${i.Inst_ID}">${i.Institution}</option>`).join('');
                 }
 
                 const recDonorSelect = document.getElementById('selectRecDonor');
                 if (recDonorSelect) {
-                    recDonorSelect.innerHTML = donors.map(d => `<option value="${d.Shop_Donor_ID}">${d.Shop_Donor_Name}</option>`).join('');
+                    recDonorSelect.innerHTML = cachedDonors.map(d => `<option value="${d.Shop_Donor_ID}">${d.Shop_Donor_Name}</option>`).join('');
                 }
                 const billDonorSelect = document.getElementById('selectBillDonor');
                 if (billDonorSelect) {
-                    billDonorSelect.innerHTML = donors.map(d => `<option value="${d.Shop_Donor_ID}">${d.Shop_Donor_Name}</option>`).join('');
+                    billDonorSelect.innerHTML = cachedDonors.map(d => `<option value="${d.Shop_Donor_ID}">${d.Shop_Donor_Name}</option>`).join('');
                 }
                 const reportDonorSelect = document.getElementById('selectReportDonor');
                 if (reportDonorSelect) {
-                    reportDonorSelect.innerHTML = `<option value="">All Donors</option>` + donors.map(d => `<option value="${d.Shop_Donor_ID}">${d.Shop_Donor_Name}</option>`).join('');
+                    reportDonorSelect.innerHTML = `<option value="">All Donors</option>` + cachedDonors.map(d => `<option value="${d.Shop_Donor_ID}">${d.Shop_Donor_Name}</option>`).join('');
                 }
                 const reportItemSelect = document.getElementById('selectReportItem');
                 if (reportItemSelect) {
-                    reportItemSelect.innerHTML = `<option value="">All Items</option>` + items.map(item => `<option value="${item.Grocery_Code}">${getItemName(item)}</option>`).join('');
+                    reportItemSelect.innerHTML = `<option value="">All Items</option>` + cachedItems.map(item => `<option value="${item.Grocery_Code}">${getItemName(item)}</option>`).join('');
                 }
 
                 // If user is hostel, lock their selector
@@ -3310,6 +3310,10 @@
 
                 initComboboxes();
                 setLanguage(currentLang);
+            }).catch(err => {
+                console.error("Initialization failed:", err);
+                applyRolePermissions();
+                showPage('dashboard');
             });
         });
     </script>
