@@ -792,10 +792,13 @@
                     <!-- Print and Export Buttons -->
                     <div class="flex justify-end gap-2 no-print">
                         <button onclick="printReport()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 transition">
-                            <span>🖨️</span> <span data-kn="ಪ್ರಿಂಟ್ ತೆಗೆಯಿರಿ" data-en="Print View">ಪ್ರಿಂಟ್ ತೆಗೆಯಿರಿ</span>
+                            <span>🖨️</span> <span data-kn="PDF ಪ್ರಿಂಟ್" data-en="Print PDF">PDF ಪ್ರಿಂಟ್</span>
                         </button>
                         <button onclick="exportReportCSV()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 transition">
-                            <span>📄</span> <span data-kn="Excel / CSV ಡೌನ್ಲೋಡ್" data-en="Export to Excel/CSV">Excel / CSV ಡೌನ್ಲೋಡ್</span>
+                            <span>📄</span> <span data-kn="Excel / CSV" data-en="Excel / CSV">Excel / CSV</span>
+                        </button>
+                        <button onclick="exportReportWord()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 transition">
+                            <span>📝</span> <span data-kn="Word ಡಾಕ್ಯುಮೆಂಟ್" data-en="Word Document">Word ಡಾಕ್ಯುಮೆಂಟ್</span>
                         </button>
                     </div>
 
@@ -856,7 +859,7 @@
                                         <option value="hostel" data-kn="ವಸತಿ ನಿಲಯ ಮೇಲ್ವಿಚಾರಕ (Store Manager)" data-en="Store Manager (Hostel)">Store Manager (Hostel)</option>
                                         <option value="godown" data-kn="ಗೋದಾಮು ಕ್ಲರ್ಕ್ (Godown Manager)" data-en="Godown Manager">Godown Manager</option>
                                         <option value="accounts" data-kn="ಲೆಕ್ಕಪತ್ರ ವಿಭಾಗ (Accounts)" data-en="Accounts">Accounts</option>
-                                        <option value="head" data-kn="ಮುಖ್ಯಸ್ಥರು (Head Office)" data-en="Head Office Admin">Head Office Admin</option>
+                                        <option value="head" data-kn="ಮುಖ್ಯಸ್ಥರು (Admin)" data-en="Admin">Admin</option>
                                     </select>
                                 </div>
                                 <div id="wrapperUserStoreSelection">
@@ -1199,7 +1202,7 @@
                         <option value="hostel">Store Manager (Hostel)</option>
                         <option value="godown">Godown Manager</option>
                         <option value="accounts">Accounts</option>
-                        <option value="head">Head Office Admin</option>
+                        <option value="head">Admin</option>
                     </select>
                 </div>
                 <div>
@@ -2404,6 +2407,36 @@
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
             link.setAttribute("download", `Godown_Report_${activeReportTab}_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportReportWord() {
+            const table = document.getElementById('tblReportOutput');
+            if (!table || table.rows.length <= 1) {
+                showToast('ವರದಿಯಲ್ಲಿ ಯಾವುದೇ ಡೇಟಾ ಇಲ್ಲ!', 'warning');
+                return;
+            }
+            // Generate Word document by creating a Blob from HTML table contents
+            const html = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+                <head><title>Inventory Report</title><style>table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid black; padding: 5px; font-family: Arial; font-size: 10pt; }</style></head>
+                <body>
+                    <h2 style="text-align:center;">Sri Taralabalu Jagadguru Vidyasamaste, Sirigere</h2>
+                    <h3 style="text-align:center;">Godown & Store Inventory Audit Report - ${activeReportTab.toUpperCase()}</h3>
+                    <br/>
+                    ${table.outerHTML}
+                </body>
+                </html>
+            `;
+            const blob = new Blob(['﻿' + html], {
+                type: 'application/msword'
+            });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `Report_${activeReportTab}_${new Date().toISOString().split('T')[0]}.doc`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

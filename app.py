@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = 'taralabalu_secret_key_87924'
 
 USERS = {
-    "head": {"password": "123", "role": "head", "inst_id": None, "name": "Head Office / ಸಂಸ್ಥೆಯ ಮುಖ್ಯಸ್ಥರು"},
+    "head": {"password": "123", "role": "head", "inst_id": None, "name": "Admin / ಸಂಸ್ಥೆಯ ಆಡಳಿತಗಾರರು"},
     "godown": {"password": "123", "role": "godown", "inst_id": None, "name": "Central Godown Clerk / ಗೋದಾಮು ಗುಮಾಸ್ತ"},
     "accounts": {"password": "123", "role": "accounts", "inst_id": None, "name": "Accounts / ಲೆಕ್ಕಾಧಿಕಾರಿ"},
     "boyshostel": {"password": "123", "role": "hostel", "inst_id": 1, "name": "Stores - Boys Hostel"},
