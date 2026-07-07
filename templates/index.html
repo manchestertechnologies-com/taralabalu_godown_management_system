@@ -3003,9 +3003,29 @@
                 if (page === 'purchases' && currentRole !== 'head' && currentRole !== 'godown') allowed = false; // Hostel cannot access Inward
                 if (page === 'master-inventory' && currentRole !== 'head' && currentRole !== 'godown') allowed = false; // Hostel cannot access central stock
                 
-                if (allowed) link.classList.remove('hidden');
-                else link.classList.add('hidden');
+                if (allowed) {
+                    link.classList.remove('hidden');
+                    link.style.display = 'flex';
+                } else {
+                    link.classList.add('hidden');
+                    link.style.display = 'none';
+                }
             });
+
+            // Rename Stores link to "Our Stock" for hostel users
+            const linkStores = document.querySelector('#sidebarNavLinks [data-page="stores"]');
+            if (linkStores) {
+                const labelSpan = linkStores.querySelector('[data-kn]');
+                if (labelSpan) {
+                    if (currentRole === 'hostel') {
+                        labelSpan.setAttribute('data-kn', 'ನಮ್ಮ ದಾಸ್ತಾನು');
+                        labelSpan.setAttribute('data-en', 'Our Stock');
+                    } else {
+                        labelSpan.setAttribute('data-kn', 'ವಸತಿ ನಿಲಯದ ದಾಸ್ತಾನು');
+                        labelSpan.setAttribute('data-en', 'Stores / Hostels');
+                    }
+                }
+            }
 
             // Restrict Inward inputs to Clerk (godown) only
             if (currentRole === 'godown') {
@@ -3030,6 +3050,11 @@
                 } else {
                     btnPending.classList.add('hidden');
                 }
+            }
+
+            // Refresh multilingual UI strings
+            if (typeof updateUIStrings === 'function') {
+                updateUIStrings();
             }
         }
 
