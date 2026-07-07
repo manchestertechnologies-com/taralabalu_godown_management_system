@@ -36,8 +36,8 @@
         <div class="flex items-center gap-3 p-5 border-b border-emerald-800">
             <img src="/static/images/logo.jpg" alt="Taralabalu Logo" class="w-10 h-10 rounded-full border-2 border-emerald-400 object-cover shadow-md">
             <div>
-                <h2 class="text-sm font-black tracking-wide text-white kannada-text leading-tight">ತರಳಬಾಳು ಗೋದಾಮು</h2>
-                <span class="text-[10px] text-emerald-300 font-bold block">Godown Management</span>
+                <h2 class="text-sm font-black tracking-wide text-white kannada-text leading-tight" data-kn="ತರಳಬಾಳು ವಿದ್ಯಾ ಸಂಸ್ಥೆ" data-en="Taralabalu Vidya Samaste">ತರಳಬಾಳು ವಿದ್ಯಾ ಸಂಸ್ಥೆ</h2>
+                <span class="text-[10px] text-emerald-300 font-bold block" data-kn="ದಾಸ್ತಾನು ನಿರ್ವಹಣೆ" data-en="Inventory Management">Inventory Management</span>
             </div>
         </div>
 
@@ -48,7 +48,7 @@
             </div>
             <div class="min-w-0">
                 <p class="text-xs font-black text-white truncate" id="lblUserDisplayName">{{ session.get('name', '') }}</p>
-                <span class="text-[10px] text-emerald-300 font-bold block capitalize" id="lblUserDisplayRole">{{ session.get('role', '') }}</span>
+                <span class="text-[10px] text-emerald-300 font-bold block capitalize" id="lblUserDisplayRole" data-kn="{{ session.get('role', '') }}" data-en="{{ session.get('role', '') }}">{{ session.get('role', '') }}</span>
             </div>
         </div>
 
@@ -57,67 +57,67 @@
             <!-- 1. DASHBOARD -->
             <a href="#" onclick="showPage('dashboard')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white" data-page="dashboard">
                 <span>📊</span>
-                <span class="kannada-text">ಮುಖ್ಯ ಮಾಹಿತಿ (Dashboard)</span>
+                <span data-kn="ಮುಖ್ಯ ಮಾಹಿತಿ" data-en="Dashboard">ಮುಖ್ಯ ಮಾಹಿತಿ</span>
             </a>
 
             <!-- 2. STOCK INWARD (Clerk only) -->
             <a href="#" onclick="showPage('stock-inward')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white hidden role-clerk" data-page="stock-inward">
                 <span>📥</span>
-                <span class="kannada-text">ದಾಸ್ತಾನು ಸ್ವೀಕೃತಿ (Stock Inward)</span>
+                <span data-kn="ದಾಸ್ತಾನು ಸ್ವೀಕೃತಿ" data-en="Stock Inward">ದಾಸ್ತಾನು ಸ್ವೀಕೃತಿ</span>
             </a>
 
             <!-- 3. VEGETABLES LOG (Head and Godown Clerk) -->
             <a href="#" onclick="showPage('vegetables')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white hidden role-admin-clerk" data-page="vegetables">
                 <span>🥦</span>
-                <span class="kannada-text">ತರಕಾರಿ ವಿವರ (Vegetables Log)</span>
+                <span data-kn="ತರಕಾರಿ ವಿವರ" data-en="Vegetables Log">ತರಕಾರಿ ವಿವರ</span>
             </a>
 
             <!-- 4. BILLS & PAYMENTS (Head only) -->
             <a href="#" onclick="showPage('bills')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white hidden role-admin" data-page="bills">
                 <span>🧾</span>
-                <span class="kannada-text">ಬಿಲ್ಲುಗಳು & ಪಾವತಿ (Bills & Payments)</span>
+                <span data-kn="ಬಿಲ್ಲುಗಳು & ಪಾವತಿ" data-en="Bills & Payments">ಬಿಲ್ಲುಗಳು & ಪಾವತಿ</span>
             </a>
 
             <!-- 5. INDENTS & APPROVALS (Head only) -->
             <a href="#" onclick="showPage('indents-approvals')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white hidden role-admin" data-page="indents-approvals">
                 <span>📋</span>
-                <span class="kannada-text">ಇಂಡೆಂಟ್ ಮತ್ತು ವಿತರಣೆ (Indents Approval)</span>
+                <span data-kn="ಇಂಡೆಂಟ್ ಮತ್ತು ವಿತರಣೆ" data-en="Indents & Approvals">ಇಂಡೆಂಟ್ ಮತ್ತು ವಿತರಣೆ</span>
             </a>
 
             <!-- 6. HOSTEL INDENTS (Hostel only) -->
             <a href="#" onclick="showPage('hostel-indents')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white hidden role-hostel" data-page="hostel-indents">
                 <span>📝</span>
-                <span class="kannada-text">ಇಂಡೆಂಟ್ ವಿನಂತಿ (Raise Indents)</span>
+                <span data-kn="ಇಂಡೆಂಟ್ ವಿನಂತಿ" data-en="Raise Indents">ಇಂಡೆಂಟ್ ವಿನಂತಿ</span>
             </a>
 
             <!-- 7. HOSTEL USAGE (Hostel only) -->
             <a href="#" onclick="showPage('hostel-usage')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white hidden role-hostel" data-page="hostel-usage">
                 <span>🍳</span>
-                <span class="kannada-text">ಅಡುಗೆ ಬಳಕೆ ದಾಖಲು (Daily Usage)</span>
+                <span data-kn="ಅಡುಗೆ ಬಳಕೆ ದಾಖಲು" data-en="Daily Usage">ಅಡುಗೆ ಬಳಕೆ ದಾಖಲು</span>
             </a>
 
             <!-- 8. DELIVERY ACKNOWLEDGMENT (Hostel only) -->
             <a href="#" onclick="showPage('hostel-receipts')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white hidden role-hostel" data-page="hostel-receipts">
                 <span>📜</span>
-                <span class="kannada-text">ಸ್ವೀಕೃತಿ ಮತ್ತು ರಸೀದಿ (Receipts)</span>
+                <span data-kn="ಸ್ವೀಕೃತಿ ಮತ್ತು ರಸೀದಿ" data-en="Receipts">ಸ್ವೀಕೃತಿ ಮತ್ತು ರಸೀದಿ</span>
             </a>
 
             <!-- 9. MASTER INVENTORY (Head and Godown Clerk) -->
             <a href="#" onclick="showPage('master-inventory')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white hidden role-admin-clerk-view" data-page="master-inventory">
                 <span>📦</span>
-                <span class="kannada-text">ಗೋದಾಮಿನ ದಾಸ್ತಾನು (Central Stock)</span>
+                <span data-kn="ಗೋದಾಮಿನ ದಾಸ್ತಾನು" data-en="Central Stock">ಗೋದಾಮಿನ ದಾಸ್ತಾನು</span>
             </a>
 
             <!-- 10. ADMIN CONTROLS (Head only) -->
             <div class="hidden role-admin pt-4 border-t border-emerald-800 mt-4 space-y-1">
-                <p class="px-4 text-[9px] uppercase tracking-wider text-emerald-400 font-bold mb-1">ಆಡಳಿತ ನಿಯಂತ್ರಣ (Admin)</p>
+                <p class="px-4 text-[9px] uppercase tracking-wider text-emerald-400 font-bold mb-1" data-kn="ಆಡಳಿತ ನಿಯಂತ್ರಣ" data-en="Admin Controls">ಆಡಳಿತ ನಿಯಂತ್ರಣ</p>
                 <a href="#" onclick="showPage('admin-users')" class="nav-link flex items-center gap-3 px-4 py-2 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white" data-page="admin-users">
                     <span>👤</span>
-                    <span class="kannada-text">ಲಾಗಿನ್ ಖಾತೆಗಳು (Manage Users)</span>
+                    <span data-kn="ಲಾಗಿನ್ ಖಾತೆಗಳು" data-en="Manage Users">ಲಾಗಿನ್ ಖಾತೆಗಳು</span>
                 </a>
                 <a href="#" onclick="showPage('admin-masters')" class="nav-link flex items-center gap-3 px-4 py-2 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white" data-page="admin-masters">
                     <span>⚙️</span>
-                    <span class="kannada-text">ಮಾಸ್ಟರ್ ನೋಂದಣಿ (System Masters)</span>
+                    <span data-kn="ಮಾಸ್ಟರ್ ನೋಂದಣಿ" data-en="System Masters">ಮಾಸ್ಟರ್ ನೋಂದಣಿ</span>
                 </a>
             </div>
         </nav>
@@ -135,7 +135,7 @@
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                <span class="kannada-text">ನಿರ್ಗಮಿಸು (Log Out)</span>
+                <span data-kn="ನಿರ್ಗಮಿಸು" data-en="Log Out">ನಿರ್ಗಮಿಸು</span>
             </a>
         </div>
     </aside>
@@ -146,30 +146,30 @@
         <!-- Header Top Navbar -->
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 print:hidden z-10">
             <div>
-                <h1 id="lblPageHeaderTitle" class="text-md sm:text-lg font-black text-slate-800 kannada-text leading-tight">ಮುಖ್ಯ ಮಾಹಿತಿ (Dashboard)</h1>
+                <h1 id="lblPageHeaderTitle" class="text-md sm:text-lg font-black text-slate-800 kannada-text leading-tight" data-kn="ಮುಖ್ಯ ಮಾಹಿತಿ" data-en="Dashboard">ಮುಖ್ಯ ಮಾಹಿತಿ</h1>
             </div>
             
             <div class="flex items-center gap-3">
                 <!-- Head office mode switcher -->
                 <div id="headModeSwitcher" class="hidden flex bg-slate-100 p-1 rounded-xl border border-slate-200">
-                    <button id="btnModeAdmin" onclick="setHeadMode('admin')" class="px-3 py-1 rounded-lg text-[10px] font-bold transition-all bg-emerald-600 text-white shadow-sm">
+                    <button id="btnModeAdmin" onclick="setHeadMode('admin')" class="px-3 py-1 rounded-lg text-[10px] font-bold transition-all bg-emerald-600 text-white shadow-sm" data-kn="🏢 ಕೇಂದ್ರ ಕಚೇರಿ" data-en="🏢 Head Office">
                         🏢 Head Office
                     </button>
-                    <button id="btnModeAuditor" onclick="setHeadMode('hostel')" class="px-3 py-1 rounded-lg text-[10px] font-bold transition-all text-emerald-800 hover:bg-emerald-200/50">
+                    <button id="btnModeAuditor" onclick="setHeadMode('hostel')" class="px-3 py-1 rounded-lg text-[10px] font-bold transition-all text-emerald-800 hover:bg-emerald-200/50" data-kn="🔍 ಶಾಖೆಗಳು" data-en="🔍 Audit Hostels">
                         🔍 Audit Hostels
                     </button>
                 </div>
 
                 <!-- Active Store select for auditor mode -->
                 <div id="wrapperAuditorStore" class="hidden flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border">
-                    <span class="text-[10px] font-bold text-slate-500 kannada-text">ಶಾಖೆ ಆಯ್ಕೆ:</span>
+                    <span class="text-[10px] font-bold text-slate-500" data-kn="ಶಾಖೆ:" data-en="Branch:">ಶಾಖೆ:</span>
                     <select id="selectActiveHostel" onchange="loadHostelDashboardData()" class="bg-transparent text-[11px] font-extrabold text-slate-800 focus:outline-none cursor-pointer">
                         <!-- Loaded dynamically -->
                     </select>
                 </div>
                 
                 <div class="text-[10px] text-slate-500 font-bold bg-slate-100 px-3 py-1.5 rounded-xl">
-                    Role: <span class="text-emerald-700 font-extrabold capitalize" id="lblHeaderRoleDisplay">{{ session.get('role', '') }}</span>
+                    <span data-kn="ಪಾತ್ರ:" data-en="Role:">ಪಾತ್ರ:</span> <span class="text-emerald-700 font-extrabold capitalize" id="lblHeaderRoleDisplay">{{ session.get('role', '') }}</span>
                 </div>
             </div>
         </header>
@@ -182,9 +182,9 @@
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                     </span>
-                    <p class="text-xs font-semibold kannada-text" id="globalAlertText">ಗಮನಿಸಿ: ಕೆಲವು ಶಾಖೆಗಳಲ್ಲಿ ದಾಸ್ತಾನು ಕೊರತೆಯಿದೆ!</p>
+                    <p class="text-xs font-semibold kannada-text" id="globalAlertText" data-kn="ಗಮನಿಸಿ: ಕೆಲವು ಶಾಖೆಗಳಲ್ಲಿ ದಾಸ್ತಾನು ಕೊರತೆಯಿದೆ!" data-en="Attention: Some hostels are low in stock!">ಗಮನಿಸಿ: ಕೆಲವು ಶಾಖೆಗಳಲ್ಲಿ ದಾಸ್ತಾನು ಕೊರತೆಯಿದೆ!</p>
                 </div>
-                <button onclick="showPage('dashboard')" class="text-[10px] bg-red-600 text-white font-bold px-2.5 py-1 rounded hover:bg-red-700 transition kannada-text">ವಿವರ ನೋಡಿ</button>
+                <button onclick="showPage('dashboard')" class="text-[10px] bg-red-600 text-white font-bold px-2.5 py-1 rounded hover:bg-red-700 transition kannada-text" data-kn="ವಿವರ ನೋಡಿ" data-en="View Details">ವಿವರ ನೋಡಿ</button>
             </div>
         </div>
 
@@ -211,10 +211,10 @@
                     <div class="glass-card rounded-2xl p-6 border-red-100 bg-gradient-to-b from-white to-red-50/20 lg:col-span-1">
                         <h3 class="text-sm font-black text-red-800 flex items-center gap-2 mb-4 border-b pb-2">
                             <span class="p-1.5 bg-red-100 rounded text-red-800">⚠️</span>
-                            <span class="kannada-text">ದಾಸ್ತಾನು ಕೊರತೆ ಎಚ್ಚರಿಕೆ (Low Stock Alerts)</span>
+                            <span data-kn="ದಾಸ್ತಾನು ಕೊರತೆ ಎಚ್ಚರಿಕೆ" data-en="Low Stock Alerts">ದಾಸ್ತಾನು ಕೊರತೆ ಎಚ್ಚರಿಕೆ</span>
                         </h3>
                         <div id="godownAlertsList" class="space-y-3 max-h-[300px] overflow-y-auto pr-1">
-                            <p class="text-sm text-slate-500 text-center py-6 kannada-text">ಯಾವುದೇ ಕೊರತೆ ಇಲ್ಲ.</p>
+                            <p class="text-sm text-slate-500 text-center py-6" data-kn="ಯಾವುದೇ ಕೊರತೆ ಇಲ್ಲ." data-en="No low stock alerts.">ಯಾವುದೇ ಕೊರತೆ ಇಲ್ಲ.</p>
                         </div>
                     </div>
 
@@ -222,22 +222,22 @@
                     <div class="glass-card rounded-2xl p-6 lg:col-span-2">
                         <h3 class="text-sm font-black text-slate-800 flex items-center gap-2 mb-4 border-b pb-2">
                             <span>🕒</span>
-                            <span class="kannada-text">ಇತ್ತೀಚಿನ ವಿತರಣೆಗಳು (Recent Transfers Log)</span>
+                            <span data-kn="ಇತ್ತೀಚಿನ ವಿತರಣೆಗಳು" data-en="Recent Transfers">ಇತ್ತೀಚಿನ ವಿತರಣೆಗಳು</span>
                         </h3>
                         <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
                             <table class="min-w-full divide-y divide-slate-200 text-xs">
                                 <thead>
                                     <tr class="bg-slate-100/50">
-                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600 kannada-text">ಇಂಡೆಂಟ್ ಸಂಖ್ಯೆ</th>
-                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600 kannada-text">ಶಾಖೆ/ವಸತಿ ನಿಲಯ</th>
-                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600 kannada-text">ವಸ್ತು</th>
-                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600 kannada-text">ಪ್ರಮಾಣ</th>
-                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600 kannada-text">ದಿನಾಂಕ</th>
+                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600" data-kn="ಇಂಡೆಂಟ್ ಸಂಖ್ಯೆ" data-en="Indent No">ಇಂಡೆಂಟ್ ಸಂಖ್ಯೆ</th>
+                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600" data-kn="ಶಾಖೆ/ವಸತಿ ನಿಲಯ" data-en="Hostel/Branch">ಶಾಖೆ/ವಸತಿ ನಿಲಯ</th>
+                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600" data-kn="ಆಹಾರ ಪದಾರ್ಥ" data-en="Item Name">ಆಹಾರ ಪದಾರ್ಥ</th>
+                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600" data-kn="ಪ್ರಮಾಣ" data-en="Quantity">ಪ್ರಮಾಣ</th>
+                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600" data-kn="ದಿನಾಂಕ" data-en="Date">ದಿನಾಂಕ</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tblRecentTransfers" class="divide-y divide-slate-100 font-medium">
                                     <!-- Filled dynamically by JS -->
-                                    <tr><td colspan="5" class="text-center py-6 text-slate-400 kannada-text">ಯಾವುದೇ ವರ್ಗಾವಣೆ ದಾಖಲೆಗಳಿಲ್ಲ.</td></tr>
+                                    <tr><td colspan="5" class="text-center py-6 text-slate-400" data-kn="ಯಾವುದೇ ವರ್ಗಾವಣೆ ದಾಖಲೆಗಳಿಲ್ಲ." data-en="No recent transfers logs.">ಯಾವುದೇ ವರ್ಗಾವಣೆ ದಾಖಲೆಗಳಿಲ್ಲ.</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -247,87 +247,89 @@
 
 
             <!-- ==================== PAGE: STOCK INWARD ==================== -->
+            <!-- ==================== PAGE: STOCK INWARD ==================== -->
             <div id="page-stock-inward" class="app-page hidden space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Form: Stock Inward -->
                     <div id="cardStockInward" class="glass-card rounded-2xl p-6 lg:col-span-1">
-                        <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
-                            <span class="text-lg">📥</span>
-                            <span class="kannada-text">ದಾನಿಗಳು/ಅಂಗಡಿಯಿಂದ ಸ್ವೀಕೃತಿ (Stock Inward)</span>
-                        </h3>
-                        <form id="formReceiveStock" onsubmit="handleReceiveStock(event)" class="space-y-4 text-xs">
-                            <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
-                                <div class="relative custom-combobox" id="comboRecItem">
-                                    <input type="text" readonly placeholder="ಕ್ಲಿಕ್ ಮಾಡಿ ಹುಡುಕಿ / Search item..." class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer font-bold select-display">
-                                    <input type="hidden" id="selectRecItem" required>
-                                    <div class="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl hidden popover-menu">
-                                        <div class="p-2 border-b">
-                                            <input type="text" placeholder="ಹುಡುಕಿ / Search item..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 popover-search">
-                                        </div>
-                                        <div class="max-h-[200px] overflow-y-auto p-1 space-y-0.5 options-list"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ದಾನಿಗಳು/ಅಂಗಡಿ ಆಯ್ಕೆ ಮಾಡಿ</label>
-                                <select id="selectRecDonor" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
-                                    <!-- Seeded Donors -->
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ಸ್ವೀಕರಿಸಿದ ಪ್ರಮಾಣ</label>
-                                <input type="number" step="0.01" id="inputRecQty" placeholder="ಪ್ರಮಾಣ ದಾಖಲಿಸಿ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-slate-600 font-bold mb-1 kannada-text">ದರ (Std Rate)</label>
-                                    <input type="number" step="0.01" id="inputRecRate" placeholder="ದರ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-slate-600 font-bold mb-1 kannada-text">ಸ್ವರೂಪ</label>
-                                    <select id="selectRecType" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                                        <option value="Donation">ದೇಣಿಗೆ (Donation)</option>
-                                        <option value="Purchase">ಖರೀದಿ (Purchase)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ದಿನಾಂಕ</label>
-                                <input type="date" id="inputRecDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
-                            </div>
-                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow-md transition-all">
-                                ದಾಸ್ತಾನು ಸೇರಿಸಿ (Save Inward)
-                            </button>
-                        </form>
-                    </div>
+                         <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                             <span class="text-lg">📥</span>
+                             <span data-kn="ದಾನಿಗಳು/ಅಂಗಡಿಯಿಂದ ಸ್ವೀಕೃತಿ" data-en="Receive Inward Stock">ದಾನಿಗಳು/ಅಂಗಡಿಯಿಂದ ಸ್ವೀಕೃತಿ</span>
+                         </h3>
+                         <form id="formReceiveStock" onsubmit="handleReceiveStock(event)" class="space-y-4 text-xs">
+                             <div>
+                                 <label class="block text-slate-600 font-bold mb-1" data-kn="ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ" data-en="Select Item">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
+                                 <div class="relative custom-combobox" id="comboRecItem">
+                                     <input type="text" readonly data-placeholder-kn="ಕ್ಲಿಕ್ ಮಾಡಿ ಹುಡುಕಿ / Search item..." data-placeholder-en="Click to search item..." placeholder="ಕ್ಲಿಕ್ ಮಾಡಿ ಹುಡುಕಿ / Search item..." class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer font-bold select-display">
+                                     <input type="hidden" id="selectRecItem" required>
+                                     <div class="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl hidden popover-menu">
+                                         <div class="p-2 border-b">
+                                             <input type="text" data-placeholder-kn="ಹುಡುಕಿ..." data-placeholder-en="Search item..." placeholder="ಹುಡುಕಿ..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 popover-search">
+                                         </div>
+                                         <div class="max-h-[200px] overflow-y-auto p-1 space-y-0.5 options-list"></div>
+                                     </div>
+                                 </div>
+                             </div>
+                             <div>
+                                 <label class="block text-slate-600 font-bold mb-1" data-kn="ದಾನಿಗಳು/ಅಂಗಡಿ ಆಯ್ಕೆ ಮಾಡಿ" data-en="Select Donor/Shop">ದಾನಿಗಳು/ಅಂಗಡಿ ಆಯ್ಕೆ ಮಾಡಿ</label>
+                                 <select id="selectRecDonor" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                     <!-- Seeded Donors -->
+                                 </select>
+                             </div>
+                             <div>
+                                 <label class="block text-slate-600 font-bold mb-1" data-kn="ಸ್ವೀಕರಿಸಿದ ಪ್ರಮಾಣ" data-en="Received Quantity">ಸ್ವೀಕರಿಸಿದ ಪ್ರಮಾಣ</label>
+                                 <input type="number" step="0.01" id="inputRecQty" data-placeholder-kn="ಪ್ರಮಾಣ ದಾಖಲಿಸಿ" data-placeholder-en="Enter quantity" placeholder="ಪ್ರಮಾಣ ದಾಖಲಿಸಿ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                             </div>
+                             <div class="grid grid-cols-2 gap-2">
+                                 <div>
+                                     <label class="block text-slate-600 font-bold mb-1" data-kn="ದರ (Std Rate)" data-en="Standard Rate">ದರ (Std Rate)</label>
+                                     <input type="number" step="0.01" id="inputRecRate" data-placeholder-kn="ದರ" data-placeholder-en="Rate" placeholder="ದರ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                 </div>
+                                 <div>
+                                     <label class="block text-slate-600 font-bold mb-1" data-kn="ಸ್ವರೂಪ" data-en="Inward Type">ಸ್ವರೂಪ</label>
+                                     <select id="selectRecType" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                         <option value="Donation" data-kn="ದೇಣಿಗೆ" data-en="Donation">ದೇಣಿಗೆ</option>
+                                         <option value="Purchase" data-kn="ಖರೀದಿ" data-en="Purchase">ಖರೀದಿ</option>
+                                     </select>
+                                 </div>
+                             </div>
+                             <div>
+                                 <label class="block text-slate-600 font-bold mb-1" data-kn="ದಿನಾಂಕ" data-en="Date">ದಿನಾಂಕ</label>
+                                 <input type="date" id="inputRecDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                             </div>
+                             <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow-md transition-all" data-kn="ದಾಸ್ತಾನು ಸೇರಿಸಿ" data-en="Add Stock">
+                                 ದಾಸ್ತಾನು ಸೇರಿಸಿ
+                             </button>
+                         </form>
+                     </div>
 
-                    <!-- Inward History Log -->
-                    <div class="glass-card rounded-2xl p-6 lg:col-span-2">
-                        <h3 class="text-md font-bold text-slate-800 mb-3 flex items-center gap-2 border-b pb-2">
-                            <span>📥</span>
-                            <span class="kannada-text">ಇತ್ತೀಚಿನ ಆಮದು ಇತಿಹಾಸ (Recent Inwards Log)</span>
-                        </h3>
-                        <div class="overflow-x-auto max-h-[450px] overflow-y-auto">
-                            <table class="min-w-full divide-y divide-slate-200 text-xs">
-                                <thead>
-                                    <tr class="bg-slate-100/50">
-                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600 kannada-text">ದಿನಾಂಕ</th>
-                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600 kannada-text">ವಸ್ತು</th>
-                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600 kannada-text">ಪ್ರಮಾಣ</th>
-                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600 kannada-text">ಮೂಲ (Donor/Shop)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tblInwardStockHistory" class="divide-y divide-slate-100 font-medium">
-                                    <!-- Filled dynamically -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                     <!-- Inward History Log -->
+                     <div class="glass-card rounded-2xl p-6 lg:col-span-2">
+                         <h3 class="text-md font-bold text-slate-800 mb-3 flex items-center gap-2 border-b pb-2">
+                             <span>📥</span>
+                             <span data-kn="ಇತ್ತೀಚಿನ ಆಮದು ಇತಿಹಾಸ" data-en="Recent Inwards Log">ಇತ್ತೀಚಿನ ಆಮದು ಇತಿಹಾಸ</span>
+                         </h3>
+                         <div class="overflow-x-auto max-h-[450px] overflow-y-auto">
+                             <table class="min-w-full divide-y divide-slate-200 text-xs">
+                                 <thead>
+                                     <tr class="bg-slate-100/50">
+                                         <th class="px-3 py-2.5 text-left font-bold text-slate-600" data-kn="ದಿನಾಂಕ" data-en="Date">ದಿನಾಂಕ</th>
+                                         <th class="px-3 py-2.5 text-left font-bold text-slate-600" data-kn="ವಸ್ತು" data-en="Item Name">ವಸ್ತು</th>
+                                         <th class="px-3 py-2.5 text-left font-bold text-slate-600" data-kn="ಪ್ರಮಾಣ" data-en="Quantity">ಪ್ರಮಾಣ</th>
+                                         <th class="px-3 py-2.5 text-left font-bold text-slate-600" data-kn="ಮೂಲ" data-en="Source (Donor/Shop)">ಮೂಲ</th>
+                                     </tr>
+                                 </thead>
+                                 <tbody id="tblInwardStockHistory" class="divide-y divide-slate-100 font-medium">
+                                     <!-- Filled dynamically -->
+                                 </tbody>
+                             </table>
+                         </div>
+                     </div>
+                 </div>
+             </div>
 
 
+            <!-- ==================== PAGE: VEGETABLES LOG ==================== -->
             <!-- ==================== PAGE: VEGETABLES LOG ==================== -->
             <div id="page-vegetables" class="app-page hidden space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -335,58 +337,58 @@
                     <div class="glass-card rounded-2xl p-6 lg:col-span-1">
                         <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                             <span>🥦</span>
-                            <span class="kannada-text">ತರಕಾರಿ ವಿತರಣೆ ದಾಖಲು (Record Vegetables)</span>
+                            <span data-kn="ತರಕಾರಿ ವಿತರಣೆ ದಾಖಲು" data-en="Record Vegetables">ತರಕಾರಿ ವಿತರಣೆ ದಾಖಲು</span>
                         </h3>
                         <form id="formAddVegetable" onsubmit="handleLogVegetable(event)" class="space-y-3.5 text-xs">
                             <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ವಸತಿ ನಿಲಯ/ಶಾಖೆ</label>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ವಸತಿ ನಿಲಯ/ಶಾಖೆ" data-en="Select Hostel/Branch">ವಸತಿ ನಿಲಯ/ಶಾಖೆ</label>
                                 <select id="selectVegHostel" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                                     <!-- Institutions list -->
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ತರಕಾರಿ ಹೆಸರು/ಕೋಡ್</label>
-                                <input type="text" id="inputVegCode" placeholder="ಉದಾ: ಆಲೂಗೆಡ್ಡೆ (Potato)" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ತರಕಾರಿ ಹೆಸರು/ಕೋಡ್" data-en="Vegetable Name/Code">ತರಕಾರಿ ಹೆಸರು/ಕೋಡ್</label>
+                                <input type="text" id="inputVegCode" data-placeholder-kn="ಉದಾ: ಆಲೂಗೆಡ್ಡೆ" data-placeholder-en="e.g. Potato" placeholder="ಉದಾ: ಆಲೂಗೆಡ್ಡೆ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-slate-600 font-bold mb-1 kannada-text">ಪ್ರಮಾಣ (kg)</label>
+                                    <label class="block text-slate-600 font-bold mb-1" data-kn="ಪ್ರಮಾಣ (kg)" data-en="Quantity (kg)">ಪ್ರಮಾಣ (kg)</label>
                                     <input type="number" step="0.1" id="inputVegQty" placeholder="kg" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                                 </div>
                                 <div>
-                                    <label class="block text-slate-600 font-bold mb-1 kannada-text">ದರ (Std Rate)</label>
-                                    <input type="number" step="0.01" id="inputVegRate" placeholder="ದರ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                    <label class="block text-slate-600 font-bold mb-1" data-kn="ದರ (Std Rate)" data-en="Standard Rate">ದರ (Std Rate)</label>
+                                    <input type="number" step="0.01" id="inputVegRate" data-placeholder-kn="ದರ" data-placeholder-en="Rate" placeholder="ದರ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                                 </div>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-slate-600 font-bold mb-1 kannada-text">ಬಿಲ್ ಸಂಖ್ಯೆ</label>
-                                    <input type="text" id="inputVegBillNo" placeholder="Bill No" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <label class="block text-slate-600 font-bold mb-1" data-kn="ಬಿಲ್ ಸಂಖ್ಯೆ" data-en="Bill No">ಬಿಲ್ ಸಂಖ್ಯೆ</label>
+                                    <input type="text" id="inputVegBillNo" data-placeholder-kn="ಬಿಲ್ ಸಂಖ್ಯೆ" data-placeholder-en="Bill No" placeholder="ಬಿಲ್ ಸಂಖ್ಯೆ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-slate-600 font-bold mb-1 kannada-text">ಬಿಲ್ ದಿನಾಂಕ</label>
+                                    <label class="block text-slate-600 font-bold mb-1" data-kn="ಬಿಲ್ ದಿನಾಂಕ" data-en="Bill Date">ಬಿಲ್ ದಿನಾಂಕ</label>
                                     <input type="date" id="inputVegBillDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                                 </div>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-slate-600 font-bold mb-1 kannada-text">ಖರೀದಿಸಿದ ಸ್ಥಳ</label>
-                                    <input type="text" id="inputVegIssuePlace" placeholder="Place" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <label class="block text-slate-600 font-bold mb-1" data-kn="ಖರೀದಿಸಿದ ಸ್ಥಳ" data-en="Purchase Location">ಖರೀದಿಸಿದ ಸ್ಥಳ</label>
+                                    <input type="text" id="inputVegIssuePlace" data-placeholder-kn="ಸ್ಥಳ" data-placeholder-en="Location" placeholder="ಸ್ಥಳ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-slate-600 font-bold mb-1 kannada-text">ಸ್ವರೂಪ</label>
+                                    <label class="block text-slate-600 font-bold mb-1" data-kn="ಸ್ವರೂಪ" data-en="Inward Type">ಸ್ವರೂಪ</label>
                                     <select id="selectVegType" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                                        <option value="Purchase">ಖರೀದಿ (Purchase)</option>
-                                        <option value="Donation">ದೇಣಿಗೆ (Donation)</option>
+                                         <option value="Purchase" data-kn="ಖರೀದಿ" data-en="Purchase">ಖರೀದಿ</option>
+                                         <option value="Donation" data-kn="ದೇಣಿಗೆ" data-en="Donation">ದೇಣಿಗೆ</option>
                                     </select>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ಶರಾ (Remarks)</label>
-                                <textarea id="inputVegRemarks" rows="2" placeholder="ವಿವರ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ಶರಾ" data-en="Remarks">ಶರಾ</label>
+                                <textarea id="inputVegRemarks" rows="2" data-placeholder-kn="ವಿವರಗಳು" data-placeholder-en="Details" placeholder="ವಿವರಗಳು" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
                             </div>
-                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow-md transition-all">
-                                ತರಕಾರಿ ವಿವರ ದಾಖಲಿಸು (Save Vegetable)
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow-md transition-all" data-kn="ತರಕಾರಿ ವಿವರ ದಾಖಲಿಸು" data-en="Save Vegetables">
+                                ತರಕಾರಿ ವಿವರ ದಾಖಲಿಸು
                             </button>
                         </form>
                     </div>
@@ -395,18 +397,18 @@
                     <div class="glass-card rounded-2xl p-6 lg:col-span-2">
                         <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                             <span>🥦</span>
-                            <span class="kannada-text">ತರಕಾರಿ ವಿತರಣಾ ಇತಿಹಾಸ (Vegetables Delivery Log)</span>
+                            <span data-kn="ತರಕಾರಿ ವಿತರಣಾ ಇತಿಹಾಸ" data-en="Vegetables Delivery Log">ತರಕಾರಿ ವಿತರಣಾ ಇತಿಹಾಸ</span>
                         </h3>
                         <div class="overflow-x-auto max-h-[450px] overflow-y-auto">
                             <table class="min-w-full divide-y divide-slate-200 text-xs">
                                 <thead>
                                     <tr class="bg-slate-100/50">
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ದಿನಾಂಕ</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600 id-col-inst-header kannada-text">ಶಾಖೆ/ವಸತಿ ನಿಲಯ</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ತರಕಾರಿ ಹೆಸರು</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ಪ್ರಮಾಣ</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ದರ</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ಒಟ್ಟು ಮೊತ್ತ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ದಿನಾಂಕ" data-en="Date">ದಿನಾಂಕ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600 id-col-inst-header" data-kn="ಶಾಖೆ/ವಸತಿ ನಿಲಯ" data-en="Hostel/Branch">ಶಾಖೆ/ವಸತಿ ನಿಲಯ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ತರಕಾರಿ ಹೆಸರು" data-en="Vegetable Name">ತರಕಾರಿ ಹೆಸರು</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಪ್ರಮಾಣ" data-en="Quantity">ಪ್ರಮಾಣ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ದರ" data-en="Rate">ದರ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಒಟ್ಟು ಮೊತ್ತ" data-en="Total Amount">ಒಟ್ಟು ಮೊತ್ತ</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tblVegetableLogs" class="divide-y divide-slate-100 font-medium">
@@ -420,62 +422,63 @@
 
 
             <!-- ==================== PAGE: BILLS & PAYMENTS ==================== -->
+            <!-- ==================== PAGE: BILLS & PAYMENTS ==================== -->
             <div id="page-bills" class="app-page hidden space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Form: Record Bill -->
                     <div class="glass-card rounded-2xl p-6 lg:col-span-1">
                         <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                             <span>🧾</span>
-                            <span class="kannada-text">ಹೊಸ ಬಿಲ್ಲು ದಾಖಲು (Log Vendor Bill)</span>
+                            <span data-kn="ಹೊಸ ಬಿಲ್ಲು ದಾಖಲು" data-en="Log Vendor Bill">ಹೊಸ ಬಿಲ್ಲು ದಾಖಲು</span>
                         </h3>
                         <form id="formAddBill" onsubmit="handleLogBill(event)" class="space-y-3.5 text-xs">
                             <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ದಾನಿ/ಅಂಗಡಿ ಆಯ್ಕೆ ಮಾಡಿ</label>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ದಾನಿ/ಅಂಗಡಿ ಆಯ್ಕೆ ಮಾಡಿ" data-en="Select Donor/Shop">ದಾನಿ/ಅಂಗಡಿ ಆಯ್ಕೆ ಮಾಡಿ</label>
                                 <select id="selectBillDonor" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                                     <!-- Loaded dynamically -->
                                 </select>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-slate-600 font-bold mb-1 kannada-text">ಬಿಲ್ ಸಂಖ್ಯೆ</label>
-                                    <input type="text" id="inputBillNo" placeholder="Bill No" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                    <label class="block text-slate-600 font-bold mb-1" data-kn="ಬಿಲ್ ಸಂಖ್ಯೆ" data-en="Bill No">ಬಿಲ್ ಸಂಖ್ಯೆ</label>
+                                    <input type="text" id="inputBillNo" data-placeholder-kn="ಬಿಲ್ ಸಂಖ್ಯೆ" data-placeholder-en="Bill No" placeholder="ಬಿಲ್ ಸಂಖ್ಯೆ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                                 </div>
                                 <div>
-                                    <label class="block text-slate-600 font-bold mb-1 kannada-text">ಬಿಲ್ ದಿನಾಂಕ</label>
+                                    <label class="block text-slate-600 font-bold mb-1" data-kn="ಬಿಲ್ ದಿನಾಂಕ" data-en="Bill Date">ಬಿಲ್ ದಿನಾಂಕ</label>
                                     <input type="date" id="inputBillDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ಒಟ್ಟು ಬಿಲ್ ಮೊತ್ತ (₹)</label>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ಒಟ್ಟು ಬಿಲ್ ಮೊತ್ತ (₹)" data-en="Total Bill Amount (₹)">ಒಟ್ಟು ಬಿಲ್ ಮೊತ್ತ (₹)</label>
                                 <input type="number" step="0.01" id="inputBillAmount" placeholder="₹" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                             </div>
                             <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ಪಾವತಿಸಿದವರು (Paid By)</label>
-                                <input type="text" id="inputBillPaidBy" placeholder="Paid By" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ಪಾವತಿಸಿದವರು" data-en="Paid By">ಪಾವತಿಸಿದವರು</label>
+                                <input type="text" id="inputBillPaidBy" data-placeholder-kn="ಪಾವತಿಸಿದವರು" data-placeholder-en="Paid By" placeholder="ಪಾವತಿಸಿದವರು" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                             </div>
                             <div class="border-t pt-3 space-y-2">
-                                <p class="text-[10px] font-black text-emerald-800 uppercase">ಚೆಕ್ ವಿವರ (Cheque Details)</p>
+                                <p class="text-[10px] font-black text-emerald-800 uppercase" data-kn="ಚೆಕ್ ವಿವರ" data-en="Cheque Details">ಚೆಕ್ ವಿವರ</p>
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
-                                        <label class="block text-slate-600 font-bold mb-1 kannada-text">ಚೆಕ್ ಸಂಖ್ಯೆ</label>
-                                        <input type="text" id="inputBillChNo" placeholder="Cheque No" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                        <label class="block text-slate-600 font-bold mb-1" data-kn="ಚೆಕ್ ಸಂಖ್ಯೆ" data-en="Cheque No">ಚೆಕ್ ಸಂಖ್ಯೆ</label>
+                                        <input type="text" id="inputBillChNo" data-placeholder-kn="ಚೆಕ್ ಸಂಖ್ಯೆ" data-placeholder-en="Cheque No" placeholder="ಚೆಕ್ ಸಂಖ್ಯೆ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                                     </div>
                                     <div>
-                                        <label class="block text-slate-600 font-bold mb-1 kannada-text">ಚೆಕ್ ದಿನಾಂಕ</label>
+                                        <label class="block text-slate-600 font-bold mb-1" data-kn="ಚೆಕ್ ದಿನಾಂಕ" data-en="Cheque Date">ಚೆಕ್ ದಿನಾಂಕ</label>
                                         <input type="date" id="inputBillChDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-slate-600 font-bold mb-1 kannada-text">ಪಾವತಿ ಮೊತ್ತ (₹)</label>
+                                    <label class="block text-slate-600 font-bold mb-1" data-kn="ಪಾವತಿ ಮೊತ್ತ (₹)" data-en="Cheque Amount (₹)">ಪಾವತಿ ಮೊತ್ತ (₹)</label>
                                     <input type="number" step="0.01" id="inputBillChAmount" placeholder="₹" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ಶರಾ (Remarks)</label>
-                                <textarea id="inputBillRemarks" rows="2" placeholder="ವಿವರ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ಶರಾ" data-en="Remarks">ಶರಾ</label>
+                                <textarea id="inputBillRemarks" rows="2" data-placeholder-kn="ವಿವರಗಳು" data-placeholder-en="Details" placeholder="ವಿವರಗಳು" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
                             </div>
-                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow-md transition-all">
-                                ಬಿಲ್ಲು ದಾಖಲಿಸು (Save Bill)
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow-md transition-all" data-kn="ಬಿಲ್ಲು ದಾಖಲಿಸು" data-en="Save Bill">
+                                ಬಿಲ್ಲು ದಾಖಲಿಸು
                             </button>
                         </form>
                     </div>
@@ -484,18 +487,18 @@
                     <div class="glass-card rounded-2xl p-6 lg:col-span-2">
                         <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                             <span>🧾</span>
-                            <span class="kannada-text">ಬಿಲ್ಲುಗಳು ಮತ್ತು ಪಾವತಿ ವಿವರಣೆ (Bills Payment Registry)</span>
+                            <span data-kn="ಬಿಲ್ಲುಗಳು ಮತ್ತು ಪಾವತಿ ವಿವರಣೆ" data-en="Bills Payment Registry">ಬಿಲ್ಲುಗಳು ಮತ್ತು ಪಾವತಿ ವಿವರಣೆ</span>
                         </h3>
                         <div class="overflow-x-auto max-h-[450px] overflow-y-auto">
                             <table class="min-w-full divide-y divide-slate-200 text-xs">
                                 <thead>
                                     <tr class="bg-slate-100/50">
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ಬಿಲ್ ಸಂಖ್ಯೆ</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ದಿನಾಂಕ</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ದಾನಿ/ಅಂಗಡಿ</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ಒಟ್ಟು ಮೊತ್ತ</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ಚೆಕ್ ಮಾಹಿತಿ</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ಸ್ಥಿತಿ (Status)</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಬಿಲ್ ಸಂಖ್ಯೆ" data-en="Bill No">ಬಿಲ್ ಸಂಖ್ಯೆ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ದಿನಾಂಕ" data-en="Date">ದಿನಾಂಕ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ದಾನಿ/ಅಂಗಡಿ" data-en="Donor/Shop">ದಾನಿ/ಅಂಗಡಿ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಒಟ್ಟು ಮೊತ್ತ" data-en="Total Amount">ಒಟ್ಟು ಮೊತ್ತ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಚೆಕ್ ಮಾಹಿತಿ" data-en="Cheque Info">ಚೆಕ್ ಮಾಹಿತಿ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಸ್ಥಿತಿ" data-en="Status">ಸ್ಥಿತಿ</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tblBillsLogs" class="divide-y divide-slate-100 font-medium">
@@ -514,20 +517,20 @@
                 <div id="cardPendingIndents" class="glass-card rounded-2xl p-6">
                     <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                         <span class="text-lg">📋</span>
-                        <span class="kannada-text">ಬಂದಿರುವ ಇಂಡೆಂಟ್‌ಗಳ ಪರಿಶೀಲನೆ (Review Pending Indents)</span>
+                        <span data-kn="ಬಂದಿರುವ ಇಂಡೆಂಟ್‌ಗಳ ಪರಿಶೀಲನೆ" data-en="Review Pending Indents">ಬಂದಿರುವ ಇಂಡೆಂಟ್‌ಗಳ ಪರಿಶೀಲನೆ</span>
                     </h3>
                     <div class="overflow-x-auto max-h-[300px] overflow-y-auto pr-1">
                         <table class="min-w-full divide-y divide-slate-200 text-xs">
                             <thead>
                                 <tr class="bg-slate-100/50">
-                                    <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ವಸತಿ ನಿಲಯ</th>
-                                    <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ವಸ್ತು</th>
-                                    <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ಕೋರಿದ ಪ್ರಮಾಣ</th>
-                                    <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ಅನುಮೋದಿಸು</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ವಸತಿ ನಿಲಯ" data-en="Hostel/Branch">ವಸತಿ ನಿಲಯ</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ವಸ್ತು" data-en="Item Name">ವಸ್ತು</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಕೋರಿದ ಪ್ರಮಾಣ" data-en="Requested Qty">ಕೋರಿದ ಪ್ರಮಾಣ</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಅನುಮೋದಿಸು" data-en="Action">ಅನುಮೋದಿಸು</th>
                                 </tr>
                             </thead>
                             <tbody id="tblPendingIndents" class="divide-y divide-slate-100 font-medium">
-                                <tr><td colspan="4" class="text-center py-6 text-slate-400 kannada-text">ಯಾವುದೇ ಇಂಡೆಂಟ್‌ಗಳು ಬಾಕಿ ಇಲ್ಲ.</td></tr>
+                                <tr><td colspan="4" class="text-center py-6 text-slate-400" data-kn="ಯಾವುದೇ ಇಂಡೆಂಟ್‌ಗಳು ಬಾಕಿ ಇಲ್ಲ." data-en="No pending indents.">ಯಾವುದೇ ಇಂಡೆಂಟ್‌ಗಳು ಬಾಕಿ ಇಲ್ಲ.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -537,18 +540,18 @@
                 <div class="glass-card rounded-2xl p-6">
                     <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                         <span>📋</span>
-                        <span class="kannada-text">ಇತ್ತೀಚಿನ ವರ್ಗಾವಣೆಗಳ ದಾಖಲೆ (Recent Transfers Log)</span>
+                        <span data-kn="ಇತ್ತೀಚಿನ ವರ್ಗಾವಣೆಗಳ ದಾಖಲೆ" data-en="Recent Transfers Log">ಇತ್ತೀಚಿನ ವರ್ಗಾವಣೆಗಳ ದಾಖಲೆ</span>
                     </h3>
                     <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
                         <table class="min-w-full divide-y divide-slate-200 text-xs">
                             <thead>
                                 <tr class="bg-slate-100/50">
-                                    <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ಇಂಡೆಂಟ್ ಸಂಖ್ಯೆ</th>
-                                    <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ಶಾಖೆ/ವಸತಿ ನಿಲಯ</th>
-                                    <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ವಸ್ತು</th>
-                                    <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ಅನುಮೋದಿತ ಪ್ರಮಾಣ</th>
-                                    <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ದಿನಾಂಕ</th>
-                                    <th class="px-4 py-3 text-left font-bold text-slate-600 kannada-text">ಸ್ಥಿತಿ (Status)</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಇಂಡೆಂಟ್ ಸಂಖ್ಯೆ" data-en="Indent No">ಇಂಡೆಂಟ್ ಸಂಖ್ಯೆ</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಶಾಖೆ/ವಸತಿ ನಿಲಯ" data-en="Hostel/Branch">ಶಾಖೆ/ವಸತಿ ನಿಲಯ</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ವಸ್ತು" data-en="Item Name">ವಸ್ತು</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಅನುಮೋದಿತ ಪ್ರಮಾಣ" data-en="Approved Qty">ಅನುಮೋದಿತ ಪ್ರಮಾಣ</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ದಿನಾಂಕ" data-en="Date">ದಿನಾಂಕ</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಸ್ಥಿತಿ" data-en="Status">ಸ್ಥಿತಿ</th>
                                 </tr>
                             </thead>
                             <tbody id="tblGodownTransfers" class="divide-y divide-slate-100 font-medium">
@@ -567,32 +570,32 @@
                     <div class="glass-card rounded-2xl p-6 lg:col-span-1">
                         <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                             <span class="text-lg">📝</span>
-                            <span class="kannada-text">ಹೊಸ ಇಂಡೆಂಟ್ ಸಲ್ಲಿಸು (Submit Indent)</span>
+                            <span data-kn="ಹೊಸ ಇಂಡೆಂಟ್ ಸಲ್ಲಿಸು" data-en="Submit Indent">ಹೊಸ ಇಂಡೆಂಟ್ ಸಲ್ಲಿಸು</span>
                         </h3>
                         <form id="formSubmitIndent" onsubmit="handleSubmitIndent(event)" class="space-y-4 text-xs">
                             <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ" data-en="Select Item">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
                                 <div class="relative custom-combobox" id="comboIndentItem">
-                                    <input type="text" readonly placeholder="ಕ್ಲಿಕ್ ಮಾಡಿ ಹುಡುಕಿ / Search item..." class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer font-bold select-display">
+                                    <input type="text" readonly data-placeholder-kn="ಕ್ಲಿಕ್ ಮಾಡಿ ಹುಡುಕಿ / Search item..." data-placeholder-en="Click to search item..." placeholder="ಕ್ಲಿಕ್ ಮಾಡಿ ಹುಡುಕಿ / Search item..." class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer font-bold select-display">
                                     <input type="hidden" id="selectIndentItem" required>
                                     <div class="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl hidden popover-menu">
                                         <div class="p-2 border-b">
-                                            <input type="text" placeholder="ಹುಡುಕಿ / Search item..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 popover-search">
+                                            <input type="text" data-placeholder-kn="ಹುಡುಕಿ..." data-placeholder-en="Search item..." placeholder="ಹುಡುಕಿ..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 popover-search">
                                         </div>
                                         <div class="max-h-[200px] overflow-y-auto p-1 space-y-0.5 options-list"></div>
                                     </div>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ಕೋರಿದ ಪ್ರಮಾಣ</label>
-                                <input type="number" step="0.01" id="inputIndentQty" placeholder="ಪ್ರಮಾಣ ದಾಖಲಿಸಿ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ಕೋರಿದ ಪ್ರಮಾಣ" data-en="Requested Quantity">ಕೋರಿದ ಪ್ರಮಾಣ</label>
+                                <input type="number" step="0.01" id="inputIndentQty" data-placeholder-kn="ಪ್ರಮಾಣ ದಾಖಲಿಸಿ" data-placeholder-en="Enter quantity" placeholder="ಪ್ರಮಾಣ ದಾಖಲಿಸಿ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                             </div>
                             <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ಶರಾ (Remarks)</label>
-                                <textarea id="inputIndentRemarks" rows="2" placeholder="ಷರಾ ಬರೆಯಿರಿ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ಶರಾ" data-en="Remarks">ಶರಾ</label>
+                                <textarea id="inputIndentRemarks" rows="2" data-placeholder-kn="ಷರಾ ಬರೆಯಿರಿ" data-placeholder-en="Remarks details" placeholder="ಷರಾ ಬರೆಯಿರಿ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
                             </div>
-                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow-md transition-all">
-                                ಇಂಡೆಂಟ್ ಸಲ್ಲಿಸು (Submit Request)
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow-md transition-all" data-kn="ಇಂಡೆಂಟ್ ಸಲ್ಲಿಸು" data-en="Submit Indent">
+                                ಇಂಡೆಂಟ್ ಸಲ್ಲಿಸು
                             </button>
                         </form>
                     </div>
@@ -601,10 +604,10 @@
                     <div class="glass-card rounded-2xl p-6 lg:col-span-2">
                         <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                             <span>📦</span>
-                            <span class="kannada-text">ಬರಬೇಕಾದ ಸರಕುಗಳ ಸ್ವೀಕೃತಿ (Pending Shipments Acknowledgment)</span>
+                            <span data-kn="ಬರಬೇಕಾದ ಸರಕುಗಳ ಸ್ವೀಕೃತಿ" data-en="Pending Shipments Acknowledgment">ಬರಬೇಕಾದ ಸರಕುಗಳ ಸ್ವೀಕೃತಿ</span>
                         </h3>
                         <div id="hostelPendingTransfersList" class="space-y-3 max-h-[400px] overflow-y-auto">
-                            <p class="text-sm text-slate-500 text-center py-6 kannada-text">ಯಾವುದೇ ಪೆಂಡಿಂಗ್ ವರ್ಗಾವಣೆಗಳಿಲ್ಲ.</p>
+                            <p class="text-sm text-slate-500 text-center py-6" data-kn="ಯಾವುದೇ ಪೆಂಡಿಂಗ್ ವರ್ಗಾವಣೆಗಳಿಲ್ಲ." data-en="No pending shipments.">ಯಾವುದೇ ಪೆಂಡಿಂಗ್ ವರ್ಗಾವಣೆಗಳಿಲ್ಲ.</p>
                         </div>
                     </div>
                 </div>
@@ -618,32 +621,32 @@
                     <div class="glass-card rounded-2xl p-6 lg:col-span-1">
                         <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                             <span class="text-lg">🍳</span>
-                            <span class="kannada-text">ಅಡುಗೆ ದಿನಬಳಕೆ ದಾಖಲಿಸು (Daily Usage Log)</span>
+                            <span data-kn="ಅಡುಗೆ ದಿನಬಳಕೆ ದಾಖಲಿಸು" data-en="Log Daily Usage">ಅಡುಗೆ ದಿನಬಳಕೆ ದಾಖಲಿಸು</span>
                         </h3>
                         <form id="formDailyUsage" onsubmit="handleDailyUsage(event)" class="space-y-4 text-xs">
                             <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ" data-en="Select Item">ವಸ್ತು ಆಯ್ಕೆ ಮಾಡಿ</label>
                                 <div class="relative custom-combobox" id="comboUsageItem">
-                                    <input type="text" readonly placeholder="ಕ್ಲಿಕ್ ಮಾಡಿ ಹುಡುಕಿ / Search item..." class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer font-bold select-display">
+                                    <input type="text" readonly data-placeholder-kn="ಕ್ಲಿಕ್ ಮಾಡಿ ಹುಡುಕಿ / Search item..." data-placeholder-en="Click to search item..." placeholder="ಕ್ಲಿಕ್ ಮಾಡಿ ಹುಡುಕಿ / Search item..." class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer font-bold select-display">
                                     <input type="hidden" id="selectUsageItem" required>
                                     <div class="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl hidden popover-menu">
                                         <div class="p-2 border-b">
-                                            <input type="text" placeholder="ಹುಡುಕಿ / Search item..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 popover-search">
+                                            <input type="text" data-placeholder-kn="ಹುಡುಕಿ..." data-placeholder-en="Search item..." placeholder="ಹುಡುಕಿ..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 popover-search">
                                         </div>
                                         <div class="max-h-[200px] overflow-y-auto p-1 space-y-0.5 options-list"></div>
                                     </div>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ಬಳಸಿದ ಪ್ರಮಾಣ</label>
-                                <input type="number" step="0.01" id="inputUsageQty" placeholder="ಬಳಸಿದ ಪ್ರಮಾಣ ದಾಖಲಿಸಿ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ಬಳಸಿದ ಪ್ರಮಾಣ" data-en="Used Quantity">ಬಳಸಿದ ಪ್ರಮಾಣ</label>
+                                <input type="number" step="0.01" id="inputUsageQty" data-placeholder-kn="ಬಳಸಿದ ಪ್ರಮಾಣ ದಾಖಲಿಸಿ" data-placeholder-en="Enter quantity used" placeholder="ಬಳಸಿದ ಪ್ರಮಾಣ ದಾಖಲಿಸಿ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                             </div>
                             <div>
-                                <label class="block text-slate-600 font-bold mb-1 kannada-text">ದಿನಾಂಕ</label>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ದಿನಾಂಕ" data-en="Date">ದಿನಾಂಕ</label>
                                 <input type="date" id="inputUsageDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
                             </div>
-                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow-md transition-all">
-                                ಬಳಕೆ ದಾಖಲಿಸು (Save Usage)
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow-md transition-all" data-kn="ಬಳಕೆ ದಾಖಲಿಸು" data-en="Save Usage">
+                                ಬಳಕೆ ದಾಖಲಿಸು
                             </button>
                         </form>
                     </div>
@@ -652,18 +655,209 @@
                     <div class="glass-card rounded-2xl p-6 lg:col-span-2">
                         <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                             <span>🍳</span>
-                            <span class="kannada-text">ದೈನಂದಿನ ಬಳಕೆ ಇತಿಹಾಸ (Consumption Logs)</span>
+                            <span data-kn="ದೈನಂದಿನ ಬಳಕೆ ಇತಿಹಾಸ" data-en="Daily Usage Logs">ದೈನಂದಿನ ಬಳಕೆ ಇತಿಹಾಸ</span>
                         </h3>
                         <div class="overflow-x-auto max-h-[450px] overflow-y-auto">
                             <table class="min-w-full divide-y divide-slate-200 text-xs">
                                 <thead>
                                     <tr class="bg-slate-100/50">
-                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600 kannada-text">ದಿನಾಂಕ</th>
-                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600 kannada-text">ವಸ್ತು</th>
-                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600 kannada-text">ಬಳಸಿದ ಪ್ರಮಾಣ</th>
+                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600" data-kn="ದಿನಾಂಕ" data-en="Date">ದಿನಾಂಕ</th>
+                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600" data-kn="ವಸ್ತು" data-en="Item Name">ವಸ್ತು</th>
+                                        <th class="px-3 py-2.5 text-left font-bold text-slate-600" data-kn="ಬಳಸಿದ ಪ್ರಮಾಣ" data-en="Quantity Used">ಬಳಸಿದ ಪ್ರಮಾಣ</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tblHostelUsageLogs" class="divide-y divide-slate-100 font-medium">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: HOSTEL RECEIPTS ==================== -->
+            <div id="page-hostel-receipts" class="app-page hidden space-y-6">
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                        <span>📜</span>
+                        <span data-kn="ಸ್ವೀಕರಿಸಿದ ಸರಕುಗಳ ವಿವರ ಮತ್ತು ರಸೀದಿಗಳು" data-en="Received History & Receipts">ಸ್ವೀಕರಿಸಿದ ಸರಕುಗಳ ವಿವರ ಮತ್ತು ರಸೀದಿಗಳು</span>
+                    </h3>
+                    <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
+                        <table class="min-w-full divide-y divide-slate-200 text-xs">
+                            <thead>
+                                <tr class="bg-slate-100/50">
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಇಂಡೆಂಟ್ ಸಂಖ್ಯೆ" data-en="Indent No">ಇಂಡೆಂಟ್ ಸಂಖ್ಯೆ</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಆಹಾರ ಪದಾರ್ಥ" data-en="Item Name">ಆಹಾರ ಪದಾರ್ಥ</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಪ್ರಮಾಣ" data-en="Quantity">ಪ್ರಮಾಣ</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಸ್ವೀಕೃತಿ ದಿನಾಂಕ" data-en="Received Date">ಸ್ವೀಕೃತಿ ದಿನಾಂಕ</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ರಸೀದಿ" data-en="Receipt">ರಸೀದಿ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblHostelReceiptsLogs" class="divide-y divide-slate-100 font-medium">
+                                <tr><td colspan="5" class="text-center py-6 text-slate-400" data-kn="ಯಾವುದೇ ಸ್ವೀಕೃತಿಗಳಿಲ್ಲ." data-en="No completed receipts found.">ಯಾವುದೇ ಸ್ವೀಕೃತಿಗಳಿಲ್ಲ.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: CENTRAL STOCK ==================== -->
+            <div id="page-master-inventory" class="app-page hidden space-y-6">
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b pb-4">
+                        <h3 class="text-md font-bold text-slate-800 flex items-center gap-2">
+                            <span>📦</span>
+                            <span data-kn="ಗೋದಾಮಿನ ದಾಸ್ತಾನು ಶಿಲ್ಕು" data-en="Central Stock Balances">ಗೋದಾಮಿನ ದಾಸ್ತಾನು ಶಿಲ್ಕು</span>
+                        </h3>
+                        <div class="w-full sm:w-64">
+                            <input type="text" id="inputStockSearch" onkeyup="filterStockGrid()" data-placeholder-kn="ಹುಡುಕಿ..." data-placeholder-en="Search item by name or code..." placeholder="ಹುಡುಕಿ..." class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+                        <table class="min-w-full divide-y divide-slate-200 text-xs">
+                            <thead>
+                                <tr class="bg-slate-100/50">
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಕೋಡ್" data-en="Code">ಕೋಡ್</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ವಸ್ತುವಿನ ಹೆಸರು" data-en="Item Name">ವಸ್ತುವಿನ ಹೆಸರು</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ದಾಸ್ತಾನು ಶಿಲ್ಕು" data-en="Current Balance">ದಾಸ್ತಾನು ಶಿಲ್ಕು</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಘಟಕ" data-en="Unit">ಘಟಕ</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600 col-remove assign-head-only" data-kn="ಕ್ರಿಯೆ" data-en="Action">ಕ್ರಿಯೆ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblGodownBalances" class="divide-y divide-slate-100 font-medium">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: MANAGE USERS ==================== -->
+            <div id="page-admin-users" class="app-page hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Form: Create User -->
+                    <div class="glass-card rounded-2xl p-6 lg:col-span-1">
+                        <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                            <span>👤</span>
+                            <span data-kn="ಹೊಸ ಲಾಗಿನ್ ಖಾತೆ ಸೃಜನೆ" data-en="Create Login Account">ಹೊಸ ಲಾಗಿನ್ ಖಾತೆ ಸೃಜನೆ</span>
+                        </h3>
+                        <form id="formAddUser" onsubmit="handleCreateUser(event)" class="space-y-4 text-xs">
+                            <div>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ಬಳಕೆದಾರರ ಹೆಸರು (Username)" data-en="Username">ಬಳಕೆದಾರರ ಹೆಸರು (Username)</label>
+                                <input type="text" id="inputUserUsername" data-placeholder-kn="e.g. boyshostel" data-placeholder-en="e.g. boyshostel" placeholder="e.g. boyshostel" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ಪ್ರದರ್ಶನ ಹೆಸರು (Display Name)" data-en="Display Name">ಪ್ರದರ್ಶನ ಹೆಸರು (Display Name)</label>
+                                <input type="text" id="inputUserDisplayName" data-placeholder-kn="ಉದಾ: Stores - Boys Hostel" data-placeholder-en="e.g. Stores - Boys Hostel" placeholder="ಉದಾ: Stores - Boys Hostel" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ಪಾಸ್‌ವರ್ಡ್" data-en="Password">ಪಾಸ್‌ವರ್ಡ್</label>
+                                <input type="password" id="inputUserPassword" data-placeholder-kn="ಲಾಗಿನ್ ಪಾಸ್‌ವರ್ಡ್" data-placeholder-en="Password" placeholder="ಲಾಗಿನ್ ಪಾಸ್‌ವರ್ಡ್" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ಪಾತ್ರ" data-en="System Role">ಪಾತ್ರ</label>
+                                <select id="selectUserRole" onchange="toggleFormStoreSelection()" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" required>
+                                    <option value="hostel" data-kn="ವಸತಿ ನಿಲಯದ ಗುಮಾಸ್ತ" data-en="Hostel Clerk">ವಸತಿ ನಿಲಯದ ಗುಮಾಸ್ತ</option>
+                                    <option value="godown" data-kn="ಗೋದಾಮು ಸಿಬ್ಬಂದಿ" data-en="Godown Clerk">ಗೋದಾಮು ಸಿಬ್ಬಂದಿ</option>
+                                    <option value="head" data-kn="ಮುಖ್ಯ ಕಚೇರಿ ವೀಕ್ಷಕ" data-en="Head Office / Admin">ಮುಖ್ಯ ಕಚೇರಿ ವೀಕ್ಷಕ</option>
+                                </select>
+                            </div>
+                            <div id="wrapperFormUserStore">
+                                <label class="block text-slate-600 font-bold mb-1" data-kn="ವಸತಿ ನಿಲಯ/ಶಾಖೆ" data-en="Hostel/Branch Assignment">ವಸತಿ ನಿಲಯ/ಶಾಖೆ</label>
+                                <select id="selectUserHostel" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow-md transition-all" data-kn="ಖಾತೆ ಸೃಜಿಸು" data-en="Create Account">
+                                ಖಾತೆ ಸೃಜಿಸು
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Users Registry List -->
+                    <div class="glass-card rounded-2xl p-6 lg:col-span-2">
+                        <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                            <span>👤</span>
+                            <span data-kn="ಲಾಗಿನ್ ಖಾತೆಗಳ ವಿವರಣೆ" data-en="Login Accounts Registry">ಲಾಗಿನ್ ಖಾತೆಗಳ ವಿವರಣೆ</span>
+                        </h3>
+                        <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
+                            <table class="min-w-full divide-y divide-slate-200 text-xs">
+                                <thead>
+                                    <tr class="bg-slate-100/50">
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಬಳಕೆದಾರರ ಹೆಸರು" data-en="Username">ಬಳಕೆದಾರರ ಹೆಸರು</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಹೆಸರು" data-en="Display Name">ಹೆಸರು</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಪಾತ್ರ" data-en="Role">ಪಾತ್ರ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ವಸತಿ ನಿಲಯ" data-en="Hostel">ವಸತಿ ನಿಲಯ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಕ್ರಿಯೆ" data-en="Action">ಕ್ರಿಯೆ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblUsersLogs" class="divide-y divide-slate-100 font-medium">
+                                    <!-- Loaded dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: SYSTEM MASTERS ==================== -->
+            <div id="page-admin-masters" class="app-page hidden space-y-6">
+                <!-- Action Headers -->
+                <div class="flex gap-4 print:hidden">
+                    <button onclick="toggleModal('modalAddMasterItem', true)" class="bg-slate-900 hover:bg-slate-950 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-md transition-all">
+                        <span>➕</span>
+                        <span data-kn="ಹೊಸ ವಸ್ತು ನೋಂದಣಿ" data-en="Add Master Item">ಹೊಸ ವಸ್ತು ನೋಂದಣಿ</span>
+                    </button>
+                    <button onclick="toggleModal('modalAddDonor', true)" class="bg-slate-900 hover:bg-slate-950 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-md transition-all">
+                        <span>➕</span>
+                        <span data-kn="ಹೊಸ ದಾನಿ/ಅಂಗಡಿ ನೋಂದಣಿ" data-en="Add Donor/Shop">ಹೊಸ ದಾನಿ/ಅಂಗಡಿ ನೋಂದಣಿ</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <!-- Master Items Registry -->
+                    <div class="glass-card rounded-2xl p-6">
+                        <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                            <span>📦</span>
+                            <span data-kn="ದಾಖಲಾದ ಆಹಾರ ಪದಾರ್ಥಗಳ ಪಟ್ಟಿ" data-en="Registered Grocery Items List">ದಾಖಲಾದ ಆಹಾರ ಪದಾರ್ಥಗಳ ಪಟ್ಟಿ</span>
+                        </h3>
+                        <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
+                            <table class="min-w-full divide-y divide-slate-200 text-xs">
+                                <thead>
+                                    <tr class="bg-slate-100/50">
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಕೋಡ್" data-en="Code">ಕೋಡ್</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಹೆಸರು (ಕನ್ನಡ)" data-en="Name (Kan)">ಹೆಸರು (ಕನ್ನಡ)</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಹೆಸರು (English)" data-en="Name (Eng)">ಹೆಸರು (English)</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಘಟಕ" data-en="Unit">ಘಟಕ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಕ್ರಿಯೆ" data-en="Action">ಕ್ರಿಯೆ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblMasterItemsList" class="divide-y divide-slate-100 font-medium">
+                                    <!-- Loaded dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Master Donors Registry -->
+                    <div class="glass-card rounded-2xl p-6">
+                        <h3 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                            <span>🤝</span>
+                            <span data-kn="ನೋಂದಾಯಿತ ದಾನಿಗಳು / ಮಾರಾಟಗಾರರು" data-en="Registered Donors & Shops">ನೋಂದಾಯಿತ ದಾನಿಗಳು / ಮಾರಾಟಗಾರರು</span>
+                        </h3>
+                        <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
+                            <table class="min-w-full divide-y divide-slate-200 text-xs">
+                                <thead>
+                                    <tr class="bg-slate-100/50">
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಕೋಡ್" data-en="Code">ಕೋಡ್</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಹೆಸರು" data-en="Name">ಹೆಸರು</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ವಿಳಾಸ" data-en="Address">ವಿಳಾಸ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಮೊಬೈಲ್" data-en="Mobile">ಮೊಬೈಲ್</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblMasterDonorsList" class="divide-y divide-slate-100 font-medium">
+                                    <!-- Loaded dynamically -->
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -681,49 +875,49 @@
     <div id="modalAddMasterItem" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full mx-4 overflow-hidden">
             <div class="bg-slate-900 text-white p-5 flex justify-between items-center">
-                <h3 class="font-bold text-lg kannada-text">ಹೊಸ ವಸ್ತು ನೋಂದಣಿ (Add Item)</h3>
+                <h3 class="font-bold text-lg" data-kn="ಹೊಸ ವಸ್ತು ನೋಂದಣಿ" data-en="Add Master Item">ಹೊಸ ವಸ್ತು ನೋಂದಣಿ</h3>
                 <button onclick="toggleModal('modalAddMasterItem', false)" class="text-slate-400 hover:text-white font-bold text-xl">&times;</button>
             </div>
             <form onsubmit="handleRegisterItem(event)" class="p-6 space-y-4 text-sm">
                 <div>
-                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತು ಕೋಡ್ (Unique ID)</label>
-                    <input type="number" id="inputItemCode" placeholder="ಉದಾ: 110" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
+                    <label class="block text-slate-600 font-semibold mb-1" data-kn="ವಸ್ತು ಕೋಡ್ (Unique ID)" data-en="Item Code (Unique ID)">ವಸ್ತು ಕೋಡ್ (Unique ID)</label>
+                    <input type="number" id="inputItemCode" data-placeholder-kn="ಉದಾ: 110" data-placeholder-en="e.g. 110" placeholder="ಉದಾ: 110" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
                 </div>
                 <div>
-                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತುವಿನ ಹೆಸರು (ಕನ್ನಡ)</label>
-                    <input type="text" id="inputItemNameKan" placeholder="ಉದಾ: ಹೆಸರು ಬೇಳೆ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
+                    <label class="block text-slate-600 font-semibold mb-1" data-kn="ವಸ್ತುವಿನ ಹೆಸರು (ಕನ್ನಡ)" data-en="Item Name (Kannada)">ವಸ್ತುವಿನ ಹೆಸರು (ಕನ್ನಡ)</label>
+                    <input type="text" id="inputItemNameKan" data-placeholder-kn="ಉದಾ: ಹೆಸರು ಬೇಳೆ" data-placeholder-en="e.g. Green Gram (Kn)" placeholder="ಉದಾ: ಹೆಸರು ಬೇಳೆ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
                 </div>
                 <div>
-                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಸ್ತುವಿನ ಹೆಸರು (English)</label>
-                    <input type="text" id="inputItemNameEng" placeholder="e.g. Green Gram" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
+                    <label class="block text-slate-600 font-semibold mb-1" data-kn="ವಸ್ತುವಿನ ಹೆಸರು (English)" data-en="Item Name (English)">ವಸ್ತುವಿನ ಹೆಸರು (English)</label>
+                    <input type="text" id="inputItemNameEng" data-placeholder-kn="e.g. Green Gram" data-placeholder-en="e.g. Green Gram" placeholder="e.g. Green Gram" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಿಭಾಗ (Category)</label>
-                        <input type="text" id="inputItemCategory" placeholder="ಬೇಳೆಕಾಳು" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
+                        <label class="block text-slate-600 font-semibold mb-1" data-kn="ವಿಭಾಗ (Category)" data-en="Category">ವಿಭಾಗ (Category)</label>
+                        <input type="text" id="inputItemCategory" data-placeholder-kn="ಬೇಳೆಕಾಳು" data-placeholder-en="Pulses" placeholder="ಬೇಳೆಕಾಳು" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
                     </div>
                     <div>
-                        <label class="block text-slate-600 font-semibold mb-1 kannada-text">ವಿಭಾಗ ಕೋಡ್</label>
-                        <input type="text" id="inputItemCatCode" placeholder="C03" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
+                        <label class="block text-slate-600 font-semibold mb-1" data-kn="ವಿಭಾಗ ಕೋಡ್" data-en="Category Code">ವಿಭಾಗ ಕೋಡ್</label>
+                        <input type="text" id="inputItemCatCode" data-placeholder-kn="C03" data-placeholder-en="C03" placeholder="C03" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-slate-600 font-semibold mb-1 kannada-text">ನಿಗದಿತ ದರ (Std Rate)</label>
-                        <input type="number" step="0.1" id="inputItemRate" placeholder="120" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
+                        <label class="block text-slate-600 font-semibold mb-1" data-kn="ನಿಗದಿತ ದರ (Std Rate)" data-en="Standard Rate">ನಿಗದಿತ ದರ (Std Rate)</label>
+                        <input type="number" step="0.1" id="inputItemRate" data-placeholder-kn="120" data-placeholder-en="120" placeholder="120" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
                     </div>
                     <div>
-                        <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಅಳತೆಯ ಘಟಕ (Unit)</label>
+                        <label class="block text-slate-600 font-semibold mb-1" data-kn="ಅಳತೆಯ ಘಟಕ (Unit)" data-en="Unit of Measure">ಅಳತೆಯ ಘಟಕ (Unit)</label>
                         <select id="selectItemUnit" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
-                            <option value="ಕೆಜಿ (KG)">ಕೆಜಿ (KG)</option>
-                            <option value="ಲೀಟರ್ (Ltr)">ಲೀಟರ್ (Ltr)</option>
-                            <option value="ಗ್ರಾಂ (Gram)">ಗ್ರಾಂ (Gram)</option>
+                            <option value="ಕೆಜಿ (KG)" data-kn="ಕೆಜಿ (KG)" data-en="KG">ಕೆಜಿ (KG)</option>
+                            <option value="ಲೀಟರ್ (Ltr)" data-kn="ಲೀಟರ್ (Ltr)" data-en="Ltr">ಲೀಟರ್ (Ltr)</option>
+                            <option value="ಗ್ರಾಂ (Gram)" data-kn="ಗ್ರಾಂ (Gram)" data-en="Gram">ಗ್ರಾಂ (Gram)</option>
                         </select>
                     </div>
                 </div>
                 <div class="flex gap-3 justify-end pt-4 border-t">
-                    <button type="button" onclick="toggleModal('modalAddMasterItem', false)" class="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 font-bold kannada-text">ರದ್ದುಮಾಡು</button>
-                    <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-950 text-white rounded-lg font-bold shadow-md kannada-text">ದಾಖಲಿಸು</button>
+                    <button type="button" onclick="toggleModal('modalAddMasterItem', false)" class="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 font-bold" data-kn="ರದ್ದುಮಾಡು" data-en="Cancel">ರದ್ದುಮಾಡು</button>
+                    <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-950 text-white rounded-lg font-bold shadow-md" data-kn="ದಾಖಲಿಸು" data-en="Register">ದಾಖಲಿಸು</button>
                 </div>
             </form>
         </div>
@@ -733,39 +927,38 @@
     <div id="modalAddDonor" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full mx-4 overflow-hidden">
             <div class="bg-slate-900 text-white p-5 flex justify-between items-center">
-                <h3 class="font-bold text-lg kannada-text">ಹೊಸ ದಾನಿ/ಅಂಗಡಿ ನೋಂದಣಿ (Add Donor)</h3>
+                <h3 class="font-bold text-lg" data-kn="ಹೊಸ ದಾನಿ/ಅಂಗಡಿ ನೋಂದಣಿ" data-en="Add Donor/Shop">ಹೊಸ ದಾನಿ/ಅಂಗಡಿ ನೋಂದಣಿ</h3>
                 <button onclick="toggleModal('modalAddDonor', false)" class="text-slate-400 hover:text-white font-bold text-xl">&times;</button>
             </div>
             <form onsubmit="handleRegisterDonor(event)" class="p-6 space-y-4 text-sm">
                 <div>
-                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ದಾನಿ/ಅಂಗಡಿ ಕೋಡ್ (Unique ID)</label>
-                    <input type="number" id="inputDonorID" placeholder="ಉದಾ: 2004" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
+                    <label class="block text-slate-600 font-semibold mb-1" data-kn="ದಾನಿ/ಅಂಗಡಿ ಕೋಡ್ (Unique ID)" data-en="Donor Code (Unique ID)">ದಾನಿ/ಅಂಗಡಿ ಕೋಡ್ (Unique ID)</label>
+                    <input type="number" id="inputDonorID" data-placeholder-kn="ಉದಾ: 2004" data-placeholder-en="e.g. 2004" placeholder="ಉದಾ: 2004" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
                 </div>
                 <div>
-                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಹೆಸರು (Donor/Shop Name)</label>
-                    <input type="text" id="inputDonorName" placeholder="ಉದಾ: ಜಯದೇವಪ್ಪ ಎಸ್." class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
+                    <label class="block text-slate-600 font-semibold mb-1" data-kn="ಹೆಸರು" data-en="Name (Donor/Shop)">ಹೆಸರು</label>
+                    <input type="text" id="inputDonorName" data-placeholder-kn="ಉದಾ: ಜಯದೇವಪ್ಪ ಎಸ್." data-placeholder-en="e.g. Jayadevappa S." placeholder="ಉದಾ: ಜಯದೇವಪ್ಪ ಎಸ್." class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900" required>
                 </div>
                 <div>
-                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಸ್ಥಳ / ವಿಳಾಸ</label>
-                    <input type="text" id="inputDonorPlace" placeholder="ಸಿರಿಗೆರೆ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
-                </div>
+                    <label class="block text-slate-600 font-semibold mb-1" data-kn="ಸ್ಥಳ / ವಿಳಾಸ" data-en="Place / Address">ಸ್ಥಳ / ವಿಳಾಸ</label>
+                    <input type="text" id="inputDonorPlace" data-placeholder-kn="ಸಿರಿಗೆರೆ" data-placeholder-en="Sirigere" placeholder="ಸಿರಿಗೆರೆ" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
                 <div>
-                    <label class="block text-slate-600 font-semibold mb-1 kannada-text">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ</label>
+                    <label class="block text-slate-600 font-semibold mb-1" data-kn="ಮೊಬೈಲ್ ಸಂಖ್ಯೆ" data-en="Mobile Number">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ</label>
                     <input type="text" id="inputDonorMobile" placeholder="9876543210" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900">
                 </div>
                 <div class="flex gap-3 justify-end pt-4 border-t">
-                    <button type="button" onclick="toggleModal('modalAddDonor', false)" class="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 font-bold kannada-text">ರದ್ದುಮಾಡು</button>
-                    <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-950 text-white rounded-lg font-bold shadow-md kannada-text">ದಾಖಲಿಸು</button>
+                    <button type="button" onclick="toggleModal('modalAddDonor', false)" class="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 font-bold" data-kn="ರದ್ದುಮಾಡು" data-en="Cancel">ರದ್ದುಮಾಡು</button>
+                    <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-950 text-white rounded-lg font-bold shadow-md" data-kn="ದಾಖಲಿಸು" data-en="Register">ದಾಖಲಿಸು</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal: Printable Receipt View (in Kannada) -->
+    <!-- Modal: Printable Receipt View -->
     <div id="modalReceipt" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-lg w-full mx-4 overflow-hidden">
             <div class="bg-emerald-900 text-white p-5 flex justify-between items-center print:hidden">
-                <h3 class="font-bold text-lg kannada-text">ಸ್ವೀಕೃತಿ ರಸೀದಿ ಮುದ್ರಣ (Print Receipt)</h3>
+                <h3 class="font-bold text-lg" data-kn="ಸ್ವೀಕೃತಿ ರಸೀದಿ ಮುದ್ರಣ" data-en="Print Acknowledgment Receipt">ಸ್ವೀಕೃತಿ ರಸೀದಿ ಮುದ್ರಣ</h3>
                 <button onclick="toggleModal('modalReceipt', false)" class="text-slate-300 hover:text-white font-bold text-xl">&times;</button>
             </div>
             
@@ -773,55 +966,55 @@
                 <!-- Printable Area -->
                 <div id="printableReceipt" class="bg-white p-6 border-2 border-dashed border-slate-400 rounded-xl space-y-6 text-slate-800">
                     <div class="text-center space-y-1">
-                        <h2 class="text-lg font-extrabold tracking-wide kannada-text text-emerald-800">ಶ್ರೀ ತರಳಬಾಳು ಜಗದ್ಗುರು ವಿದ್ಯಾ ಸಂಸ್ಥೆ, ಸಿರಿಗೆರೆ</h2>
-                        <p class="text-sm font-semibold kannada-text text-slate-700">ವಸತಿ ನಿಲಯ ಸ್ವೀಕೃತಿ ರಸೀದಿ (Hostel Receipt Slip)</p>
+                        <h2 class="text-lg font-extrabold tracking-wide text-emerald-800" data-kn="ಶ್ರೀ ತರಳಬಾಳು ಜಗದ್ಗುರು ವಿದ್ಯಾ ಸಂಸ್ಥೆ, ಸಿರಿಗೆರೆ" data-en="Sri Taralabalu Jagadguru Vidya Samaste, Sirigere">ಶ್ರೀ ತರಳಬಾಳು ಜಗದ್ಗುರು ವಿದ್ಯಾ ಸಂಸ್ಥೆ, ಸಿರಿಗೆರೆ</h2>
+                        <p class="text-sm font-semibold text-slate-700" data-kn="ವಸತಿ ನಿಲಯ ಸ್ವೀಕೃತಿ ರಸೀದಿ" data-en="Hostel Receipt Slip">ವಸತಿ ನಿಲಯ ಸ್ವೀಕೃತಿ ರಸೀದಿ</p>
                         <div class="border-b border-slate-300 pt-2"></div>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-y-3 text-sm kannada-text">
-                        <span class="text-slate-500 font-medium">ರಸೀದಿ ಸಂಖ್ಯೆ (Indent No):</span>
+                    <div class="grid grid-cols-2 gap-y-3 text-sm">
+                        <span class="text-slate-500 font-medium" data-kn="ರಸೀದಿ ಸಂಖ್ಯೆ (Indent No):" data-en="Indent Number:">ರಸೀದಿ ಸಂಖ್ಯೆ (Indent No):</span>
                         <span class="font-bold text-slate-800" id="lblRecNum">-</span>
                         
-                        <span class="text-slate-500 font-medium">ಸ್ವೀಕರಿಸಿದ ವಸತಿ ನಿಲಯ:</span>
+                        <span class="text-slate-500 font-medium" data-kn="ಸ್ವೀಕರಿಸಿದ ವಸತಿ ನಿಲಯ:" data-en="Receiving Hostel:">ಸ್ವೀಕರಿಸಿದ ವಸತಿ ನಿಲಯ:</span>
                         <span class="font-bold text-slate-800" id="lblRecHostel">-</span>
                         
-                        <span class="text-slate-500 font-medium">ದಾಖಲಾದ ದಿನಾಂಕ:</span>
+                        <span class="text-slate-500 font-medium" data-kn="ದಾಖಲಾದ ದಿನಾಂಕ:" data-en="Issued Date:">ದಾಖಲಾದ ದಿನಾಂಕ:</span>
                         <span class="font-bold text-slate-800" id="lblRecDateSent">-</span>
 
-                        <span class="text-slate-500 font-medium">ಸ್ವೀಕೃತಿ ದಿನಾಂಕ:</span>
+                        <span class="text-slate-500 font-medium" data-kn="ಸ್ವೀಕೃತಿ ದಿನಾಂಕ:" data-en="Received Date:">ಸ್ವೀಕೃತಿ ದಿನಾಂಕ:</span>
                         <span class="font-bold text-slate-800" id="lblRecDate">-</span>
                         
-                        <span class="text-slate-500 font-medium">ವಸ್ತುವಿನ ವಿವರ:</span>
+                        <span class="text-slate-500 font-medium" data-kn="ವಸ್ತುವಿನ ವಿವರ:" data-en="Item Details:">ವಸ್ತುವಿನ ವಿವರ:</span>
                         <span class="font-bold text-slate-800" id="lblRecItem">-</span>
 
-                        <span class="text-slate-500 font-medium">ಸ್ವೀಕರಿಸಿದ ಒಟ್ಟು ಪ್ರಮಾಣ:</span>
+                        <span class="text-slate-500 font-medium" data-kn="ಸ್ವೀಕರಿಸಿದ ಒಟ್ಟು ಪ್ರಮಾಣ:" data-en="Total Received Quantity:">ಸ್ವೀಕರಿಸಿದ ಒಟ್ಟು ಪ್ರಮಾಣ:</span>
                         <span class="font-bold text-slate-800 text-lg" id="lblRecQty">-</span>
                     </div>
 
-                    <div class="pt-8 flex justify-between items-end text-sm kannada-text">
+                    <div class="pt-8 flex justify-between items-end text-sm">
                         <div>
                             <div class="w-32 border-b border-slate-300"></div>
-                            <p class="text-xs text-slate-500 mt-1">ಗೋದಾಮು ಸಿಬ್ಬಂದಿ ಸಹಿ</p>
+                            <p class="text-xs text-slate-500 mt-1" data-kn="ಗೋದಾಮು ಸಿಬ್ಬಂದಿ ಸಹಿ" data-en="Godown Issuer Signature">ಗೋದಾಮು ಸಿಬ್ಬಂದಿ ಸಹಿ</p>
                         </div>
                         <div class="text-right">
                             <div class="w-32 border-b border-slate-300 ml-auto"></div>
-                            <p class="text-xs text-slate-500 mt-1">ವಸತಿ ನಿಲಯದ ಗುಮಾಸ್ತರ ಸಹಿ</p>
+                            <p class="text-xs text-slate-500 mt-1" data-kn="ವಸತಿ ನಿಲಯದ ಗುಮಾಸ್ತರ ಸಹಿ" data-en="Hostel Clerk Signature">ವಸತಿ ನಿಲಯದ ಗುಮಾಸ್ತರ ಸಹಿ</p>
                         </div>
                     </div>
 
-                    <div class="border-t border-slate-200 pt-3 text-center text-[10px] text-slate-400 kannada-text">
+                    <div class="border-t border-slate-200 pt-3 text-center text-[10px] text-slate-400" data-kn="ಇದು ವ್ಯವಸ್ಥೆಯಿಂದ ಸ್ವಯಂ ಚಾಲಿತವಾಗಿ ಸೃಜಿಸಲ್ಪಟ್ಟ ಅಂಗೀಕಾರ ರಸೀದಿಯಾಗಿದೆ." data-en="This is a system generated acknowledgment receipt.">
                         ಇದು ವ್ಯವಸ್ಥೆಯಿಂದ ಸ್ವಯಂ ಚಾಲಿತವಾಗಿ ಸೃಜಿಸಲ್ಪಟ್ಟ ಅಂಗೀಕಾರ ರಸೀದಿಯಾಗಿದೆ.
                     </div>
                 </div>
                 
                 <!-- Action buttons -->
                 <div class="flex gap-3 justify-end pt-5 border-t mt-6 print:hidden">
-                    <button type="button" onclick="toggleModal('modalReceipt', false)" class="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 font-bold text-sm kannada-text">ಮುಚ್ಚು</button>
+                    <button type="button" onclick="toggleModal('modalReceipt', false)" class="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 font-bold text-sm" data-kn="ಮುಚ್ಚು" data-en="Close">ಮುಚ್ಚು</button>
                     <button type="button" onclick="window.print()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold shadow-md text-sm flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                         </svg>
-                        <span class="kannada-text">ರಸೀದಿ ಮುದ್ರಿಸು / PDF</span>
+                        <span data-kn="ರಸೀದಿ ಮುದ್ರಿಸು / PDF" data-en="Print Receipt / PDF">ರಸೀದಿ ಮುದ್ರಿಸು / PDF</span>
                     </button>
                 </div>
             </div>
@@ -970,37 +1163,84 @@
         function setLanguage(lang) {
             currentLang = lang;
             localStorage.setItem('lang', lang);
+            
+            // Update sidebar button states
+            const btnKn = document.getElementById('btnLangKN');
+            const btnEn = document.getElementById('btnLangEN');
+            if (btnKn && btnEn) {
+                if (lang === 'kn') {
+                    btnKn.className = "flex-grow py-1 rounded text-[10px] font-bold transition-all bg-emerald-600 text-white shadow";
+                    btnEn.className = "flex-grow py-1 rounded text-[10px] font-bold transition-all text-emerald-200 hover:text-white";
+                } else {
+                    btnEn.className = "flex-grow py-1 rounded text-[10px] font-bold transition-all bg-emerald-600 text-white shadow";
+                    btnKn.className = "flex-grow py-1 rounded text-[10px] font-bold transition-all text-emerald-200 hover:text-white";
+                }
+            }
             updateUIStrings();
         }
         
         function updateUIStrings() {
-            translateDOM();
-            document.querySelectorAll('[placeholder]').forEach(el => {
-                const placeholder = el.getAttribute('placeholder');
-                if (!placeholder) return;
-                
-                if (currentLang === 'en') {
-                    for (const [knVal, enVal] of Object.entries(TRANSLATION_MAP)) {
-                        if (placeholder === knVal) {
-                            el.setAttribute('placeholder', enVal);
-                        }
-                    }
-                } else {
-                    for (const [knVal, enVal] of Object.entries(TRANSLATION_MAP)) {
-                        if (placeholder === enVal) {
-                            el.setAttribute('placeholder', knVal);
-                        }
-                    }
-                }
+            // Apply attributes translation for text
+            document.querySelectorAll('[data-kn][data-en]').forEach(el => {
+                el.innerText = currentLang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-kn');
+            });
+            // Apply attributes translation for placeholders
+            document.querySelectorAll('[data-placeholder-kn][data-placeholder-en]').forEach(el => {
+                el.setAttribute('placeholder', currentLang === 'en' ? el.getAttribute('data-placeholder-en') : el.getAttribute('data-placeholder-kn'));
             });
             
-            if (currentRole === 'godown') {
-                loadGodownDashboardData();
-            } else {
+            // Update page header title
+            const activePage = localStorage.getItem('activePage') || 'dashboard';
+            const headerTitle = document.getElementById('lblPageHeaderTitle');
+            if (headerTitle) {
+                const pageTitles = {
+                    'dashboard': { kn: 'ಮುಖ್ಯ ಮಾಹಿತಿ', en: 'Dashboard' },
+                    'stock-inward': { kn: 'ದಾಸ್ತಾನು ಸ್ವೀಕೃತಿ', en: 'Stock Inward' },
+                    'vegetables': { kn: 'ತರಕಾರಿ ವಿವರ', en: 'Vegetables Log' },
+                    'bills': { kn: 'ಬಿಲ್ಲುಗಳು & ಪಾವತಿ', en: 'Bills & Payments' },
+                    'indents-approvals': { kn: 'ಇಂಡೆಂಟ್ ಮತ್ತು ವಿತರಣೆ', en: 'Indents & Approvals' },
+                    'hostel-indents': { kn: 'ಇಂಡೆಂಟ್ ವಿನಂತಿ', en: 'Raise Indents' },
+                    'hostel-usage': { kn: 'ಅಡುಗೆ ಬಳಕೆ ದಾಖಲು', en: 'Daily Usage' },
+                    'hostel-receipts': { kn: 'ಸ್ವೀಕೃತಿ ಮತ್ತು ರಸೀದಿ', en: 'Receipts' },
+                    'master-inventory': { kn: 'ಗೋದಾಮಿನ ದಾಸ್ತಾನು', en: 'Central Stock' },
+                    'admin-users': { kn: 'ಲಾಗಿನ್ ಖಾತೆಗಳು', en: 'Manage Users' },
+                    'admin-masters': { kn: 'ಮಾಸ್ಟರ್ ನೋಂದಣಿ', en: 'System Masters' }
+                };
+                const titles = pageTitles[activePage] || { kn: activePage, en: activePage };
+                headerTitle.innerText = currentLang === 'en' ? titles.en : titles.kn;
+            }
+            
+            // Reload active data
+            if (activePage === 'dashboard') {
+                if (currentRole === 'godown') loadGodownDashboardData();
+                else loadHostelDashboardData();
+            } else if (activePage === 'stock-inward') {
+                loadInwardsLog();
+            } else if (activePage === 'vegetables') {
+                loadVegetableLogs();
+            } else if (activePage === 'bills') {
+                loadBillsLogs();
+                loadDonorsList();
+            } else if (activePage === 'indents-approvals') {
+                loadPendingIndents();
+                loadGodownTransfers();
+            } else if (activePage === 'hostel-indents') {
                 loadHostelDashboardData();
+            } else if (activePage === 'hostel-usage') {
+                loadHostelUsageLogs();
+            } else if (activePage === 'hostel-receipts') {
+                loadHostelReceiptsLogs();
+            } else if (activePage === 'master-inventory') {
+                loadCentralStockBalances();
+            } else if (activePage === 'admin-users') {
+                loadUsersList();
+            } else if (activePage === 'admin-masters') {
+                loadMasterItemsList();
+                loadMasterDonorsList();
             }
         }
 
+        // SPA Navigation showPage handler
         // SPA Navigation showPage handler
         function showPage(pageId) {
             document.querySelectorAll('.app-page').forEach(el => el.classList.add('hidden'));
@@ -1020,20 +1260,21 @@
 
             const headerTitle = document.getElementById('lblPageHeaderTitle');
             if (headerTitle) {
-                let titleText = pageId.replace('-', ' ').toUpperCase();
-                if (pageId === 'dashboard') titleText = currentLang === 'en' ? 'Dashboard Summary' : 'ಮುಖ್ಯ ಮಾಹಿತಿ ಫಾರ್ಮ್ (Dashboard)';
-                else if (pageId === 'stock-inward') titleText = currentLang === 'en' ? 'Stock Inward' : 'ದಾಸ್ತಾನು ಸ್ವೀಕೃತಿ ಮತ್ತು ನಮೂದು (Stock Inward)';
-                else if (pageId === 'vegetables') titleText = currentLang === 'en' ? 'Vegetables Log' : 'ತರಕಾರಿ ವಿವರಗಳು ಮತ್ತು ಸಾಗಣೆ (Vegetables Log)';
-                else if (pageId === 'bills') titleText = currentLang === 'en' ? 'Bills & Payments' : 'ಬಿಲ್ಲುಗಳು ಮತ್ತು ಪಾವತಿ ವಿವರಣೆ (Bills & Payments)';
-                else if (pageId === 'indents-approvals') titleText = currentLang === 'en' ? 'Indents Approval' : 'ಇಂಡೆಂಟ್‌ಗಳ ಪರಿಶೀಲನೆ ಮತ್ತು ವಿತರಣೆ (Indents Approval)';
-                else if (pageId === 'hostel-indents') titleText = currentLang === 'en' ? 'Raise Hostel Indents' : 'ಹೊಸ ಇಂಡೆಂಟ್ ವಿನಂತಿ (Raise Indents)';
-                else if (pageId === 'hostel-usage') titleText = currentLang === 'en' ? 'Kitchen Consumption' : 'ಅಡುಗೆ ದಿನಬಳಕೆ ದಾಖಲು (Daily Usage)';
-                else if (pageId === 'hostel-receipts') titleText = currentLang === 'en' ? 'Delivery Receipts' : 'ಸ್ವೀಕೃತಿಗಳು ಮತ್ತು ಅಂಗೀಕಾರ ರಸೀದಿಗಳು (Receipts)';
-                else if (pageId === 'master-inventory') titleText = currentLang === 'en' ? 'Central Stock' : 'ಗೋದಾಮಿನ ದಾಸ್ತಾನು ಶಿಲ್ಕು (Central Stock)';
-                else if (pageId === 'admin-users') titleText = currentLang === 'en' ? 'Manage Login Accounts' : 'ಲಾಗಿನ್ ಖಾತೆಗಳ ನಿರ್ವಹಣೆ (Manage Users)';
-                else if (pageId === 'admin-masters') titleText = currentLang === 'en' ? 'System Masters' : 'ವಸ್ತು ಮತ್ತು ದಾನಿಗಳ ಮಾಸ್ಟರ್ ನೋಂದಣಿ (System Masters)';
-                
-                headerTitle.innerText = titleText;
+                const pageTitles = {
+                    'dashboard': { kn: 'ಮುಖ್ಯ ಮಾಹಿತಿ', en: 'Dashboard' },
+                    'stock-inward': { kn: 'ದಾಸ್ತಾನು ಸ್ವೀಕೃತಿ', en: 'Stock Inward' },
+                    'vegetables': { kn: 'ತರಕಾರಿ ವಿವರ', en: 'Vegetables Log' },
+                    'bills': { kn: 'ಬಿಲ್ಲುಗಳು & ಪಾವತಿ', en: 'Bills & Payments' },
+                    'indents-approvals': { kn: 'ಇಂಡೆಂಟ್ ಮತ್ತು ವಿತರಣೆ', en: 'Indents & Approvals' },
+                    'hostel-indents': { kn: 'ಇಂಡೆಂಟ್ ವಿನಂತಿ', en: 'Raise Indents' },
+                    'hostel-usage': { kn: 'ಅಡುಗೆ ಬಳಕೆ ದಾಖಲು', en: 'Daily Usage' },
+                    'hostel-receipts': { kn: 'ಸ್ವೀಕೃತಿ ಮತ್ತು ರಸೀದಿ', en: 'Receipts' },
+                    'master-inventory': { kn: 'ಗೋದಾಮಿನ ದಾಸ್ತಾನು', en: 'Central Stock' },
+                    'admin-users': { kn: 'ಲಾಗಿನ್ ಖಾತೆಗಳು', en: 'Manage Users' },
+                    'admin-masters': { kn: 'ಮಾಸ್ಟರ್ ನೋಂದಣಿ', en: 'System Masters' }
+                };
+                const titles = pageTitles[pageId] || { kn: pageId, en: pageId };
+                headerTitle.innerText = currentLang === 'en' ? titles.en : titles.kn;
             }
             
             localStorage.setItem('activePage', pageId);
@@ -1064,7 +1305,185 @@
                 loadCentralStockBalances();
             } else if (pageId === 'admin-users') {
                 loadUsersList();
+                toggleFormStoreSelection();
+            } else if (pageId === 'admin-masters') {
+                loadMasterItemsList();
+                loadMasterDonorsList();
             }
+        }
+
+        // --- MANAGE LOGIN ACCOUNTS JS FUNCTIONS ---
+        function loadUsersList() {
+            fetch('/api/users')
+                .then(res => res.json())
+                .then(users => {
+                    const tbody = document.getElementById('tblUsersLogs');
+                    if (!tbody) return;
+                    
+                    fetch('/api/institutions')
+                        .then(res => res.json())
+                        .then(insts => {
+                            const instMap = {};
+                            insts.forEach(i => instMap[i.Inst_ID] = i.Institution);
+                            
+                            if (users.length === 0) {
+                                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-400" data-kn="ಯಾವುದೇ ಖಾತೆಗಳಿಲ್ಲ." data-en="No login accounts found.">ಯಾವುದೇ ಖಾತೆಗಳಿಲ್ಲ.</td></tr>`;
+                            } else {
+                                tbody.innerHTML = users.map(user => {
+                                    const storeName = user.inst_id ? (instMap[user.inst_id] || `Store #${user.inst_id}`) : '-';
+                                    const translatedRole = user.role === 'head' ? (currentLang === 'en' ? 'Head Office' : 'ಮುಖ್ಯ ಕಚೇರಿ')
+                                                         : user.role === 'godown' ? (currentLang === 'en' ? 'Central Godown Clerk' : 'ಗೋದಾಮು ಸಿಬ್ಬಂದಿ')
+                                                         : (currentLang === 'en' ? 'Hostel Store Clerk' : 'ವಸತಿ ನಿಲಯದ ಗುಮಾಸ್ತ');
+                                    
+                                    const actionBtn = user.username === loggedInUser.username 
+                                        ? `<span class="text-slate-400 font-bold italic" data-kn="ಲಾಗಿನ್ ಆಗಿದ್ದೀರಿ" data-en="Logged In">ಲಾಗಿನ್ ಆಗಿದ್ದೀರಿ</span>`
+                                        : `<button onclick="deleteUser('${user.username}')" class="text-red-600 hover:text-red-800 transition font-black text-xs px-2.5 py-1 bg-red-50 hover:bg-red-100 rounded-lg flex items-center gap-1">
+                                             <span>❌</span> <span data-kn="ಅಳಿಸು" data-en="Delete">ಅಳಿಸು</span>
+                                           </button>`;
+                                           
+                                    return `
+                                        <tr class="hover:bg-slate-50/50">
+                                            <td class="px-4 py-3 font-mono text-slate-600">${user.username}</td>
+                                            <td class="px-4 py-3 text-slate-800 font-bold">${user.name}</td>
+                                            <td class="px-4 py-3 text-slate-600">${translatedRole}</td>
+                                            <td class="px-4 py-3 text-slate-500 font-bold">${storeName}</td>
+                                            <td class="px-4 py-3">${actionBtn}</td>
+                                        </tr>
+                                    `;
+                                }).join('');
+                            }
+                        });
+                });
+        }
+
+        function toggleFormStoreSelection() {
+            const role = document.getElementById('selectUserRole').value;
+            const selectHostel = document.getElementById('selectUserHostel');
+            const wrapper = document.getElementById('wrapperFormUserStore');
+            if (!wrapper) return;
+            
+            if (role === 'hostel') {
+                wrapper.classList.remove('hidden');
+                fetch('/api/institutions')
+                    .then(res => res.json())
+                    .then(data => {
+                        selectHostel.innerHTML = data.map(inst => `<option value="${inst.Inst_ID}">${inst.Institution}</option>`).join('');
+                    });
+            } else {
+                wrapper.classList.add('hidden');
+            }
+        }
+
+        function handleCreateUser(e) {
+            e.preventDefault();
+            const role = document.getElementById('selectUserRole').value;
+            const payload = {
+                username: document.getElementById('inputUserUsername').value,
+                name: document.getElementById('inputUserDisplayName').value,
+                password: document.getElementById('inputUserPassword').value,
+                role: role,
+                inst_id: role === 'hostel' ? parseInt(document.getElementById('selectUserHostel').value) : null
+            };
+            
+            fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('ದೋಷ: ' + data.error);
+                } else {
+                    const successMsg = currentLang === 'en' ? 'User account created successfully!' : 'ಲಾಗಿನ್ ಖಾತೆ ಯಶಸ್ವಿಯಾಗಿ ಸೃಜಿಸಲಾಗಿದೆ!';
+                    alert(successMsg);
+                    document.getElementById('formAddUser').reset();
+                    toggleFormStoreSelection();
+                    loadUsersList();
+                }
+            });
+        }
+
+        function deleteUser(username) {
+            const confirmMsg = currentLang === 'en'
+                ? `Are you sure you want to delete account "${username}"?`
+                : `"${username}" ಲಾಗಿನ್ ಖಾತೆಯನ್ನು ಅಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?`;
+            if (!confirm(confirmMsg)) return;
+            
+            fetch(`/api/users/${username}`, {
+                method: 'DELETE'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('ದೋಷ: ' + data.error);
+                } else {
+                    const successMsg = currentLang === 'en' ? 'User account deleted!' : 'ಲಾಗಿನ್ ಖಾತೆಯನ್ನು ಅಳಿಸಲಾಗಿದೆ!';
+                    alert(successMsg);
+                    loadUsersList();
+                }
+            });
+        }
+
+        // --- SYSTEM MASTERS JS FUNCTIONS ---
+        function loadMasterItemsList() {
+            fetch('/api/grocery-items')
+                .then(res => res.json())
+                .then(items => {
+                    const tbody = document.getElementById('tblMasterItemsList');
+                    if (!tbody) return;
+                    if (items.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-400" data-kn="ಯಾವುದೇ ಆಹಾರ ಪದಾರ್ಥಗಳಿಲ್ಲ." data-en="No items registered.">ಯಾವುದೇ ಆಹಾರ ಪದಾರ್ಥಗಳಿಲ್ಲ.</td></tr>`;
+                    } else {
+                        tbody.innerHTML = items.map(item => `
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="px-4 py-3 font-mono text-slate-600">${item.Grocery_Code}</td>
+                                <td class="px-4 py-3 text-slate-800 kannada-text font-bold">${item.Grocery_Items_Kan}</td>
+                                <td class="px-4 py-3 text-slate-800 font-bold">${item.Grocery_Items_Eng || '-'}</td>
+                                <td class="px-4 py-3 text-slate-500 font-mono">${item.Qtl_Kg_Ltr}</td>
+                                <td class="px-4 py-3">
+                                    <button onclick="deleteMasterItem(${item.Grocery_Code})" class="text-red-600 hover:text-red-800 transition font-black text-xs px-2.5 py-1 bg-red-50 hover:bg-red-100 rounded-lg flex items-center gap-1">
+                                        <span>❌</span> <span data-kn="ಅಳಿಸು" data-en="Delete">ಅಳಿಸು</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                });
+        }
+
+        function loadMasterDonorsList() {
+            fetch('/api/donors')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('tblMasterDonorsList');
+                    if (!tbody) return;
+                    if (data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-400" data-kn="ಯಾವುದೇ ದಾನಿಗಳಿಲ್ಲ." data-en="No donors/shops registered.">ಯಾವುದೇ ದಾನಿಗಳಿಲ್ಲ.</td></tr>`;
+                    } else {
+                        tbody.innerHTML = data.map(d => `
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="px-4 py-3 font-mono text-slate-600">${d.Shop_Donor_ID}</td>
+                                <td class="px-4 py-3 text-slate-800 kannada-text font-bold">${d.Shop_Donor_Name}</td>
+                                <td class="px-4 py-3 text-slate-600">${d.Place || '-'}</td>
+                                <td class="px-4 py-3 text-slate-500 font-mono">${d.Mobile || '-'}</td>
+                            </tr>
+                        `).join('');
+                    }
+                });
+        }
+
+        function filterStockGrid() {
+            const query = document.getElementById('inputStockSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#tblGodownBalances tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    row.classList.remove('hidden');
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
         }
 
         // Setup default dates & layout on load
@@ -1089,9 +1508,9 @@
                         activeSelect.innerHTML = data.map(inst => `<option value="${inst.Inst_ID}">${inst.Institution}</option>`).join('');
                     }
                     
-                    const userInstSelect = document.getElementById('selectUserInst');
-                    if (userInstSelect) {
-                        userInstSelect.innerHTML = data.map(inst => `<option value="${inst.Inst_ID}">${inst.Institution}</option>`).join('');
+                    const selectUserHostel = document.getElementById('selectUserHostel');
+                    if (selectUserHostel) {
+                        selectUserHostel.innerHTML = data.map(inst => `<option value="${inst.Inst_ID}">${inst.Institution}</option>`).join('');
                     }
                     
                     // Apply visual permissions based on role
@@ -1141,7 +1560,17 @@
                 
                 if (currentHeadMode === 'admin') {
                     currentRole = 'godown';
-                    document.querySelectorAll('.role-admin, .role-admin-clerk, .role-admin-clerk-view').forE        // --- DATA LOADERS ---
+                    document.querySelectorAll('.role-admin, .role-admin-clerk, .role-admin-clerk-view').forEach(el => el.classList.remove('hidden'));
+                    document.getElementById('wrapperAuditorStore').classList.add('hidden');
+                } else {
+                    currentRole = 'hostel';
+                    document.querySelectorAll('.role-hostel, .role-admin-clerk-view').forEach(el => el.classList.remove('hidden'));
+                    document.getElementById('wrapperAuditorStore').classList.remove('hidden');
+                }
+            }
+        }
+
+        // --- DATA LOADERS ---
 
         function renderDashboardCards(metrics) {
             const grid = document.getElementById('dashboardStatsGrid');
