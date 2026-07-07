@@ -718,5 +718,39 @@ def init_db():
     conn.close()
     print(f"Database ({db_type}) successfully initialized and seeded with Kannada values.")
 
+def ensure_audit_logs_table():
+    """Create the Audit_Logs table if it doesn't exist (idempotent)."""
+    import sqlite3 as _sqlite3
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(base_dir, 'database.db')
+    conn = _sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Audit_Logs (
+            Rec INTEGER PRIMARY KEY AUTOINCREMENT,
+            Timestamp TEXT NOT NULL,
+            Username TEXT NOT NULL,
+            Module TEXT NOT NULL,
+            Action TEXT NOT NULL,
+            Target_ID TEXT,
+            Old_Value TEXT,
+            New_Value TEXT
+        )
+    """)
+    # Also add Bill_No and Bill_Date columns to Stock_Issue if missing
+    try:
+        cursor.execute("ALTER TABLE Stock_Issue ADD COLUMN Bill_No TEXT")
+    except Exception:
+        pass
+    try:
+        cursor.execute("ALTER TABLE Stock_Issue ADD COLUMN Bill_Date TEXT")
+    except Exception:
+        pass
+    conn.commit()
+    conn.close()
+    print("Audit_Logs table ensured.")
+
+
+
 if __name__ == '__main__':
     init_db()
