@@ -242,7 +242,7 @@ def get_godown_stock():
 
 @app.route('/api/godown-stock', methods=['POST'])
 def add_godown_stock():
-    if not chk('head','godown'): return jsonify({'error':'Unauthorized'}), 403
+    if not chk('godown'): return jsonify({'error':'Unauthorized'}), 403
     d = request.json or {}
     code, donor_id, quantity = d.get('Grocery_Code'), d.get('Shop_Donor_ID'), d.get('Quantity')
     if not code or not donor_id or not quantity: return jsonify({'error':'Fill all required fields'}), 400
@@ -302,7 +302,7 @@ def create_indent():
 
 @app.route('/api/indents/<int:indent_rec>/approve', methods=['POST'])
 def approve_indent(indent_rec):
-    if not chk('head','godown'): return jsonify({'error':'Unauthorized'}), 403
+    if not chk('godown'): return jsonify({'error':'Unauthorized'}), 403
     d = request.json or {}
     rows = db_query("SELECT * FROM Indents WHERE Rec=%s", (indent_rec,))
     if not rows: return jsonify({'error':'Indent not found'}), 404
@@ -328,7 +328,7 @@ def approve_indent(indent_rec):
 
 @app.route('/api/indents/<int:indent_rec>/reject', methods=['POST'])
 def reject_indent(indent_rec):
-    if not chk('head','godown'): return jsonify({'error':'Unauthorized'}), 403
+    if not chk('godown'): return jsonify({'error':'Unauthorized'}), 403
     d = request.json or {}
     rows = db_query("SELECT * FROM Indents WHERE Rec=%s", (indent_rec,))
     if not rows: return jsonify({'error':'Indent not found'}), 404
@@ -409,6 +409,32 @@ def get_daily_usage_logs(inst_id):
         FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code=gi.Grocery_Code
         WHERE si.Issue_Inst_ID=%s AND si.Purchased_Donation='Consumption' {extra}
         ORDER BY si.Rec DESC""", tuple(args)))
+
+@app.route('/api/daily-usage/<int:rec_id>', methods=['DELETE'])
+def delete_daily_usage(rec_id):
+    if not chk('head', 'hostel', 'godown'): return jsonify({'error':'Unauthorized'}), 403
+    rows = db_query("SELECT * FROM Stock_Issue WHERE Rec=%s AND Purchased_Donation='Consumption'", (rec_id,))
+    if not rows: return jsonify({'error':'Log not found'}), 404
+    log = rows[0]
+
+    # Verify same day entry
+    today = datetime.now().strftime('%Y-%m-%d')
+    if log['Date1'] != today:
+        return jsonify({'error':'Can only edit or delete entries made on the same day!'}), 400
+
+    inst_id = log['Issue_Inst_ID']
+    col = INST_ID_TO_COLUMN.get(int(inst_id))
+    if not col: return jsonify({'error':'Invalid hostel'}), 400
+
+    try:
+        # Revert the stock level by adding back the consumed quantity
+        db_query(f"UPDATE Grocery_Items SET {col} = {col} + %s WHERE Grocery_Code = %s", (log['Issue'], log['Grocery_Code']), fetch=False)
+        # Delete consumption log
+        db_query("DELETE FROM Stock_Issue WHERE Rec = %s", (rec_id,), fetch=False)
+        log_audit('Consumption', 'Delete', log['Grocery_Code'], f"{log['Issue']} reverted", 'Deleted')
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 # --- LOW STOCK ALERTS ---
@@ -525,15 +551,30 @@ def report_indents():
 @app.route('/api/reports/consumption', methods=['GET'])
 def report_consumption():
     df = request.args.get('from',''); dt = request.args.get('to',''); iid = request.args.get('inst_id','')
+    item_code = request.args.get('item_code','')
     wheres = ["si.Purchased_Donation='Consumption'"]; args = []
     if df: wheres.append("si.Date1>=%s"); args.append(df)
     if dt: wheres.append("si.Date1<=%s"); args.append(dt)
     if iid: wheres.append("si.Issue_Inst_ID=%s"); args.append(iid)
-    return jsonify(db_query(f"""SELECT si.Date1,inst.Institution,gi.Grocery_Items_Kan,gi.Grocery_Items_Eng,
-        gi.Qtl_Kg_Ltr,gi.Grocery_Category,si.Issue AS QuantityUsed,si.Issue_Amount,si.Remarks
+    if item_code: wheres.append("si.Grocery_Code=%s"); args.append(item_code)
+    
+    logs = db_query(f"""SELECT si.Date1,inst.Institution,gi.Grocery_Code,gi.Grocery_Items_Kan,gi.Grocery_Items_Eng,
+        gi.Qtl_Kg_Ltr,gi.Grocery_Category,si.Issue AS QuantityUsed,si.Issue_Amount,si.Remarks,
+        gi.Boys_Hostel_Qty, gi.Girls_Hostel_Qty, gi.Math_Qty, gi.Shantivan_Qty_a, gi.Hunnime_Qty, gi.AO_Office_Qty, gi.Shraddanjali_Qty,
+        si.Issue_Inst_ID
         FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code=gi.Grocery_Code
         JOIN Institutions inst ON si.Issue_Inst_ID=inst.Inst_ID
-        WHERE {' AND '.join(wheres)} ORDER BY si.Date1 DESC,si.Rec DESC""", tuple(args)))
+        WHERE {' AND '.join(wheres)} ORDER BY si.Date1 DESC,si.Rec DESC""", tuple(args))
+        
+    for log in logs:
+        inst_id = int(log['Issue_Inst_ID'])
+        col = INST_ID_TO_COLUMN.get(inst_id)
+        if col and col in log:
+            log['RemainingStock'] = log[col]
+        else:
+            log['RemainingStock'] = 0.0
+            
+    return jsonify(logs)
 
 @app.route('/api/reports/donations', methods=['GET'])
 def report_donations():

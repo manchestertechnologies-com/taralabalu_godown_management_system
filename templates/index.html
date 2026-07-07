@@ -51,7 +51,7 @@
         <div class="flex items-center gap-3 p-5 border-b border-emerald-800">
             <img src="/static/images/logo.jpg" alt="Taralabalu Logo" class="w-10 h-10 rounded-full border-2 border-emerald-400 object-cover shadow-md" onerror="this.src='https://placehold.co/100x100?text=TVSR'">
             <div>
-                <h2 class="text-xs font-black tracking-wide text-white kannada-text leading-tight" data-kn="ತರಳಬಾಳು ವಿದ್ಯಾ ಸಂಸ್ಥೆ" data-en="Taralabalu Vidyasamaste">ತರಳಬಾಳು ವಿದ್ಯಾ ಸಂಸ್ಥೆ</h2>
+                <h2 class="text-xs font-black tracking-wide text-white kannada-text leading-tight" data-kn="ತರಳಬಾಳು ವಿದ್ಯಾಸಂಸ್ಥೆ" data-en="Taralabalu Vidyasamaste">ತರಳಬಾಳು ವಿದ್ಯಾಸಂಸ್ಥೆ</h2>
                 <span class="text-[9px] text-emerald-300 font-bold block" data-kn="ದಾಸ್ತಾನು ವ್ಯವಸ್ಥೆ" data-en="Godown Management">ದಾಸ್ತಾನು ವ್ಯವಸ್ಥೆ</span>
             </div>
         </div>
@@ -63,7 +63,7 @@
             </div>
             <div class="min-w-0">
                 <p class="text-xs font-black text-white truncate" id="lblUserDisplayName">{{ session.get('name', 'User') }}</p>
-                <span class="text-[9px] text-emerald-300 font-bold block capitalize" id="lblUserDisplayRole">{{ session.get('role', 'hostel') }}</span>
+                <span class="text-[9px] text-emerald-300 font-bold block capitalize" id="lblUserDisplayRole">Role</span>
             </div>
         </div>
 
@@ -96,7 +96,7 @@
             <!-- 5. PURCHASES -->
             <a href="#" onclick="showPage('purchases')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white" data-page="purchases">
                 <span>📥</span>
-                <span data-kn="ಖರೀದಿ / ದಾನಿಗಳು" data-en="Purchases / Inwards">ಖರೀದಿ / ದಾನಿಗಳು</span>
+                <span data-kn="ಖರೀದಿ / ಸ್ವೀಕೃತಿ" data-en="Purchases / Inwards">ಖರೀದಿ / ಸ್ವೀಕೃತಿ</span>
             </a>
 
             <!-- 6. BILLS -->
@@ -245,7 +245,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 no-print">
                         <div class="bg-white p-4 rounded-xl border flex justify-between items-center">
                             <div>
-                                <p class="text-[10px] text-slate-400 font-bold uppercase" data-kn="ಒಟ್ಟು ದಾಸ್ತಾನು ಮೌಲ್ಯ" data-en="Total Stock Value">ಒಟ್ಟು ದಾಸ್ತಾನು ಮೌಲ್ಯ</p>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase" data-kn="ಒಟ್ಟು ದಾಸ್ತಾನು ಮೌಲ್ಯ" data-en="Total Central stock Value">ಒಟ್ಟು ದಾಸ್ತಾನು ಮೌಲ್ಯ</p>
                                 <h4 id="lblCentralStockValue" class="text-md font-black text-slate-800">₹0.00</h4>
                             </div>
                             <span class="text-xl">💰</span>
@@ -259,7 +259,7 @@
                         </div>
                         <div class="bg-white p-4 rounded-xl border flex justify-between items-center">
                             <div>
-                                <p class="text-[10px] text-slate-400 font-bold uppercase" data-kn="ಕೊನೆಯ ಹಂತದ ದಾಸ್ತಾನು" data-en="Total Central stock">ಕೊನೆಯ ಹಂತದ ದಾಸ್ತಾನು</p>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase" data-kn="ಒಟ್ಟು ದಾಸ್ತಾನು" data-en="Total stock Quantity">ಒಟ್ಟು ದಾಸ್ತಾನು</p>
                                 <h4 id="lblCentralClosingStock" class="text-md font-black text-slate-800">0.00</h4>
                             </div>
                             <span class="text-xl">📈</span>
@@ -303,7 +303,7 @@
                             </select>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="toggleModal('modalLogConsumption', true)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition">
+                            <button onclick="openLogConsumptionModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition">
                                 <span data-kn="➕ ದೈನಂದಿನ ಬಳಕೆ ದಾಖಲಿಸು" data-en="➕ Log Usage / Consumption">➕ ದೈನಂದಿನ ಬಳಕೆ ದಾಖಲಿಸು</span>
                             </button>
                         </div>
@@ -326,7 +326,7 @@
                                         <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಕೋಡ್" data-en="Code">ಕೋಡ್</th>
                                         <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಆಹಾರ ಪದಾರ್ಥ" data-en="Item Name">ಆಹಾರ ಪದಾರ್ಥ</th>
                                         <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ವರ್ಗ" data-en="Category">ವರ್ಗ</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು" data-en="Current stock">ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು" data-en="Current Stock">ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು</th>
                                         <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಘಟಕ" data-en="Unit">ಘಟಕ</th>
                                     </tr>
                                 </thead>
@@ -348,6 +348,7 @@
                                         <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಪದಾರ್ಥದ ಹೆಸರು" data-en="Item Name">ಪದಾರ್ಥದ ಹೆಸರು</th>
                                         <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಬಳಕೆಯಾದ ಪ್ರಮಾಣ" data-en="Used Quantity">ಬಳಕೆಯಾದ ಪ್ರಮಾಣ</th>
                                         <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಷರಾ" data-en="Remarks">ಷರಾ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600 no-print" data-kn="ಕ್ರಮ" data-en="Action">ಕ್ರಮ</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tblStoreConsumptionHistory" class="divide-y divide-slate-100">
@@ -364,7 +365,7 @@
                     <div class="flex border-b border-slate-200 gap-4 text-xs font-bold no-print">
                         <button onclick="switchIndentTab('history')" id="btnIndentTabHistory" class="pb-2 border-b-2 border-emerald-600 text-emerald-800" data-kn="ಇಂಡೆಂಟ್ ಇತಿಹಾಸ" data-en="Indent Log">ಇಂಡೆಂಟ್ ಇತಿಹಾಸ</button>
                         <button onclick="switchIndentTab('new')" id="btnIndentTabNew" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700" data-kn="ಹೊಸ ಇಂಡೆಂಟ್ ರಚಿಸು" data-en="Submit New Indent">ಹೊಸ ಇಂಡೆಂಟ್ ರಚಿಸು</button>
-                        <button onclick="switchIndentTab('pending')" id="btnIndentTabPending" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700 assign-godown-only hidden" data-kn="ಬಾಕಿ ಇರುವ ಇಂಡೆಂಟ್‌ಗಳು" data-en="Pending Indents Approval">ಬಾಕಿ ಇರುವ ಇಂಡೆಂಟ್‌ಗಳು</button>
+                        <button onclick="switchIndentTab('pending')" id="btnIndentTabPending" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700 hidden" data-kn="ಬಾಕಿ ಇರುವ ಇಂಡೆಂಟ್‌ಗಳು" data-en="Pending Indents Approval">ಬಾಕಿ ಇರುವ ಇಂಡೆಂಟ್‌ಗಳು</button>
                     </div>
 
                     <!-- Sub-tab: New Indent Form -->
@@ -436,7 +437,7 @@
                     <div id="tabIndentHistory" class="indent-tab-content bg-white rounded-xl border overflow-hidden">
                         <div class="p-4 border-b flex flex-wrap gap-2 justify-between items-center no-print">
                             <div class="flex gap-2">
-                                <select id="selectIndentHistoryStatus" onchange="loadHostelIndentsHistory()" class="p-2 border rounded-lg text-xs focus:outline-none">
+                                <select id="selectIndentHistoryStatus" onchange="loadIndentsPageData()" class="p-2 border rounded-lg text-xs focus:outline-none">
                                     <option value="" data-kn="ಎಲ್ಲಾ ಸ್ಥಿತಿಗಳು" data-en="All Statuses">ಎಲ್ಲಾ ಸ್ಥಿತಿಗಳು</option>
                                     <option value="Pending" data-kn="ಬಾಕಿ" data-en="Pending">ಬಾಕಿ</option>
                                     <option value="Sent" data-kn="ಕಳುಹಿಸಲಾಗಿದೆ" data-en="Sent">ಕಳುಹಿಸಲಾಗಿದೆ</option>
@@ -497,7 +498,7 @@
 
                     <!-- Sub-tab: Grocery Inward Entry -->
                     <div id="tabPurchaseGrocery" class="purchase-tab-content grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="glass-card rounded-2xl p-6 lg:col-span-1 border-emerald-100 no-print">
+                        <div id="cardStockInward" class="glass-card rounded-2xl p-6 lg:col-span-1 border-emerald-100 no-print assign-godown-only">
                             <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                                 <span>📥</span>
                                 <span data-kn="ಸ್ವೀಕೃತಿ ದಾಖಲು ಮಾಡಿ" data-en="Log Stock Inward">ಸ್ವೀಕೃತಿ ದಾಖಲು ಮಾಡಿ</span>
@@ -549,13 +550,15 @@
                                         <input type="text" id="inputRecBillNo" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                                     </div>
                                 </div>
-                                <div>
-                                    <label class="block text-slate-600 font-bold mb-1" data-kn="ಬಿಲ್ ದಿನಾಂಕ" data-en="Bill Date">ಬಿಲ್ ದಿನಾಂಕ</label>
-                                    <input type="date" id="inputRecBillDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-slate-600 font-bold mb-1" data-kn="ಷರಾ" data-en="Remarks">ಷರಾ</label>
-                                    <input type="text" id="inputRecRemarks" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-slate-600 font-bold mb-1" data-kn="ಬಿಲ್ ದಿನಾಂಕ" data-en="Bill Date">ಬಿಲ್ ದಿನಾಂಕ</label>
+                                        <input type="date" id="inputRecBillDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-slate-600 font-bold mb-1" data-kn="ಷರಾ" data-en="Remarks">ಷರಾ</label>
+                                        <input type="text" id="inputRecRemarks" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    </div>
                                 </div>
                                 <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow transition">
                                     <span data-kn="➕ ದಾಸ್ತಾನು ಸೇರಿಸಿ" data-en="➕ Add Inward Stock">➕ ದಾಸ್ತಾನು ಸೇರಿಸಿ</span>
@@ -564,7 +567,7 @@
                         </div>
 
                         <!-- Inward history log -->
-                        <div class="glass-card rounded-2xl p-6 lg:col-span-2">
+                        <div class="glass-card rounded-2xl p-6 lg:col-span-2 expand-when-no-form">
                             <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                                 <span>📋</span>
                                 <span data-kn="ಸ್ವೀಕೃತಿ ವಿವರ ಮತ್ತು ದಾಖಲೆಗಳು" data-en="Grocery Inwards Logs">ಸ್ವೀಕೃತಿ ವಿವರ ಮತ್ತು ದಾಖಲೆಗಳು</span>
@@ -591,7 +594,7 @@
 
                     <!-- Sub-tab: Vegetable Inward Entry -->
                     <div id="tabPurchaseVegetables" class="purchase-tab-content grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
-                        <div class="glass-card rounded-2xl p-6 lg:col-span-1 border-emerald-100 no-print">
+                        <div class="glass-card rounded-2xl p-6 lg:col-span-1 border-emerald-100 no-print assign-godown-only">
                             <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                                 <span>🥬</span>
                                 <span data-kn="ದೈನಂದಿನ ತರಕಾರಿ ದಾಖಲು" data-en="Log Vegetable Purchase">ದೈನಂದಿನ ತರಕಾರಿ ದಾಖಲು</span>
@@ -638,7 +641,7 @@
                         </div>
 
                         <!-- Vegetables Inwards list log -->
-                        <div class="glass-card rounded-2xl p-6 lg:col-span-2">
+                        <div class="glass-card rounded-2xl p-6 lg:col-span-2 expand-when-no-form">
                             <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
                                 <span>🥦</span>
                                 <span data-kn="ತರಕಾರಿ ಸ್ವೀಕೃತಿ ಮತ್ತು ಖರೀದಿಗಳ ದಿನಚರಿ" data-en="Vegetables Log Register">ತರಕಾರಿ ಸ್ವೀಕೃತಿ ಮತ್ತು ಖರೀದಿಗಳ ದಿನಚರಿ</span>
@@ -782,6 +785,13 @@
                                 <option value="" data-kn="ಎಲ್ಲಾ ದಾನಿಗಳು" data-en="All Donors">ಎಲ್ಲಾ ದಾನಿಗಳು</option>
                             </select>
                         </div>
+                        <div id="wrapperReportItemSelect">
+                            <label class="block text-slate-500 mb-1" data-kn="ಆಹಾರ ಪದಾರ್ಥ" data-en="Filter Grocery Item">ಆಹಾರ ಪದಾರ್ಥ</label>
+                            <select id="selectReportItem" class="w-full p-2 border rounded-lg focus:outline-none">
+                                <option value="" data-kn="ಎಲ್ಲಾ ಪದಾರ್ಥಗಳು" data-en="All Items">ಎಲ್ಲಾ ಪದಾರ್ಥಗಳು</option>
+                                <!-- Loaded dynamically -->
+                            </select>
+                        </div>
                         <div class="flex items-end">
                             <button onclick="generateReport()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2 rounded-lg shadow-sm transition">
                                 <span data-kn="🔍 ವರದಿ ತಯಾರಿಸು" data-en="🔍 Generate Report">🔍 ವರದಿ ತಯಾರಿಸು</span>
@@ -798,14 +808,14 @@
                             <span>📄</span> <span data-kn="Excel / CSV" data-en="Excel / CSV">Excel / CSV</span>
                         </button>
                         <button onclick="exportReportWord()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 transition">
-                            <span>📝</span> <span data-kn="Word ಡಾಕ್ಯುಮೆಂಟ್" data-en="Word Document">Word ಡಾಕ್ಯುಮೆಂಟ್</span>
+                            <span>📝</span> <span data-kn="Word ಡಾಕ್ಯುಮೆಂಟ್" data-en="Word Document">Word Document</span>
                         </button>
                     </div>
 
                     <!-- Report Table output -->
                     <div id="printableReceipt" class="bg-white p-6 rounded-xl border print-card">
                         <div class="text-center mb-6 hidden print-only">
-                            <h2 class="text-lg font-black text-slate-800">ತರಳಬಾಳು ವಿದ್ಯಾ ಸಂಸ್ಥೆ, ಸಿರಿಗೆರೆ</h2>
+                            <h2 class="text-lg font-black text-slate-800">ತರಳಬಾಳು ವಿದ್ಯಾಸಂಸ್ಥೆ, ಸಿರಿಗೆರೆ</h2>
                             <p class="text-xs font-bold text-slate-500" data-kn="ಗೋದಾಮು ಮತ್ತು ದಾಸ್ತಾನು ನಿರ್ವಹಣಾ ವರದಿ" data-en="Godown & Store Inventory Audit Report">ಗೋದಾಮು ಮತ್ತು ದಾಸ್ತಾನು ನಿರ್ವಹಣಾ ವರದಿ</p>
                             <div class="border-b-2 border-slate-900 my-4"></div>
                         </div>
@@ -857,7 +867,7 @@
                                     <label class="block text-slate-600 font-bold mb-1" data-kn="ಪಾತ್ರ (Role)" data-en="Role">ಪಾತ್ರ (Role)</label>
                                     <select id="selectUserRole" onchange="toggleFormStoreSelection()" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
                                         <option value="hostel" data-kn="ವಸತಿ ನಿಲಯ ಮೇಲ್ವಿಚಾರಕ (Store Manager)" data-en="Store Manager (Hostel)">Store Manager (Hostel)</option>
-                                        <option value="godown" data-kn="ಗೋದಾಮು ಕ್ಲರ್ಕ್ (Godown Manager)" data-en="Godown Manager">Godown Manager</option>
+                                        <option value="godown" data-kn="ಗೋದಾಮು ಕ್ಲರ್ಕ್ (Godown Clerk)" data-en="Central Godown Clerk">Central Godown Clerk</option>
                                         <option value="accounts" data-kn="ಲೆಕ್ಕಪತ್ರ ವಿಭಾಗ (Accounts)" data-en="Accounts">Accounts</option>
                                         <option value="head" data-kn="ಮುಖ್ಯಸ್ಥರು (Admin)" data-en="Admin">Admin</option>
                                     </select>
@@ -1200,7 +1210,7 @@
                     <label class="block text-slate-600 font-bold mb-1" data-kn="ಪಾತ್ರ" data-en="Role">ಪಾತ್ರ</label>
                     <select id="editUserRole" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none">
                         <option value="hostel">Store Manager (Hostel)</option>
-                        <option value="godown">Godown Manager</option>
+                        <option value="godown">Central Godown Clerk</option>
                         <option value="accounts">Accounts</option>
                         <option value="head">Admin</option>
                     </select>
@@ -1291,7 +1301,7 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="toggleModal('modalAddMasterItem', false)" class="px-4 py-2 border rounded-lg hover:bg-slate-100" data-kn="ರದ್ದು" data-en="Cancel">ರದ್ದು</button>
-                    <button type="submit" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold" data-kn="💾 ವಸ್ತು ಸೇರಿಸಿ" data-en="💾 Register Item">💾 ವಸ್ತು ಸೇರಿಸಿ</button>
+                    <button type="submit" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold" data-kn="💾 ವಸ್ತು ಸೇರಿಸಿ" data-en="💾 Register Item">💾 ವಸ್ತು ಸೇರಿಸಿ</button>
                 </div>
             </form>
         </div>
@@ -1323,7 +1333,7 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="toggleModal('modalAddDonor', false)" class="px-4 py-2 border rounded-lg hover:bg-slate-100" data-kn="ರದ್ದು" data-en="Cancel">ರದ್ದು</button>
-                    <button type="submit" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold" data-kn="💾 ಹೊಸ ದಾನಿ ನೋಂದಾಯಿಸು" data-en="💾 Register Vendor/Donor">💾 ಹೊಸ ದಾನಿ ನೋಂದಾಯಿಸು</button>
+                    <button type="submit" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold" data-kn="💾 ಹೊಸ ದಾನಿ ನೋಂದಾಯಿಸು" data-en="💾 Register Vendor/Donor">💾 ಹೊಸ ದಾನಿ ನೋಂದಾಯಿಸು</button>
                 </div>
             </form>
         </div>
@@ -1431,7 +1441,7 @@
                 'master-inventory': { kn: 'ಗೋದಾಮು ದಾಸ್ತಾನು', en: 'Central Stock' },
                 'stores': { kn: 'ವಸತಿ ನಿಲಯದ ದಾಸ್ತಾನು', en: 'Stores Stock' },
                 'indents': { kn: 'ಇಂಡೆಂಟ್‌ಗಳು', en: 'Indents Registry' },
-                'purchases': { kn: 'ಖರೀದಿ / ದಾನಿಗಳು', en: 'Purchases / Inwards' },
+                'purchases': { kn: 'ಖರೀದಿ / ಸ್ವೀಕೃತಿ', en: 'Purchases / Inwards' },
                 'bills': { kn: 'ಬಿಲ್ಲುಗಳು & ಪಾವತಿ', en: 'Bills' },
                 'reports': { kn: 'ವರದಿಗಳು', en: 'Reports' },
                 'notifications': { kn: 'ಅಧಿಸೂಚನೆಗಳು', en: 'Notifications' },
@@ -1505,7 +1515,7 @@
                     `).join('');
                 }
 
-                // Populate low stock sidebar alerts
+                // Populate low stock alerts
                 const alertsList = document.getElementById('godownAlertsList');
                 if (alertsList) {
                     if (alerts.length === 0) {
@@ -1618,7 +1628,7 @@
                 const stdRate = parseFloat(item.Std_Rate) || 0;
                 const lowStock = totStock < 10.0;
                 
-                const actionBtn = chkRole('head', 'godown') 
+                const actionBtn = chkRole('godown') 
                     ? `<button onclick="editMasterItem(${item.Grocery_Code})" class="text-emerald-600 hover:text-emerald-800 transition font-bold mr-2">Edit</button>`
                     : ``;
 
@@ -1682,18 +1692,26 @@
                     .then(res => res.json())
                     .then(data => {
                         const tbody = document.getElementById('tblStoreConsumptionHistory');
+                        const todayStr = new Date().toISOString().split('T')[0];
+                        
                         if (data.length === 0) {
-                            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">${currentLang === 'en' ? 'No usage logged' : 'ಯಾವುದೇ ಬಳಕೆ ಇತಿಹಾಸವಿಲ್ಲ.'}</td></tr>`;
+                            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">${currentLang === 'en' ? 'No usage logged' : 'ಯಾವುದೇ ಬಳಕೆ ಇತಿಹಾಸವಿಲ್ಲ.'}</td></tr>`;
                         } else {
-                            tbody.innerHTML = data.map(c => `
-                                <tr class="hover:bg-slate-50/50">
-                                    <td class="px-4 py-3 font-mono text-slate-500">${c.Date1}</td>
-                                    <td class="px-4 py-3 text-slate-500 font-mono">${c.Grocery_Code}</td>
-                                    <td class="px-4 py-3 text-slate-800 font-bold">${getItemName(c)}</td>
-                                    <td class="px-4 py-3 font-extrabold text-slate-800">${c.QuantityUsed} ${c.Qtl_Kg_Ltr}</td>
-                                    <td class="px-4 py-3 text-slate-500">${c.Remarks || '-'}</td>
-                                </tr>
-                            `).join('');
+                            tbody.innerHTML = data.map(c => {
+                                const actionCell = c.Date1 === todayStr
+                                    ? `<button onclick="deleteConsumptionLog(${c.Rec})" class="text-red-600 hover:text-red-800 font-bold transition">Delete</button>`
+                                    : `<span class="text-slate-400 font-medium">Locked</span>`;
+                                return `
+                                    <tr class="hover:bg-slate-50/50">
+                                        <td class="px-4 py-3 font-mono text-slate-500">${c.Date1}</td>
+                                        <td class="px-4 py-3 text-slate-500 font-mono">${c.Grocery_Code}</td>
+                                        <td class="px-4 py-3 text-slate-800 font-bold">${getItemName(c)}</td>
+                                        <td class="px-4 py-3 font-extrabold text-slate-800">${c.QuantityUsed} ${c.Qtl_Kg_Ltr}</td>
+                                        <td class="px-4 py-3 text-slate-500">${c.Remarks || '-'}</td>
+                                        <td class="px-4 py-3 no-print">${actionCell}</td>
+                                    </tr>
+                                `;
+                            }).join('');
                         }
                     });
             }
@@ -1727,6 +1745,11 @@
             renderStoreStockTable(filtered);
         }
 
+        function openLogConsumptionModal() {
+            document.getElementById('inputUsageDate').value = new Date().toISOString().split('T')[0];
+            toggleModal('modalLogConsumption', true);
+        }
+
         // Log daily consumption
         function handleLogConsumption(e) {
             e.preventDefault();
@@ -1752,6 +1775,21 @@
                     toggleModal('modalLogConsumption', false);
                     document.getElementById('formLogConsumption').reset();
                     document.querySelector('#comboUsageItem .select-display').value = '';
+                    loadStoreDashboardData();
+                }
+            });
+        }
+
+        function deleteConsumptionLog(recId) {
+            if (!confirm(currentLang === 'en' ? 'Delete this consumption entry and revert stock?' : 'ಈ ಬಳಕೆ ದಾಖಲೆಯನ್ನು ಅಳಿಸಲು ಮತ್ತು ದಾಸ್ತಾನನ್ನು ಮರಳಿ ಪಡೆಯಲು ಬಯಸುವಿರಾ?')) return;
+            fetch(`/api/daily-usage/${recId}`, {
+                method: 'DELETE'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) showToast(data.error, 'error');
+                else {
+                    showToast(currentLang === 'en' ? 'Consumption entry deleted and stock reverted' : 'ಬಳಕೆ ದಾಖಲೆ ಅಳಿಸಲಾಗಿದೆ ಮತ್ತು ದಾಸ್ತಾನು ಮರಳಿದೆ!');
                     loadStoreDashboardData();
                 }
             });
@@ -1833,19 +1871,30 @@
                             tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">${currentLang === 'en' ? 'No pending indents' : 'ಯಾವುದೇ ಬಾಕಿ ಇಂಡೆಂಟ್‌ಗಳು ಇಲ್ಲ.'}</td></tr>`;
                             return;
                         }
-                        tbody.innerHTML = data.map(ind => `
-                            <tr class="hover:bg-slate-50/50">
-                                <td class="px-4 py-3 font-mono text-slate-500">${ind.Indent_Date}</td>
-                                <td class="px-4 py-3 font-bold text-slate-800">${ind.Institution}</td>
-                                <td class="px-4 py-3 text-slate-800 font-bold">${getItemName(ind)}</td>
-                                <td class="px-4 py-3 font-black text-slate-900">${ind.Quantity} ${ind.Qtl_Kg_Ltr}</td>
-                                <td class="px-4 py-3"><input type="number" id="sanctionQty-${ind.Rec}" value="${ind.Quantity}" class="p-1.5 border rounded w-24 text-xs font-black"></td>
-                                <td class="px-4 py-3 flex gap-1 no-print">
-                                    <button onclick="approveIndent(${ind.Rec})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2 py-1 rounded">Approve</button>
-                                    <button onclick="rejectIndentConfirm(${ind.Rec})" class="bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded">Reject</button>
-                                </td>
-                            </tr>
-                        `).join('');
+
+                        const isClerk = (currentRole === 'godown');
+
+                        tbody.innerHTML = data.map(ind => {
+                            const qtyInput = isClerk
+                                ? `<input type="number" id="sanctionQty-${ind.Rec}" value="${ind.Quantity}" class="p-1.5 border rounded w-24 text-xs font-black">`
+                                : `<span class="font-extrabold text-slate-500">${ind.Quantity} ${ind.Qtl_Kg_Ltr} (View Only)</span>`;
+
+                            const actionCell = isClerk
+                                ? `<button onclick="approveIndent(${ind.Rec})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2 py-1 rounded">Approve</button>
+                                   <button onclick="rejectIndentConfirm(${ind.Rec})" class="bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded">Reject</button>`
+                                : `<span class="text-xs text-slate-400 font-bold" data-kn="ವೀಕ್ಷಣೆ ಮಾತ್ರ" data-en="View Only">ವೀಕ್ಷಣೆ ಮಾತ್ರ</span>`;
+
+                            return `
+                                <tr class="hover:bg-slate-50/50">
+                                    <td class="px-4 py-3 font-mono text-slate-500">${ind.Indent_Date}</td>
+                                    <td class="px-4 py-3 font-bold text-slate-800">${ind.Institution}</td>
+                                    <td class="px-4 py-3 text-slate-800 font-bold">${getItemName(ind)}</td>
+                                    <td class="px-4 py-3 font-black text-slate-900">${ind.Quantity} ${ind.Qtl_Kg_Ltr}</td>
+                                    <td class="px-4 py-3">${qtyInput}</td>
+                                    <td class="px-4 py-3 flex gap-1 no-print">${actionCell}</td>
+                                </tr>
+                            `;
+                        }).join('');
                     });
             }
         }
@@ -1986,6 +2035,7 @@
             });
         }
 
+        // Acknowledge delivery
         function acknowledgeDelivery(recId) {
             fetch(`/api/indents/${recId}/acknowledge`, {
                 method: 'POST'
@@ -2212,17 +2262,22 @@
             const tabBtn = document.getElementById(`btnReportTab${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`);
             if (tabBtn) tabBtn.className = "pb-2 border-b-2 border-emerald-600 text-emerald-800";
 
-            // Hide/Show correct report dropdown filters
+            // Hide/Show report filters
             const divInst = document.getElementById('wrapperReportInstitutionSelect');
             const divDonor = document.getElementById('wrapperReportDonorSelect');
+            const divItem = document.getElementById('wrapperReportItemSelect');
 
             divInst.classList.add('hidden');
             divDonor.classList.add('hidden');
+            divItem.classList.add('hidden');
 
             if (tabId === 'consumption' || tabId === 'indents') {
                 divInst.classList.remove('hidden');
             } else if (tabId === 'purchases' || tabId === 'donations') {
                 divDonor.classList.remove('hidden');
+            }
+            if (tabId === 'consumption') {
+                divItem.classList.remove('hidden');
             }
         }
 
@@ -2233,12 +2288,16 @@
             const dateTo = document.getElementById('inputReportDateTo').value;
             const instId = document.getElementById('selectReportInstitution').value;
             const donorId = document.getElementById('selectReportDonor').value;
+            const itemCode = document.getElementById('selectReportItem').value;
 
             let url = `/api/reports/${activeReportTab}?from=${dateFrom}&to=${dateTo}`;
             if (activeReportTab === 'consumption' || activeReportTab === 'indents') {
                 url += `&inst_id=${instId}`;
             } else if (activeReportTab === 'purchases' || activeReportTab === 'donations') {
                 url += `&donor=${donorId}`;
+            }
+            if (activeReportTab === 'consumption' && itemCode) {
+                url += `&item_code=${itemCode}`;
             }
 
             fetch(url)
@@ -2339,6 +2398,7 @@
                             <th class="px-3 py-2 text-left font-bold text-slate-600">Institution</th>
                             <th class="px-3 py-2 text-left font-bold text-slate-600">Item</th>
                             <th class="px-3 py-2 text-left font-bold text-slate-600">Consumed Qty</th>
+                            <th class="px-3 py-2 text-left font-bold text-slate-600">Remaining Stock</th>
                             <th class="px-3 py-2 text-left font-bold text-slate-600">Remarks</th>
                         </tr>
                     </thead>
@@ -2348,7 +2408,8 @@
                                 <td class="px-3 py-2 font-mono">${r.Date1}</td>
                                 <td class="px-3 py-2 font-bold">${r.Institution}</td>
                                 <td class="px-3 py-2">${getItemName(r)}</td>
-                                <td class="px-3 py-2 font-bold text-slate-800">${r.QuantityUsed} ${r.Qtl_Kg_Ltr}</td>
+                                <td class="px-3 py-2 font-bold text-red-600">${r.QuantityUsed} ${r.Qtl_Kg_Ltr}</td>
+                                <td class="px-3 py-2 font-black text-slate-800">${(r.RemainingStock || 0).toFixed(2)} ${r.Qtl_Kg_Ltr}</td>
                                 <td class="px-3 py-2 text-slate-500">${r.Remarks || '-'}</td>
                             </tr>
                         `).join('')}
@@ -2396,7 +2457,6 @@
             currentReportData.forEach(row => {
                 const line = headers.map(header => {
                     let cellVal = row[header] === null ? "" : String(row[header]);
-                    // Escape quotes
                     cellVal = cellVal.replace(/"/g, '""');
                     return `"${cellVal}"`;
                 }).join(",");
@@ -2418,7 +2478,6 @@
                 showToast('ವರದಿಯಲ್ಲಿ ಯಾವುದೇ ಡೇಟಾ ಇಲ್ಲ!', 'warning');
                 return;
             }
-            // Generate Word document by creating a Blob from HTML table contents
             const html = `
                 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
                 <head><title>Inventory Report</title><style>table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid black; padding: 5px; font-family: Arial; font-size: 10pt; }</style></head>
@@ -2430,7 +2489,7 @@
                 </body>
                 </html>
             `;
-            const blob = new Blob(['﻿' + html], {
+            const blob = new Blob(['\ufeff' + html], {
                 type: 'application/msword'
             });
             const url = URL.createObjectURL(blob);
@@ -2455,7 +2514,6 @@
                 const cardGrid = document.getElementById('gridNotificationCards');
                 if (!cardGrid) return;
 
-                // Update notification count badge in sidebar
                 const totalCount = alerts.length + pending.length;
                 const badge = document.getElementById('badgeNotifCount');
                 if (badge) {
@@ -2474,8 +2532,8 @@
 
                 let html = '';
                 
-                // 1. Pending approval alerts for head/godown
-                if (chkRole('head', 'godown') && pending.length > 0) {
+                // Pending indent approval alert (Godown Clerk only)
+                if (currentRole === 'godown' && pending.length > 0) {
                     html += `
                         <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 shadow-sm space-y-3">
                             <div class="flex items-center justify-between">
@@ -2489,7 +2547,22 @@
                     `;
                 }
 
-                // 2. Critical/Low stock alerts
+                // Pending indents monitor alert (Admin only)
+                if (currentRole === 'head' && pending.length > 0) {
+                    html += `
+                        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-blue-100 text-blue-800 text-[10px] font-black px-2.5 py-0.5 rounded-full">MONITORING VIEW</span>
+                                <span class="text-xl">📋</span>
+                            </div>
+                            <h4 class="text-xs font-black text-slate-800" data-kn="ಬಾಕಿ ಇರುವ ಇಂಡೆಂಟ್‌ಗಳ ವೀಕ್ಷಣೆ" data-en="Awaiting Indent Dispatches">ಬಾಕಿ ಇರುವ ಇಂಡೆಂಟ್‌ಗಳ ವೀಕ್ಷಣೆ</h4>
+                            <p class="text-[11px] text-slate-500 font-bold">${pending.length} indents are currently pending review by Godown Clerk.</p>
+                            <button onclick="showPage('indents'); switchIndentTab('pending');" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 rounded-lg transition">View Pending List</button>
+                        </div>
+                    `;
+                }
+
+                // Critical/Low stock alerts
                 alerts.forEach(a => {
                     const isCritical = a.CurrentBalance < 5.0;
                     html += `
@@ -2528,7 +2601,7 @@
                             <tr class="hover:bg-slate-50/50">
                                 <td class="px-4 py-3 font-bold text-slate-800">${u.username}</td>
                                 <td class="px-4 py-3 font-semibold text-slate-700">${u.name}</td>
-                                <td class="px-4 py-3"><span class="px-2 py-0.5 bg-slate-100 text-slate-800 text-[10px] font-black rounded-full capitalize">${u.role}</span></td>
+                                <td class="px-4 py-3"><span class="px-2 py-0.5 bg-slate-100 text-slate-800 text-[10px] font-black rounded-full capitalize">${u.role === 'head' ? 'Admin' : (u.role === 'godown' ? 'Central Godown Clerk' : 'Store Manager')}</span></td>
                                 <td class="px-4 py-3 text-slate-500">${instName}</td>
                                 <td class="px-4 py-3 no-print">
                                     <button onclick="editUser('${u.username}')" class="text-emerald-600 hover:text-emerald-800 font-bold mr-3">Edit</button>
@@ -2567,7 +2640,7 @@
             .then(data => {
                 if (data.error) showToast(data.error, 'error');
                 else {
-                    showToast('ಲಾಗಿನ್ ಬಳಕೆದಾರರನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ');
+                    showToast('ಬಳಕೆದಾರರನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸೃಷ್ಟಿಸಲಾಗಿದೆ');
                     document.getElementById('formAddUser').reset();
                     loadUsersList();
                 }
@@ -2611,7 +2684,7 @@
             .then(data => {
                 if (data.error) showToast(data.error, 'error');
                 else {
-                    showToast('ಬಳಕೆದಾರರ ಮಾಹಿತಿ ನವೀಕರಿಸಲಾಗಿದೆ');
+                    showToast('ಬಳಕೆದಾರರ ವಿವರಗಳನ್ನು ನವೀಕರಿಸಲಾಗಿದೆ');
                     toggleModal('modalEditUser', false);
                     loadUsersList();
                 }
@@ -2898,7 +2971,10 @@
 
         // Role authorization and navigation filter
         function applyRolePermissions() {
-            document.getElementById('lblHeaderRoleDisplay').innerText = currentRole;
+            // Render nice English/Kannada display role names
+            let roleName = currentRole === 'head' ? 'Admin' : (currentRole === 'godown' ? 'Central Godown Clerk' : 'Store Manager');
+            document.getElementById('lblHeaderRoleDisplay').innerText = roleName;
+            document.getElementById('lblUserDisplayRole').innerText = roleName;
             
             // Show Admin section in sidebar if head
             if (currentRole === 'head') {
@@ -2915,14 +2991,29 @@
                 
                 let allowed = true;
                 if (page === 'admin-users' && currentRole !== 'head') allowed = false;
-                if (page === 'admin-masters' && currentRole !== 'head' && currentRole !== 'godown') allowed = false;
+                if (page === 'admin-masters' && currentRole !== 'head') allowed = false; // Clerk cannot access masters/logs
                 if (page === 'bills' && currentRole !== 'head' && currentRole !== 'accounts') allowed = false;
-                if (page === 'purchases' && currentRole !== 'head' && currentRole !== 'godown') allowed = false;
-                if (page === 'master-inventory' && currentRole !== 'head' && currentRole !== 'godown') allowed = false;
+                if (page === 'purchases' && currentRole !== 'head' && currentRole !== 'godown') allowed = false; // Hostel cannot access Inward
+                if (page === 'master-inventory' && currentRole !== 'head' && currentRole !== 'godown') allowed = false; // Hostel cannot access central stock
                 
                 if (allowed) link.classList.remove('hidden');
                 else link.classList.add('hidden');
             });
+
+            // Restrict Inward inputs to Clerk (godown) only
+            if (currentRole === 'godown') {
+                document.querySelectorAll('.assign-godown-only').forEach(el => el.classList.remove('hidden'));
+                document.querySelectorAll('.expand-when-no-form').forEach(el => {
+                    el.classList.remove('lg:col-span-3');
+                    el.classList.add('lg:col-span-2');
+                });
+            } else {
+                document.querySelectorAll('.assign-godown-only').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.expand-when-no-form').forEach(el => {
+                    el.classList.remove('lg:col-span-2');
+                    el.classList.add('lg:col-span-3');
+                });
+            }
 
             // Adjust Indent sub-tabs
             const btnPending = document.getElementById('btnIndentTabPending');
@@ -2935,8 +3026,8 @@
             }
         }
 
-        function chkRole(...roles) {
-            return roles.includes(currentRole);
+        function chkRole(role) {
+            return currentRole === role;
         }
 
         // Custom searchcombobox renderer (Prevents long scroll headache)
@@ -3002,7 +3093,6 @@
                     });
                 }
 
-                // Render first 40 to prevent lag
                 const rendered = filtered.slice(0, 40);
 
                 if (rendered.length === 0) {
@@ -3034,13 +3124,14 @@
 
         // Document Initialization
         window.addEventListener('DOMContentLoaded', () => {
-            // Pre-load common metadata lists
             Promise.all([
                 fetch('/api/institutions').then(res => res.json()),
-                fetch('/api/donors').then(res => res.json())
-            ]).then(([insts, donors]) => {
+                fetch('/api/donors').then(res => res.json()),
+                fetch('/api/grocery-items').then(res => res.json())
+            ]).then(([insts, donors, items]) => {
                 cachedInstitutions = insts;
                 cachedDonors = donors;
+                cachedItems = items;
 
                 // Populate drop-downs
                 const storeSelect = document.getElementById('selectStoreHostel');
@@ -3075,6 +3166,10 @@
                 const reportDonorSelect = document.getElementById('selectReportDonor');
                 if (reportDonorSelect) {
                     reportDonorSelect.innerHTML = `<option value="">All Donors</option>` + donors.map(d => `<option value="${d.Shop_Donor_ID}">${d.Shop_Donor_Name}</option>`).join('');
+                }
+                const reportItemSelect = document.getElementById('selectReportItem');
+                if (reportItemSelect) {
+                    reportItemSelect.innerHTML = `<option value="">All Items</option>` + items.map(item => `<option value="${item.Grocery_Code}">${getItemName(item)}</option>`).join('');
                 }
 
                 // If user is hostel, lock their selector
