@@ -1422,6 +1422,13 @@
         let cachedInstitutions = [];
 
         function showPage(pageId) {
+            // Enforce role authorization checks
+            if (pageId === 'admin-users' && currentRole !== 'head') { showPage('dashboard'); return; }
+            if (pageId === 'admin-masters' && currentRole !== 'head') { showPage('dashboard'); return; }
+            if (pageId === 'bills' && currentRole !== 'head' && currentRole !== 'accounts') { showPage('dashboard'); return; }
+            if (pageId === 'purchases' && currentRole !== 'head' && currentRole !== 'godown') { showPage('dashboard'); return; }
+            if (pageId === 'master-inventory' && currentRole !== 'head' && currentRole !== 'godown') { showPage('dashboard'); return; }
+
             document.querySelectorAll('.app-page').forEach(el => el.classList.add('hidden'));
             const target = document.getElementById(`page-${pageId}`);
             if (target) target.classList.remove('hidden');
