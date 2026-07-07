@@ -241,6 +241,7 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
                 <!-- ==================== PAGE: HOSTEL STOCK BALANCE ==================== -->
                 <div id="page-hostel-stock" class="app-page hidden space-y-6">
@@ -1492,6 +1493,7 @@
             if (pageId === 'bills' && currentRole !== 'head' && currentRole !== 'accounts') { showPage('dashboard'); return; }
             if (pageId === 'purchases' && currentRole !== 'head' && currentRole !== 'godown') { showPage('dashboard'); return; }
             if (pageId === 'master-inventory' && currentRole !== 'head' && currentRole !== 'godown') { showPage('dashboard'); return; }
+            if (pageId === 'reports' && currentRole !== 'head' && currentRole !== 'godown' && currentRole !== 'accounts') { showPage('dashboard'); return; }
 
             document.querySelectorAll('.app-page').forEach(el => el.classList.add('hidden'));
             const target = document.getElementById(`page-${pageId}`);
@@ -3093,6 +3095,7 @@
                 if (page === 'purchases' && currentRole !== 'head' && currentRole !== 'godown') allowed = false; // Hostel cannot access Inward
                 if (page === 'master-inventory' && currentRole !== 'head' && currentRole !== 'godown') allowed = false; // Hostel cannot access central stock
                 if (page === 'stores' && currentRole !== 'head' && currentRole !== 'godown' && currentRole !== 'accounts') allowed = false; // Hostel cannot access stores page link
+                if (page === 'reports' && currentRole !== 'head' && currentRole !== 'godown' && currentRole !== 'accounts') allowed = false; // Hostel cannot access reports link
                 
                 // Hostel-only pages
                 if (page === 'hostel-stock' && currentRole !== 'hostel') allowed = false;
