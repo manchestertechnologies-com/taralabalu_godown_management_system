@@ -118,6 +118,20 @@
                 <span id="badgeNotifCount" class="absolute right-2 top-2.5 bg-red-500 text-white rounded-full text-[8px] px-1.5 py-0.5 hidden">0</span>
             </a>
 
+            <!-- Hostel specific links (only allowed for hostel role) -->
+            <a href="#" onclick="showPage('hostel-stock')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white" data-page="hostel-stock">
+                <span>📦</span>
+                <span data-kn="ದಾಸ್ತಾನು ಶಿಲ್ಕು" data-en="Stock Balance">ದಾಸ್ತಾನು ಶಿಲ್ಕು</span>
+            </a>
+            <a href="#" onclick="showPage('hostel-consumption')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-emerald-100 hover:bg-emerald-800 hover:text-white" data-page="hostel-consumption">
+                <span>🍽️</span>
+                <span data-kn="ಬಳಕೆ ಇತಿಹಾಸ" data-en="Usage History">ಬಳಕೆ ಇತಿಹಾಸ</span>
+            </a>
+            <a href="#" onclick="openLogConsumptionModal()" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-emerald-700 text-white hover:bg-emerald-600 mt-2 shadow-sm" data-page="log-consumption">
+                <span>➕</span>
+                <span data-kn="ಬಳಕೆ ದಾಖಲಿಸು" data-en="Log Consumption">ಬಳಕೆ ದಾಖಲಿಸು</span>
+            </a>
+
             <!-- Admin Controls separator -->
             <div id="adminControlsSection" class="pt-4 border-t border-emerald-800 mt-4 space-y-1 hidden">
                 <p class="px-4 text-[9px] uppercase tracking-wider text-emerald-400 font-bold mb-1" data-kn="ನಿಯಂತ್ರಣ ಕೇಂದ್ರ" data-en="Admin Controls">ನಿಯಂತ್ರಣ ಕೇಂದ್ರ</p>
@@ -228,56 +242,54 @@
                         </div>
                     </div>
 
-                    <!-- Hostel Specific Dashboard Section -->
-                    <div id="gridDashboardHostelSection" class="space-y-6 hidden">
-
-                        <div class="flex gap-2 no-print">
-                            <button onclick="switchStoreTab('stock')" id="btnStoreTabStock" class="px-4 py-2 rounded-lg text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm" data-kn="ದಾಸ್ತಾನು ಶಿಲ್ಕು" data-en="Stock Balance">ದಾಸ್ತಾನು ಶಿಲ್ಕು</button>
-                            <button onclick="switchStoreTab('consumption')" id="btnStoreTabConsumption" class="px-4 py-2 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200" data-kn="ದೈನಂದಿನ ಬಳಕೆ ಇತಿಹಾಸ" data-en="Usage History">ದೈನಂದಿನ ಬಳಕೆ ಇತಿಹಾಸ</button>
+                <!-- ==================== PAGE: HOSTEL STOCK BALANCE ==================== -->
+                <div id="page-hostel-stock" class="app-page hidden space-y-6">
+                    <div class="bg-white rounded-xl border overflow-hidden shadow-sm">
+                        <div class="p-4 border-b flex justify-between items-center bg-slate-50/50">
+                            <h3 class="text-xs font-black text-slate-700 uppercase" data-kn="ದಾಸ್ತಾನು ಶಿಲ್ಕು ವಿವರಗಳು" data-en="Hostel Stock Balance Levels">ದಾಸ್ತಾನು ಶಿಲ್ಕು ವಿವರಗಳು</h3>
+                            <input type="text" id="inputStoreStockSearch" oninput="filterStoreStock()" data-placeholder-kn="ಹುಡುಕಿ..." data-placeholder-en="Search item..." class="p-2 border rounded-lg text-xs w-64 focus:ring-1 focus:ring-emerald-500 focus:outline-none">
                         </div>
-
-                        <!-- Store Stock Sub-tab -->
-                        <div id="tabStoreStock" class="store-tab-content bg-white rounded-xl border overflow-hidden">
-                            <div class="p-4 border-b flex justify-between items-center">
-                                <input type="text" id="inputStoreStockSearch" oninput="filterStoreStock()" data-placeholder-kn="ಹುಡುಕಿ..." data-placeholder-en="Search item..." class="p-2 border rounded-lg text-xs w-64 focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-slate-200 text-xs">
-                                    <thead class="bg-slate-50">
-                                        <tr>
-                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಕೋಡ್" data-en="Code">ಕೋಡ್</th>
-                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಆಹಾರ ಪದಾರ್ಥ" data-en="Item Name">ಆಹಾರ ಪದಾರ್ಥ</th>
-                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ವರ್ಗ" data-en="Category">ವರ್ಗ</th>
-                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು" data-en="Current Stock">ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು</th>
-                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಘಟಕ" data-en="Unit">ಘಟಕ</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tblStoreStock" class="divide-y divide-slate-100">
-                                        <!-- Dynamic -->
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-200 text-xs">
+                                <thead class="bg-slate-50/80">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಕೋಡ್" data-en="Code">ಕೋಡ್</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಆಹಾರ ಪದಾರ್ಥ" data-en="Item Name">ಆಹಾರ ಪದಾರ್ಥ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ವರ್ಗ" data-en="Category">ವರ್ಗ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು" data-en="Current Stock">ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಘಟಕ" data-en="Unit">ಘಟಕ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblStoreStock" class="divide-y divide-slate-100">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- Store Consumption Sub-tab -->
-                        <div id="tabStoreConsumption" class="store-tab-content bg-white rounded-xl border overflow-hidden hidden">
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-slate-200 text-xs">
-                                    <thead class="bg-slate-50">
-                                        <tr>
-                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ದಿನಾಂಕ" data-en="Date">ದಿನಾಂಕ</th>
-                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಕೋಡ್" data-en="Code">ಕೋಡ್</th>
-                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಪದಾರ್ಥದ ಹೆಸರು" data-en="Item Name">ಪದಾರ್ಥದ ಹೆಸರು</th>
-                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಬಳಕೆಯಾದ ಪ್ರಮಾಣ" data-en="Used Quantity">ಬಳಕೆಯಾದ ಪ್ರಮಾಣ</th>
-                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಷರಾ" data-en="Remarks">ಷರಾ</th>
-                                            <th class="px-4 py-3 text-left font-bold text-slate-600 no-print" data-kn="ಕ್ರಮ" data-en="Action">ಕ್ರಮ</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tblStoreConsumptionHistory" class="divide-y divide-slate-100">
-                                        <!-- Dynamic -->
-                                    </tbody>
-                                </table>
-                            </div>
+                <!-- ==================== PAGE: HOSTEL CONSUMPTION HISTORY ==================== -->
+                <div id="page-hostel-consumption" class="app-page hidden space-y-6">
+                    <div class="bg-white rounded-xl border overflow-hidden shadow-sm">
+                        <div class="p-4 border-b bg-slate-50/50">
+                            <h3 class="text-xs font-black text-slate-700 uppercase" data-kn="ದೈನಂದಿನ ಬಳಕೆ ಇತಿಹಾಸ" data-en="Daily Consumption / Usage History">ದೈನಂದಿನ ಬಳಕೆ ಇತಿಹಾಸ</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-200 text-xs">
+                                <thead class="bg-slate-50/80">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ದಿನಾಂಕ" data-en="Date">ದಿನಾಂಕ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಕೋಡ್" data-en="Code">ಕೋಡ್</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಪದಾರ್ಥದ ಹೆಸರು" data-en="Item Name">ಪದಾರ್ಥದ ಹೆಸರು</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಬಳಕೆಯಾದ ಪ್ರಮಾಣ" data-en="Used Quantity">ಬಳಕೆಯಾದ ಪ್ರಮಾಣ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಷರಾ" data-en="Remarks">ಷರಾ</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600 no-print" data-kn="ಕ್ರಮ" data-en="Action">ಕ್ರಮ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblStoreConsumptionHistory" class="divide-y divide-slate-100">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -1504,8 +1516,10 @@
                 'bills': { kn: 'ಬಿಲ್ಲುಗಳು & ಪಾವತಿ', en: 'Bills' },
                 'reports': { kn: 'ವರದಿಗಳು', en: 'Reports' },
                 'notifications': { kn: 'ಅಧಿಸೂಚನೆಗಳು', en: 'Notifications' },
-                'admin-users': { kn: 'ಬಳಕೆದಾರರ ಖಾತೆಗಳು', en: 'Users' },
-                'admin-masters': { kn: 'ಮಾಸ್ಟರ್ ಸೆಟ್ಟಿಂಗ್ಸ್', en: 'Settings' }
+                'admin-users': { kn: 'ಬಳಕೆದಾರರ ಖาತೆಗಳು', en: 'Users' },
+                'admin-masters': { kn: 'ಮಾಸ್ಟರ್ ಸೆಟ್ಟಿಂಗ್ಸ್', en: 'Settings' },
+                'hostel-stock': { kn: 'ದಾಸ್ತಾನು ಶಿಲ್ಕು', en: 'Stock Balance' },
+                'hostel-consumption': { kn: 'ಬಳಕೆ ಇತಿಹಾಸ', en: 'Usage History' }
             };
             const title = titles[pageId] || { kn: pageId, en: pageId };
             document.getElementById('lblPageHeaderTitle').innerText = currentLang === 'en' ? title.en : title.kn;
@@ -1513,7 +1527,7 @@
             // Load page specific data
             if (pageId === 'dashboard') loadDashboardMetrics();
             else if (pageId === 'master-inventory') loadCentralStockBalances();
-            else if (pageId === 'stores') loadStoreDashboardData();
+            else if (pageId === 'stores' || pageId === 'hostel-stock' || pageId === 'hostel-consumption') loadStoreDashboardData();
             else if (pageId === 'indents') loadIndentsPageData();
             else if (pageId === 'purchases') loadPurchasesPageData();
             else if (pageId === 'bills') loadBillsLogs();
@@ -1532,21 +1546,7 @@
                         <div class="col-span-4 bg-white p-8 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-r from-emerald-50/30 to-white">
                             <div>
                                 <h2 class="text-lg font-black text-slate-800 mb-1" id="lblHostelWelcome">ನಮಸ್ಕಾರ, ${loggedInUser.name}</h2>
-                                <p class="text-xs text-slate-500 font-medium" data-kn="ಇಂಡೆಂಟ್‌ಗಳನ್ನು ರಚಿಸಲು ಮತ್ತು ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಎಡಭಾಗದ ಮೆನುವನ್ನು ಬಳಸಿ." data-en="Use the sidebar navigation to create indents or view notifications.">ಇಂಡೆಂಟ್‌ಗಳನ್ನು ರಚಿಸಲು ಮತ್ತು ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಎಡಭಾಗದ ಮೆನುವನ್ನು ಬಳಸಿ.</p>
-                            </div>
-                            <div class="flex flex-wrap gap-3">
-                                <button onclick="showPage('indents')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-sm transition flex items-center gap-2">
-                                    <span>📋</span>
-                                    <span data-kn="ಇಂಡೆಂಟ್ ರಚಿಸಿ" data-en="Create Indent">ಇಂಡೆಂಟ್ ರಚಿಸಿ</span>
-                                </button>
-                                <button onclick="showPage('notifications')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-5 py-3 rounded-xl transition flex items-center gap-2">
-                                    <span>🔔</span>
-                                    <span data-kn="ಅಧಿಸೂಚನೆಗಳು" data-en="View Notifications">ಅಧಿಸೂಚನೆಗಳು</span>
-                                </button>
-                                <button onclick="openLogConsumptionModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-sm transition flex items-center gap-2">
-                                    <span>➕</span>
-                                    <span data-kn="ದೈನಂದಿನ ಬಳಕೆ ದಾಖಲಿಸು" data-en="Log Usage / Consumption">ದೈನಂದಿನ ಬಳಕೆ ದಾಖಲಿಸು</span>
-                                </button>
+                                <p class="text-xs text-slate-500 font-medium" data-kn="ದಾಸ್ತಾನು ಶಿಲ್ಕು, ಬಳಕೆ ದಾಖಲಿಸಲು ಮತ್ತು ಇಂಡೆಂಟ್‌ಗಳಿಗಾಗಿ ಎಡಭಾಗದ ಮೆನುವನ್ನು ಬಳಸಿ." data-en="Use the left sidebar navigation to view stock, log consumption, manage indents, or view notifications.">ದಾಸ್ತಾನು ಶಿಲ್ಕು, ಬಳಕೆ ದಾಖಲಿಸಲು ಮತ್ತು ಇಂಡೆಂಟ್‌ಗಳಿಗಾಗಿ ಎಡಭಾಗದ ಮೆನುವನ್ನು ಬಳಸಿ.</p>
                             </div>
                         </div>
                     `;
@@ -1775,44 +1775,43 @@
         let storeStockList = [];
         function loadStoreDashboardData() {
             const selectStore = document.getElementById('selectStoreHostel');
-            const storeId = selectStore.value;
+            const storeId = currentRole === 'hostel' ? loggedInUser.inst_id : (selectStore ? selectStore.value : null);
             if (!storeId) return;
 
-            if (activeStoreTab === 'stock') {
-                fetch(`/api/hostel-stock/${storeId}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        storeStockList = data;
-                        renderStoreStockTable(data);
-                    });
-            } else {
-                fetch(`/api/daily-usage/${storeId}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        const tbody = document.getElementById('tblStoreConsumptionHistory');
-                        const todayStr = new Date().toISOString().split('T')[0];
-                        
-                        if (data.length === 0) {
-                            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">${currentLang === 'en' ? 'No usage logged' : 'ಯಾವುದೇ ಬಳಕೆ ಇತಿಹಾಸವಿಲ್ಲ.'}</td></tr>`;
-                        } else {
-                            tbody.innerHTML = data.map(c => {
-                                const actionCell = c.Date1 === todayStr
-                                    ? `<button onclick="deleteConsumptionLog(${c.Rec})" class="text-red-600 hover:text-red-800 font-bold transition">Delete</button>`
-                                    : `<span class="text-slate-400 font-medium">Locked</span>`;
-                                return `
-                                    <tr class="hover:bg-slate-50/50">
-                                        <td class="px-4 py-3 font-mono text-slate-500">${c.Date1}</td>
-                                        <td class="px-4 py-3 text-slate-500 font-mono">${c.Grocery_Code}</td>
-                                        <td class="px-4 py-3 text-slate-800 font-bold">${getItemName(c)}</td>
-                                        <td class="px-4 py-3 font-extrabold text-slate-800">${c.QuantityUsed} ${c.Qtl_Kg_Ltr}</td>
-                                        <td class="px-4 py-3 text-slate-500">${c.Remarks || '-'}</td>
-                                        <td class="px-4 py-3 no-print">${actionCell}</td>
-                                    </tr>
-                                `;
-                            }).join('');
-                        }
-                    });
-            }
+            fetch(`/api/hostel-stock/${storeId}`)
+                .then(res => res.json())
+                .then(data => {
+                    storeStockList = data;
+                    renderStoreStockTable(data);
+                });
+
+            fetch(`/api/daily-usage/${storeId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('tblStoreConsumptionHistory');
+                    if (!tbody) return;
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    
+                    if (data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">${currentLang === 'en' ? 'No usage logged' : 'ಯಾವುದೇ ಬಳಕೆ ಇತಿಹಾಸವಿಲ್ಲ.'}</td></tr>`;
+                    } else {
+                        tbody.innerHTML = data.map(c => {
+                            const actionCell = c.Date1 === todayStr
+                                ? `<button onclick="deleteConsumptionLog(${c.Rec})" class="text-red-600 hover:text-red-800 font-bold transition">Delete</button>`
+                                : `<span class="text-slate-400 font-medium">Locked</span>`;
+                            return `
+                                <tr class="hover:bg-slate-50/50">
+                                    <td class="px-4 py-3 font-mono text-slate-500">${c.Date1}</td>
+                                    <td class="px-4 py-3 text-slate-500 font-mono">${c.Grocery_Code}</td>
+                                    <td class="px-4 py-3 text-slate-800 font-bold">${getItemName(c)}</td>
+                                    <td class="px-4 py-3 font-extrabold text-slate-800">${c.QuantityUsed} ${c.Qtl_Kg_Ltr}</td>
+                                    <td class="px-4 py-3 text-slate-500">${c.Remarks || '-'}</td>
+                                    <td class="px-4 py-3 no-print">${actionCell}</td>
+                                </tr>
+                            `;
+                        }).join('');
+                    }
+                });
         }
 
         function renderStoreStockTable(data) {
@@ -3095,6 +3094,11 @@
                 if (page === 'master-inventory' && currentRole !== 'head' && currentRole !== 'godown') allowed = false; // Hostel cannot access central stock
                 if (page === 'stores' && currentRole !== 'head' && currentRole !== 'godown' && currentRole !== 'accounts') allowed = false; // Hostel cannot access stores page link
                 
+                // Hostel-only pages
+                if (page === 'hostel-stock' && currentRole !== 'hostel') allowed = false;
+                if (page === 'hostel-consumption' && currentRole !== 'hostel') allowed = false;
+                if (page === 'log-consumption' && currentRole !== 'hostel') allowed = false;
+
                 if (allowed) {
                     link.classList.remove('hidden');
                     link.style.display = 'flex';
@@ -3109,7 +3113,7 @@
             const hostelGrid = document.getElementById('gridDashboardHostelSection');
             if (currentRole === 'hostel') {
                 if (centralGrid) centralGrid.classList.add('hidden');
-                if (hostelGrid) hostelGrid.classList.remove('hidden');
+                if (hostelGrid) hostelGrid.classList.add('hidden'); // Hostel dashboard is just greeting panel
             } else {
                 if (centralGrid) centralGrid.classList.remove('hidden');
                 if (hostelGrid) hostelGrid.classList.add('hidden');
