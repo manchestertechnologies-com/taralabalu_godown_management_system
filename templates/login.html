@@ -42,23 +42,26 @@
         </div>
 
         <form id="loginForm" class="space-y-5">
-            <!-- Portal Selection Dropdown -->
-            <div>
-                <label id="lblPortal" class="block text-xs font-extrabold text-slate-700 mb-2 kannada-text">ಲಾಗಿನ್ ಪೋರ್ಟಲ್ ಆಯ್ಕೆ ಮಾಡಿ / Select Portal</label>
+            <!-- Login Mode Switcher -->
+            <div class="flex bg-slate-100 p-1 rounded-xl mb-4 border border-slate-200">
+                <button type="button" id="toggleLoginAdmin" onclick="setLoginMode('admin')" class="flex-grow py-2 rounded-lg text-xs font-black transition-all bg-emerald-600 text-white shadow-sm">Admin</button>
+                <button type="button" id="toggleLoginUser" onclick="setLoginMode('user')" class="flex-grow py-2 rounded-lg text-xs font-black transition-all text-emerald-800 hover:bg-emerald-100">User</button>
+            </div>
+
+            <!-- Portal Selection Dropdown (Only for Admin roles) -->
+            <div id="wrapperAdminSelect">
+                <label id="lblPortal" class="block text-xs font-extrabold text-slate-700 mb-2 kannada-text">ಆಡಳಿತ ಪೋರ್ಟಲ್ ಆಯ್ಕೆ ಮಾಡಿ / Select Admin Portal</label>
                 <select id="selectUsername" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
                     <option value="head">ಆಡಳಿತಾಧಿಕಾರಿ (Admin)</option>
                     <option value="godown">ಕೇಂದ್ರ ಗೋದಾಮು ಗುಮಾಸ್ತ (Central Godown Clerk)</option>
-                    <option value="boyshostel">Stores - Boys Hostel (ವಸತಿ ನಿಲಯ - ಬಾಲಕರು)</option>
-                    <option value="girlshostel">Stores - Girls Hostel (ವಸತಿ ನಿಲಯ - ಬಾಲಕಿಯರು)</option>
-                    <option value="math">Stores - Math (ಮಠ)</option>
-                    <option value="shantivanabidara">Stores - Shantivana Bidara (ಶಾಂತಿವನ ಬಿಡಾರ)</option>
-                    <option value="shantivanagurukula">Stores - Shantivana Gurukula (ಶಾಂತಿವನ ಗುರುಕುಲ)</option>
-                    <option value="sirigerebhs">Stores - Sirigere BHS (ಸಿರಿಗೆರೆ ಬಿ.ಎಚ್.ಎಸ್)</option>
-                    <option value="sirigereghs">Stores - Sirigere GHS (ಸಿರಿಗೆರೆ ಜಿ.ಎಚ್.ಎಸ್)</option>
-                    <option value="storesa">Stores - A (ಶಾಖೆ ಎ)</option>
-                    <option value="aooffice">Stores - AO_Office (ಎ.ಓ ಕಚೇರಿ)</option>
-                    <option value="shraddajali">Store - Shraddhajali (ಶ್ರದ್ಧಾಂಜಲಿ)</option>
+                    <option value="accounts">ಲೆಕ್ಕಪತ್ರ ವಿಭಾಗ (Accounts)</option>
                 </select>
+            </div>
+
+            <!-- User Text Input Field (For Store users) -->
+            <div id="wrapperUserTextInput" class="hidden">
+                <label class="block text-xs font-extrabold text-slate-700 mb-2 kannada-text" data-kn="ಬಳಕೆದಾರರ ಹೆಸರು ನಮೂದಿಸಿ" data-en="Enter Store Username">ಬಳಕೆದಾರರ ಹೆಸರು ನಮೂದಿಸಿ / Enter Store Username</label>
+                <input type="text" id="inputUsernameText" placeholder="e.g. boyshostel, girlshostel" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
             </div>
 
             <!-- Password Input -->
@@ -142,11 +145,41 @@
             }
         }
 
+        let loginMode = 'admin'; // 'admin' or 'user'
+        function setLoginMode(mode) {
+            loginMode = mode;
+            const btnAdmin = document.getElementById('toggleLoginAdmin');
+            const btnUser = document.getElementById('toggleLoginUser');
+            const wrapperAdmin = document.getElementById('wrapperAdminSelect');
+            const wrapperUser = document.getElementById('wrapperUserTextInput');
+
+            if (mode === 'admin') {
+                btnAdmin.className = "flex-grow py-2 rounded-lg text-xs font-black transition-all bg-emerald-600 text-white shadow-sm";
+                btnUser.className = "flex-grow py-2 rounded-lg text-xs font-black transition-all text-emerald-800 hover:bg-emerald-100";
+                wrapperAdmin.classList.remove('hidden');
+                wrapperUser.classList.add('hidden');
+            } else {
+                btnUser.className = "flex-grow py-2 rounded-lg text-xs font-black transition-all bg-emerald-600 text-white shadow-sm";
+                btnAdmin.className = "flex-grow py-2 rounded-lg text-xs font-black transition-all text-emerald-800 hover:bg-emerald-100";
+                wrapperAdmin.classList.add('hidden');
+                wrapperUser.classList.remove('hidden');
+                document.getElementById('inputUsernameText').focus();
+            }
+        }
+
         function handleLogin(e) {
             e.preventDefault();
-            const username = document.getElementById('selectUsername').value;
+            const username = loginMode === 'admin'
+                ? document.getElementById('selectUsername').value
+                : document.getElementById('inputUsernameText').value.trim();
             const password = document.getElementById('inputPassword').value;
             const errorBox = document.getElementById('errorBox');
+
+            if (!username) {
+                errorBox.innerText = currentLang === 'kn' ? "ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ನಮೂದಿಸಿ!" : "Please enter your username!";
+                errorBox.classList.remove('hidden');
+                return;
+            }
 
             errorBox.classList.add('hidden');
 
