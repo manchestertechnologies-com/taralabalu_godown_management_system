@@ -1534,60 +1534,27 @@
         // --- DASHBOARD LOADER ---
         function loadDashboardMetrics() {
             if (currentRole === 'hostel') {
-                const storeId = loggedInUser.inst_id;
-                Promise.all([
-                    fetch(`/api/hostel-stock/${storeId}`).then(res => res.json()).catch(() => []),
-                    fetch(`/api/indents?hostel_id=${storeId}&status=Pending`).then(res => res.json()).catch(() => []),
-                    fetch(`/api/daily-usage/${storeId}`).then(res => res.json()).catch(() => [])
-                ]).then(([stock, indentsData, usageData]) => {
-                    const todayStr = new Date().toISOString().split('T')[0];
-                    const activeItems = stock.filter(x => x.CurrentBalance > 0);
-                    const storeVal = stock.reduce((sum, item) => sum + ((parseFloat(item.CurrentBalance) || 0) * (parseFloat(item.Std_Rate) || 0)), 0);
-                    const todayUsage = usageData.filter(x => x.Date1 === todayStr).reduce((sum, item) => sum + (parseFloat(item.QuantityUsed) || 0), 0);
-
-                    const metrics = [
-                        {
-                            label: currentLang === 'en' ? "Our Store Items" : "ನಮ್ಮ ಒಟ್ಟು ಆಹಾರ ಪದಾರ್ಥಗಳು",
-                            value: activeItems.length,
-                            desc: currentLang === 'en' ? "Available in store" : "ಶೇಖರಣೆಯಲ್ಲಿ ಲಭ್ಯವಿರುವ ಪದಾರ್ಥಗಳು",
-                            icon: "📦", color: "border-l-emerald-600"
-                        },
-                        {
-                            label: currentLang === 'en' ? "Store Stock Value" : "ದಾಸ್ತಾನು ಮೌಲ್ಯ",
-                            value: '₹' + storeVal.toLocaleString('en-IN', { minimumFractionDigits: 2 }),
-                            desc: currentLang === 'en' ? "Estimated valuation" : "ಅಂದಾಜು ಒಟ್ಟು ಮೌಲ್ಯ",
-                            icon: "💰", color: "border-l-blue-600"
-                        },
-                        {
-                            label: currentLang === 'en' ? "Pending Indents" : "ಕಳುಹಿಸಿದ ಬಾಕಿ ಇಂಡೆಂಟ್‌ಗಳು",
-                            value: indentsData.length,
-                            desc: currentLang === 'en' ? "Awaiting central approval" : "ಗೋದಾಮಿನಿಂದ ಅನುಮೋದನೆ ಬಾಕಿ",
-                            icon: "📋", color: "border-l-amber-500"
-                        },
-                        {
-                            label: currentLang === 'en' ? "Today's Consumption" : "ದೈನಂದಿನ ಬಳಕೆ (ಇಂದು)",
-                            value: todayUsage.toFixed(1),
-                            desc: currentLang === 'en' ? "Total logged today" : "ಇಂದು ಬಳಸಲಾದ ಪ್ರಮಾಣ",
-                            icon: "🍽️", color: "border-l-red-500"
-                        }
-                    ];
-
-                    const grid = document.getElementById('dashboardStatsGrid');
-                    if (grid) {
-                        grid.innerHTML = metrics.map(m => `
-                            <div class="bg-white p-5 rounded-2xl border-l-4 ${m.color} shadow-sm flex items-center justify-between transition hover:shadow-md">
-                                <div>
-                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">${m.label}</span>
-                                    <h3 class="text-xl font-black text-slate-800 my-0.5">${m.value}</h3>
-                                    <p class="text-[10px] text-slate-500 font-medium">${m.desc}</p>
-                                </div>
-                                <span class="text-2xl">${m.icon}</span>
+                const grid = document.getElementById('dashboardStatsGrid');
+                if (grid) {
+                    grid.innerHTML = `
+                        <div class="col-span-4 bg-white p-8 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-r from-emerald-50/30 to-white">
+                            <div>
+                                <h2 class="text-lg font-black text-slate-800 mb-1" id="lblHostelWelcome">ನಮಸ್ಕಾರ, ${loggedInUser.name}</h2>
+                                <p class="text-xs text-slate-500 font-medium" data-kn="ಇಂಡೆಂಟ್‌ಗಳನ್ನು ರಚಿಸಲು ಮತ್ತು ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಎಡಭಾಗದ ಮೆನುವನ್ನು ಬಳಸಿ." data-en="Use the sidebar navigation to create indents or view notifications.">ಇಂಡೆಂಟ್‌ಗಳನ್ನು ರಚಿಸಲು ಮತ್ತು ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಎಡಭಾಗದ ಮೆನುವನ್ನು ಬಳಸಿ.</p>
                             </div>
-                        `).join('');
-                    }
-                    
-                    loadStoreDashboardData();
-                });
+                            <div class="flex gap-3">
+                                <button onclick="showPage('indents')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-sm transition flex items-center gap-2">
+                                    <span>📋</span>
+                                    <span data-kn="ಇಂಡೆಂಟ್ ರಚಿಸಿ" data-en="Create Indent">ಇಂಡೆಂಟ್ ರಚಿಸಿ</span>
+                                </button>
+                                <button onclick="showPage('notifications')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-5 py-3 rounded-xl transition flex items-center gap-2">
+                                    <span>🔔</span>
+                                    <span data-kn="ಅಧಿಸೂಚನೆಗಳು" data-en="View Notifications">ಅಧಿಸೂಚನೆಗಳು</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
             } else {
                 Promise.all([
                     fetch('/api/grocery-items').then(res => res.json()).catch(() => []),
