@@ -140,13 +140,25 @@ def api_login():
     username = data.get('username', '').strip().lower()
     password = data.get('password', '')
     
-    if username in USERS and USERS[username]['password'] == password:
-        session['username'] = username
-        session['role'] = USERS[username]['role']
-        session['inst_id'] = USERS[username]['inst_id']
-        session['name'] = USERS[username]['name']
-        return jsonify({'success': True})
-    
+    try:
+        users = db_query("SELECT * FROM Users WHERE username = %s", (username,))
+        if users:
+            user = users[0]
+            if user['password'] == password:
+                session['username'] = user['username']
+                session['role'] = user['role']
+                session['inst_id'] = user['inst_id']
+                session['name'] = user['name']
+                return jsonify({'success': True})
+    except Exception as e:
+        # Fallback to hardcoded dictionary if table is initializing
+        if username in USERS and USERS[username]['password'] == password:
+            session['username'] = username
+            session['role'] = USERS[username]['role']
+            session['inst_id'] = USERS[username]['inst_id']
+            session['name'] = USERS[username]['name']
+            return jsonify({'success': True})
+            
     return jsonify({'success': False, 'message': 'Invalid username or password'}), 401
 
 @app.route('/logout')
@@ -648,6 +660,88 @@ def add_bill():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# --- User Management API (Admin only) ---
+@app.route('/api/users', methods=['GET'])
+def get_users():
+    if 'role' not in session or session['role'] != 'head':
+        return jsonify({'error': 'Unauthorized'}), 403
+    users = db_query("SELECT username, role, inst_id, name FROM Users ORDER BY role, username")
+    return jsonify(users)
+
+@app.route('/api/users', methods=['POST'])
+def create_user():
+    if 'role' not in session or session['role'] != 'head':
+        return jsonify({'error': 'Unauthorized'}), 403
+    data = request.json or {}
+    username = data.get('username', '').strip().lower()
+    password = data.get('password', '').strip()
+    role = data.get('role', '').strip()
+    inst_id = data.get('inst_id')
+    name = data.get('name', '').strip()
+    
+    if not username or not password or not role or not name:
+        return jsonify({'error': 'Username, password, role, and name are required'}), 400
+        
+    try:
+        # Check if username already exists
+        exists = db_query("SELECT username FROM Users WHERE username = %s", (username,))
+        if exists:
+            return jsonify({'error': 'Username already exists'}), 400
+            
+        db_query("""
+            INSERT INTO Users (username, password, role, inst_id, name)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (username, password, role, inst_id, name), fetch=False)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/users/<username>', methods=['DELETE'])
+def delete_user(username):
+    if 'role' not in session or session['role'] != 'head':
+        return jsonify({'error': 'Unauthorized'}), 403
+    if username == session.get('username'):
+        return jsonify({'error': 'Cannot delete your own logged-in user'}), 400
+    try:
+        db_query("DELETE FROM Users WHERE username = %s", (username,), fetch=False)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+def init_users_table():
+    try:
+        # Create Users table if not exists
+        db_query("""
+            CREATE TABLE IF NOT EXISTS Users (
+                username VARCHAR(50) PRIMARY KEY,
+                password VARCHAR(100) NOT NULL,
+                role VARCHAR(20) NOT NULL,
+                inst_id INT,
+                name VARCHAR(100) NOT NULL
+            )
+        """, fetch=False)
+        
+        # Seed default users if table is empty
+        existing = db_query("SELECT COUNT(*) as cnt FROM Users")
+        count = 0
+        if existing:
+            count = existing[0].get('cnt', 0) if isinstance(existing[0], dict) else existing[0][0]
+            
+        if count == 0:
+            for username, info in USERS.items():
+                db_query("""
+                    INSERT INTO Users (username, password, role, inst_id, name)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (username, info['password'], info['role'], info['inst_id'], info['name']), fetch=False)
+            print("Successfully seeded default users into database.")
+    except Exception as e:
+        print(f"Error initializing users table: {e}")
+
+
 if __name__ == '__main__':
+    # Initialize the users table database schema
+    init_users_table()
     app.run(debug=True, host='0.0.0.0', port=5000)
+
 
