@@ -190,7 +190,8 @@
                         <!-- Stats cards injected dynamically by JS -->
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Central Specific Dashboard Section -->
+                    <div id="gridDashboardCentralSection" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <!-- Low Stock Alerts Panel -->
                         <div class="glass-card rounded-2xl p-6 border-red-100 bg-gradient-to-b from-white to-red-50/20 lg:col-span-1">
                             <h3 class="text-sm font-black text-red-800 flex items-center gap-2 mb-4 border-b pb-2">
@@ -221,6 +222,65 @@
                                     </thead>
                                     <tbody id="tblRecentTransfers" class="divide-y divide-slate-100">
                                         <!-- Injected by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hostel Specific Dashboard Section -->
+                    <div id="gridDashboardHostelSection" class="space-y-6 hidden">
+                        <div class="flex justify-between items-center bg-white p-4 rounded-xl border">
+                            <h3 class="text-xs font-bold text-slate-500" data-kn="ದಾಸ್ತಾನು ವಿವರ ಮತ್ತು ದೈನಂದಿನ ಬಳಕೆ ನೋಂದಣಿ" data-en="Store Stock Balance & Daily Usage Registry">ದಾಸ್ತಾನು ವಿವರ ಮತ್ತು ದೈನಂದಿನ ಬಳಕೆ ನೋಂದಣಿ</h3>
+                            <button onclick="openLogConsumptionModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition">
+                                <span data-kn="➕ ದೈನಂದಿನ ಬಳಕೆ ದಾಖಲಿಸು" data-en="➕ Log Usage / Consumption">➕ ದೈನಂದಿನ ಬಳಕೆ ದಾಖಲಿಸು</span>
+                            </button>
+                        </div>
+
+                        <div class="flex border-b border-slate-200 gap-4 text-xs font-bold">
+                            <button onclick="switchStoreTab('stock')" id="btnStoreTabStock" class="pb-2 border-b-2 border-emerald-600 text-emerald-800" data-kn="ದಾಸ್ತಾನು ಶಿಲ್ಕು" data-en="Stock Balance">ದಾಸ್ತಾನು ಶಿಲ್ಕು</button>
+                            <button onclick="switchStoreTab('consumption')" id="btnStoreTabConsumption" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700" data-kn="ದೈನಂದಿನ ಬಳಕೆ ಇತಿಹಾಸ" data-en="Usage History">ದೈನಂದಿನ ಬಳಕೆ ಇತಿಹಾಸ</button>
+                        </div>
+
+                        <!-- Store Stock Sub-tab -->
+                        <div id="tabStoreStock" class="store-tab-content bg-white rounded-xl border overflow-hidden">
+                            <div class="p-4 border-b flex justify-between items-center">
+                                <input type="text" id="inputStoreStockSearch" oninput="filterStoreStock()" data-placeholder-kn="ಹುಡುಕಿ..." data-placeholder-en="Search item..." class="p-2 border rounded-lg text-xs w-64 focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-slate-200 text-xs">
+                                    <thead class="bg-slate-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಕೋಡ್" data-en="Code">ಕೋಡ್</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಆಹಾರ ಪದಾರ್ಥ" data-en="Item Name">ಆಹಾರ ಪದಾರ್ಥ</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ವರ್ಗ" data-en="Category">ವರ್ಗ</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು" data-en="Current Stock">ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಘಟಕ" data-en="Unit">ಘಟಕ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tblStoreStock" class="divide-y divide-slate-100">
+                                        <!-- Dynamic -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Store Consumption Sub-tab -->
+                        <div id="tabStoreConsumption" class="store-tab-content bg-white rounded-xl border overflow-hidden hidden">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-slate-200 text-xs">
+                                    <thead class="bg-slate-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ದಿನಾಂಕ" data-en="Date">ದಿನಾಂಕ</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಕೋಡ್" data-en="Code">ಕೋಡ್</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಪದಾರ್ಥದ ಹೆಸರು" data-en="Item Name">ಪದಾರ್ಥದ ಹೆಸರು</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಬಳಕೆಯಾದ ಪ್ರಮಾಣ" data-en="Used Quantity">ಬಳಕೆಯಾದ ಪ್ರಮಾಣ</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-600" data-kn="ಷರಾ" data-en="Remarks">ಷರಾ</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-600 no-print" data-kn="ಕ್ರಮ" data-en="Action">ಕ್ರಮ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tblStoreConsumptionHistory" class="divide-y divide-slate-100">
+                                        <!-- Dynamic -->
                                     </tbody>
                                 </table>
                             </div>
@@ -1473,94 +1533,151 @@
 
         // --- DASHBOARD LOADER ---
         function loadDashboardMetrics() {
-            Promise.all([
-                fetch('/api/grocery-items').then(res => res.json()).catch(() => []),
-                fetch('/api/low-stock-alerts').then(res => res.json()).catch(() => []),
-                fetch('/api/indents').then(res => res.json()).catch(() => [])
-            ]).then(([stock, alerts, indentsData]) => {
-                const totalVal = stock.reduce((sum, item) => sum + ((parseFloat(item.Tot_Stock) || 0) * (parseFloat(item.Std_Rate) || 0)), 0);
-                const pendingCount = indentsData.filter(i => i.Sanctioned === 'Pending').length;
+            if (currentRole === 'hostel') {
+                const storeId = loggedInUser.inst_id;
+                Promise.all([
+                    fetch(`/api/hostel-stock/${storeId}`).then(res => res.json()).catch(() => []),
+                    fetch(`/api/indents?hostel_id=${storeId}&status=Pending`).then(res => res.json()).catch(() => []),
+                    fetch(`/api/daily-usage/${storeId}`).then(res => res.json()).catch(() => [])
+                ]).then(([stock, indentsData, usageData]) => {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    const activeItems = stock.filter(x => x.CurrentBalance > 0);
+                    const storeVal = stock.reduce((sum, item) => sum + ((parseFloat(item.CurrentBalance) || 0) * (parseFloat(item.Std_Rate) || 0)), 0);
+                    const todayUsage = usageData.filter(x => x.Date1 === todayStr).reduce((sum, item) => sum + (parseFloat(item.QuantityUsed) || 0), 0);
 
-                const metrics = [
-                    {
-                        label: currentLang === 'en' ? "Warehouse Items" : "ಒಟ್ಟು ಆಹಾರ ಪದಾರ್ಥಗಳು",
-                        value: stock.length,
-                        desc: currentLang === 'en' ? "Total item categories" : "ನೋಂದಾಯಿತ ಪದಾರ್ಥಗಳು",
-                        icon: "📦", color: "border-l-emerald-600"
-                    },
-                    {
-                        label: currentLang === 'en' ? "Warehouse Value" : "ಗೋದಾಮಿನ ದಾಸ್ತಾನು ಮೌಲ್ಯ",
-                        value: '₹' + totalVal.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
-                        desc: currentLang === 'en' ? "Current valuation" : "ಗೋದಾಮಿನ ಒಟ್ಟು ಮೌಲ್ಯ",
-                        icon: "💰", color: "border-l-blue-600"
-                    },
-                    {
-                        label: currentLang === 'en' ? "Low Stock Alerts" : "ಕೊರತೆಯಿರುವ ದಾಸ್ತಾನು",
-                        value: alerts.length,
-                        desc: currentLang === 'en' ? "Hostels requiring items" : "ತಕ್ಷಣ ತುಂಬಿಸಬೇಕಾದ ವಸ್ತುಗಳು",
-                        icon: "⚠️", color: "border-l-red-500"
-                    },
-                    {
-                        label: currentLang === 'en' ? "Pending Indents" : "ಬಾಕಿ ಇಂಡೆಂಟ್‌ಗಳು",
-                        value: pendingCount,
-                        desc: currentLang === 'en' ? "Awaiting dispatch approval" : "ಅನುಮೋದನೆ ಬಾಕಿ ಇರುವ ಇಂಡೆಂಟ್",
-                        icon: "📋", color: "border-l-amber-500"
-                    }
-                ];
+                    const metrics = [
+                        {
+                            label: currentLang === 'en' ? "Our Store Items" : "ನಮ್ಮ ಒಟ್ಟು ಆಹಾರ ಪದಾರ್ಥಗಳು",
+                            value: activeItems.length,
+                            desc: currentLang === 'en' ? "Available in store" : "ಶೇಖರಣೆಯಲ್ಲಿ ಲಭ್ಯವಿರುವ ಪದಾರ್ಥಗಳು",
+                            icon: "📦", color: "border-l-emerald-600"
+                        },
+                        {
+                            label: currentLang === 'en' ? "Store Stock Value" : "ದಾಸ್ತಾನು ಮೌಲ್ಯ",
+                            value: '₹' + storeVal.toLocaleString('en-IN', { minimumFractionDigits: 2 }),
+                            desc: currentLang === 'en' ? "Estimated valuation" : "ಅಂದಾಜು ಒಟ್ಟು ಮೌಲ್ಯ",
+                            icon: "💰", color: "border-l-blue-600"
+                        },
+                        {
+                            label: currentLang === 'en' ? "Pending Indents" : "ಕಳುಹಿಸಿದ ಬಾಕಿ ಇಂಡೆಂಟ್‌ಗಳು",
+                            value: indentsData.length,
+                            desc: currentLang === 'en' ? "Awaiting central approval" : "ಗೋದಾಮಿನಿಂದ ಅನುಮೋದನೆ ಬಾಕಿ",
+                            icon: "📋", color: "border-l-amber-500"
+                        },
+                        {
+                            label: currentLang === 'en' ? "Today's Consumption" : "ದೈನಂದಿನ ಬಳಕೆ (ಇಂದು)",
+                            value: todayUsage.toFixed(1),
+                            desc: currentLang === 'en' ? "Total logged today" : "ಇಂದು ಬಳಸಲಾದ ಪ್ರಮಾಣ",
+                            icon: "🍽️", color: "border-l-red-500"
+                        }
+                    ];
 
-                const grid = document.getElementById('dashboardStatsGrid');
-                if (grid) {
-                    grid.innerHTML = metrics.map(m => `
-                        <div class="bg-white p-5 rounded-2xl border-l-4 ${m.color} shadow-sm flex items-center justify-between transition hover:shadow-md">
-                            <div>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">${m.label}</span>
-                                <h3 class="text-xl font-black text-slate-800 my-0.5">${m.value}</h3>
-                                <p class="text-[10px] text-slate-500 font-medium">${m.desc}</p>
-                            </div>
-                            <span class="text-2xl">${m.icon}</span>
-                        </div>
-                    `).join('');
-                }
-
-                // Populate low stock alerts
-                const alertsList = document.getElementById('godownAlertsList');
-                if (alertsList) {
-                    if (alerts.length === 0) {
-                        alertsList.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">${currentLang === 'en' ? 'No low stock' : 'ಯಾವುದೇ ಕೊರತೆ ಇಲ್ಲ.'}</p>`;
-                        document.getElementById('globalAlertBanner').classList.add('hidden');
-                    } else {
-                        alertsList.innerHTML = alerts.slice(0, 10).map(a => `
-                            <div class="flex justify-between items-center p-2.5 bg-red-50 rounded-xl border border-red-100">
+                    const grid = document.getElementById('dashboardStatsGrid');
+                    if (grid) {
+                        grid.innerHTML = metrics.map(m => `
+                            <div class="bg-white p-5 rounded-2xl border-l-4 ${m.color} shadow-sm flex items-center justify-between transition hover:shadow-md">
                                 <div>
-                                    <span class="text-xs font-bold text-slate-800">${a.Grocery_Items_Kan}</span>
-                                    <span class="text-[9px] text-slate-400 block">${a.Institution}</span>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">${m.label}</span>
+                                    <h3 class="text-xl font-black text-slate-800 my-0.5">${m.value}</h3>
+                                    <p class="text-[10px] text-slate-500 font-medium">${m.desc}</p>
                                 </div>
-                                <span class="text-xs font-black text-red-600 bg-red-100/50 px-2 py-0.5 rounded-full">${a.CurrentBalance.toFixed(1)} ${a.Qtl_Kg_Ltr}</span>
+                                <span class="text-2xl">${m.icon}</span>
                             </div>
                         `).join('');
-                        document.getElementById('globalAlertBanner').classList.remove('hidden');
                     }
-                }
+                    
+                    loadStoreDashboardData();
+                });
+            } else {
+                Promise.all([
+                    fetch('/api/grocery-items').then(res => res.json()).catch(() => []),
+                    fetch('/api/low-stock-alerts').then(res => res.json()).catch(() => []),
+                    fetch('/api/indents').then(res => res.json()).catch(() => [])
+                ]).then(([stock, alerts, indentsData]) => {
+                    const totalVal = stock.reduce((sum, item) => sum + ((parseFloat(item.Tot_Stock) || 0) * (parseFloat(item.Std_Rate) || 0)), 0);
+                    const pendingCount = indentsData.filter(i => i.Sanctioned === 'Pending').length;
 
-                // Recent transfers table
-                const transfersTbody = document.getElementById('tblRecentTransfers');
-                if (transfersTbody) {
-                    const recent = indentsData.slice(0, 10);
-                    if (recent.length === 0) {
-                        transfersTbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">${currentLang === 'en' ? 'No recent transfers' : 'ಯಾವುದೇ ವಿತರಣೆ ದಾಖಲೆಗಳಿಲ್ಲ.'}</td></tr>`;
-                    } else {
-                        transfersTbody.innerHTML = recent.map(t => `
-                            <tr class="hover:bg-slate-50/50">
-                                <td class="px-3 py-2.5 font-mono text-slate-500 font-bold">${t.Indent_no}</td>
-                                <td class="px-3 py-2.5 text-slate-800 font-bold">${t.Institution}</td>
-                                <td class="px-3 py-2.5 text-slate-700">${getItemName(t)}</td>
-                                <td class="px-3 py-2.5 font-extrabold text-slate-900">${t.Sanctioned_Quantity || t.Quantity} ${t.Qtl_Kg_Ltr}</td>
-                                <td class="px-3 py-2.5 text-slate-500 font-mono">${t.Sanctioned_on || t.Indent_Date}</td>
-                            </tr>
+                    const metrics = [
+                        {
+                            label: currentLang === 'en' ? "Warehouse Items" : "ಒಟ್ಟು ಆಹಾರ ಪದಾರ್ಥಗಳು",
+                            value: stock.length,
+                            desc: currentLang === 'en' ? "Total item categories" : "ನೋಂದಾಯಿತ ಪದಾರ್ಥಗಳು",
+                            icon: "📦", color: "border-l-emerald-600"
+                        },
+                        {
+                            label: currentLang === 'en' ? "Warehouse Value" : "ಗೋದಾಮಿನ ದಾಸ್ತಾನು ಮೌಲ್ಯ",
+                            value: '₹' + totalVal.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+                            desc: currentLang === 'en' ? "Current valuation" : "ಗೋದಾಮಿನ ಒಟ್ಟು ಮೌಲ್ಯ",
+                            icon: "💰", color: "border-l-blue-600"
+                        },
+                        {
+                            label: currentLang === 'en' ? "Low Stock Alerts" : "ಕೊರತೆಯಿರುವ ದಾಸ್ತಾನು",
+                            value: alerts.length,
+                            desc: currentLang === 'en' ? "Hostels requiring items" : "ತಕ್ಷಣ ತುಂಬಿಸಬೇಕಾದ ವಸ್ತುಗಳು",
+                            icon: "⚠️", color: "border-l-red-500"
+                        },
+                        {
+                            label: currentLang === 'en' ? "Pending Indents" : "ಬಾಕಿ ಇಂಡೆಂಟ್‌ಗಳು",
+                            value: pendingCount,
+                            desc: currentLang === 'en' ? "Awaiting dispatch approval" : "ಅನುಮೋದನೆ ಬಾಕಿ ಇರುವ ಇಂಡೆಂಟ್",
+                            icon: "📋", color: "border-l-amber-500"
+                        }
+                    ];
+
+                    const grid = document.getElementById('dashboardStatsGrid');
+                    if (grid) {
+                        grid.innerHTML = metrics.map(m => `
+                            <div class="bg-white p-5 rounded-2xl border-l-4 ${m.color} shadow-sm flex items-center justify-between transition hover:shadow-md">
+                                <div>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">${m.label}</span>
+                                    <h3 class="text-xl font-black text-slate-800 my-0.5">${m.value}</h3>
+                                    <p class="text-[10px] text-slate-500 font-medium">${m.desc}</p>
+                                </div>
+                                <span class="text-2xl">${m.icon}</span>
+                            </div>
                         `).join('');
                     }
-                }
-            });
+
+                    // Populate low stock alerts
+                    const alertsList = document.getElementById('godownAlertsList');
+                    if (alertsList) {
+                        if (alerts.length === 0) {
+                            alertsList.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">${currentLang === 'en' ? 'No low stock' : 'ಯಾವುದೇ ಕೊರತೆ ಇಲ್ಲ.'}</p>`;
+                            document.getElementById('globalAlertBanner').classList.add('hidden');
+                        } else {
+                            alertsList.innerHTML = alerts.slice(0, 10).map(a => `
+                                <div class="flex justify-between items-center p-2.5 bg-red-50 rounded-xl border border-red-100">
+                                    <div>
+                                        <span class="text-xs font-bold text-slate-800">${a.Grocery_Items_Kan}</span>
+                                        <span class="text-[9px] text-slate-400 block">${a.Institution}</span>
+                                    </div>
+                                    <span class="text-xs font-black text-red-600 bg-red-100/50 px-2 py-0.5 rounded-full">${a.CurrentBalance.toFixed(1)} ${a.Qtl_Kg_Ltr}</span>
+                                </div>
+                            `).join('');
+                            document.getElementById('globalAlertBanner').classList.remove('hidden');
+                        }
+                    }
+
+                    // Recent transfers table
+                    const transfersTbody = document.getElementById('tblRecentTransfers');
+                    if (transfersTbody) {
+                        const recent = indentsData.slice(0, 10);
+                        if (recent.length === 0) {
+                            transfersTbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">${currentLang === 'en' ? 'No recent transfers' : 'ಯಾವುದೇ ವಿತರಣೆ ದಾಖಲೆಗಳಿಲ್ಲ.'}</td></tr>`;
+                        } else {
+                            transfersTbody.innerHTML = recent.map(t => `
+                                <tr class="hover:bg-slate-50/50">
+                                    <td class="px-3 py-2.5 font-mono text-slate-500 font-bold">${t.Indent_no}</td>
+                                    <td class="px-3 py-2.5 text-slate-800 font-bold">${t.Institution}</td>
+                                    <td class="px-3 py-2.5 text-slate-700">${getItemName(t)}</td>
+                                    <td class="px-3 py-2.5 font-extrabold text-slate-900">${t.Sanctioned_Quantity || t.Quantity} ${t.Qtl_Kg_Ltr}</td>
+                                    <td class="px-3 py-2.5 text-slate-500 font-mono">${t.Sanctioned_on || t.Indent_Date}</td>
+                                </tr>
+                            `).join('');
+                        }
+                    }
+                });
+            }
         }
 
         // --- MASTER CENTRAL STOCK ---
@@ -3002,6 +3119,7 @@
                 if (page === 'bills' && currentRole !== 'head' && currentRole !== 'accounts') allowed = false;
                 if (page === 'purchases' && currentRole !== 'head' && currentRole !== 'godown') allowed = false; // Hostel cannot access Inward
                 if (page === 'master-inventory' && currentRole !== 'head' && currentRole !== 'godown') allowed = false; // Hostel cannot access central stock
+                if (page === 'stores' && currentRole !== 'head' && currentRole !== 'godown' && currentRole !== 'accounts') allowed = false; // Hostel cannot access stores page link
                 
                 if (allowed) {
                     link.classList.remove('hidden');
@@ -3012,19 +3130,15 @@
                 }
             });
 
-            // Rename Stores link to "Our Stock" for hostel users
-            const linkStores = document.querySelector('#sidebarNavLinks [data-page="stores"]');
-            if (linkStores) {
-                const labelSpan = linkStores.querySelector('[data-kn]');
-                if (labelSpan) {
-                    if (currentRole === 'hostel') {
-                        labelSpan.setAttribute('data-kn', 'ನಮ್ಮ ದಾಸ್ತಾನು');
-                        labelSpan.setAttribute('data-en', 'Our Stock');
-                    } else {
-                        labelSpan.setAttribute('data-kn', 'ವಸತಿ ನಿಲಯದ ದಾಸ್ತಾನು');
-                        labelSpan.setAttribute('data-en', 'Stores / Hostels');
-                    }
-                }
+            // Toggle dashboard grid panels based on role
+            const centralGrid = document.getElementById('gridDashboardCentralSection');
+            const hostelGrid = document.getElementById('gridDashboardHostelSection');
+            if (currentRole === 'hostel') {
+                if (centralGrid) centralGrid.classList.add('hidden');
+                if (hostelGrid) hostelGrid.classList.remove('hidden');
+            } else {
+                if (centralGrid) centralGrid.classList.remove('hidden');
+                if (hostelGrid) hostelGrid.classList.add('hidden');
             }
 
             // Restrict Inward inputs to Clerk (godown) only
