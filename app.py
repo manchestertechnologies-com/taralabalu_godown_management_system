@@ -3,11 +3,19 @@ import urllib.parse
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
 from datetime import datetime
 import sqlite3
-import psycopg2
-import psycopg2.extras
+import uuid
+
+try:
+    import psycopg2
+    import psycopg2.extras
+except ImportError:
+    pass
 
 app = Flask(__name__)
 app.secret_key = 'taralabalu_secret_key_87924'
+
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads', 'bills')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 USERS = {
     "head": {"password": "123", "role": "head", "inst_id": None, "name": "Admin / ಸಂಸ್ಥೆಯ ಆಡಳಿತಗಾರರು"},
@@ -31,7 +39,6 @@ INST_ID_TO_COLUMN = {
     7: "Girls_Hostel_Qty", 8: "Hunnime_Qty", 9: "AO_Office_Qty", 10: "Shraddanjali_Qty"
 }
 
-
 def get_db_connection():
     if 'DATABASE_URL' in os.environ:
         conn_str = os.environ['DATABASE_URL']
@@ -48,20 +55,25 @@ def get_db_connection():
     conn = sqlite3.connect(os.path.join(base_dir, 'database.db'))
     return conn, "sqlite"
 
-
 def db_query(query, args=(), fetch=True):
     conn, db_type = get_db_connection()
     if db_type == "sqlite":
         query = query.replace("%s", "?")
     cursor = conn.cursor()
     try:
+        # Use RealDictCursor if postgresql
+        if db_type == "postgresql":
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cursor.execute(query, args)
         if fetch:
-            if cursor.description:
-                columns = [desc[0] for desc in cursor.description]
-                result = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            if db_type == "postgresql":
+                result = [dict(row) for row in cursor.fetchall()]
             else:
-                result = []
+                if cursor.description:
+                    columns = [desc[0] for desc in cursor.description]
+                    result = [dict(zip(columns, row)) for row in cursor.fetchall()]
+                else:
+                    result = []
             cursor.close(); conn.close()
             return result
         else:
@@ -71,7 +83,6 @@ def db_query(query, args=(), fetch=True):
         conn.rollback(); cursor.close(); conn.close()
         raise e
 
-
 def log_audit(module, action, target_id='', old_val='', new_val=''):
     try:
         username = session.get('username', 'system')
@@ -80,10 +91,13 @@ def log_audit(module, action, target_id='', old_val='', new_val=''):
     except Exception:
         pass
 
-
 def chk(*roles):
     return 'role' in session and session['role'] in roles
 
+def get_fy_prefix(fy_str):
+    if fy_str and len(fy_str) >= 4:
+        return fy_str[:4]
+    return str(datetime.now().year)
 
 # --- PAGES ---
 
@@ -102,7 +116,6 @@ def login_page(slug=None):
 def logout():
     session.clear()
     return redirect(url_for('login_page'))
-
 
 # --- AUTH ---
 
@@ -124,7 +137,6 @@ def api_login():
                             'inst_id': USERS[username]['inst_id'], 'name': USERS[username]['name']})
             return jsonify({'success': True})
     return jsonify({'success': False, 'message': 'Invalid credentials'}), 401
-
 
 # --- GROCERY ITEMS ---
 
@@ -165,7 +177,6 @@ def delete_grocery_item(code):
         return jsonify({'success': True})
     except Exception as e: return jsonify({'error': str(e)}), 500
 
-
 # --- INSTITUTIONS ---
 
 @app.route('/api/institutions', methods=['GET'])
@@ -182,7 +193,6 @@ def add_institution():
         log_audit('Institutions', 'Add', '', '', name)
         return jsonify({'success': True})
     except Exception as e: return jsonify({'error': str(e)}), 500
-
 
 # --- DONORS ---
 
@@ -222,19 +232,33 @@ def delete_donor(donor_id):
         return jsonify({'success': True})
     except Exception as e: return jsonify({'error': str(e)}), 500
 
-
 # --- STOCK INWARD ---
 
 @app.route('/api/godown-stock', methods=['GET'])
 def get_godown_stock():
     df = request.args.get('from',''); dt = request.args.get('to',''); dn = request.args.get('donor','')
+    fy = request.args.get('year', '')
+    inst_id = request.args.get('inst_id') or session.get('inst_id')
     wheres = ["si.Stock > 0"]; args = []
+    
     if df: wheres.append("si.Date1 >= %s"); args.append(df)
     if dt: wheres.append("si.Date1 <= %s"); args.append(dt)
     if dn: wheres.append("si.Shop_Donor_ID = %s"); args.append(dn)
+    if fy: wheres.append("si.Year1 LIKE %s"); args.append(get_fy_prefix(fy) + "%")
+    
+    # Store Manager can only view their own store inward entries
+    if session.get('role') == 'hostel':
+        wheres.append("si.Issue_Inst_ID = %s")
+        args.append(inst_id)
+    elif inst_id:
+        wheres.append("si.Issue_Inst_ID = %s")
+        args.append(inst_id)
+    else:
+        wheres.append("si.Issue_Inst_ID IS NULL")
+
     logs = db_query(f"""SELECT si.Rec,si.Date1,si.Grocery_Code,gi.Grocery_Items_Kan,gi.Grocery_Items_Eng,
         gi.Qtl_Kg_Ltr,si.Stock,si.Purchase_Rate,(si.Stock*si.Purchase_Rate) AS Amount,
-        sd.Shop_Donor_Name,si.Remarks,si.Purchased_Donation,si.Bill_No
+        sd.Shop_Donor_Name,si.Remarks,si.Purchased_Donation,si.Bill_No,si.File_Path
         FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code=gi.Grocery_Code
         LEFT JOIN Shops_Donors sd ON si.Shop_Donor_ID=sd.Shop_Donor_ID
         WHERE {' AND '.join(wheres)} ORDER BY si.Rec DESC""", tuple(args))
@@ -242,23 +266,178 @@ def get_godown_stock():
 
 @app.route('/api/godown-stock', methods=['POST'])
 def add_godown_stock():
-    if not chk('godown'): return jsonify({'error':'Unauthorized'}), 403
-    d = request.json or {}
-    code, donor_id, quantity = d.get('Grocery_Code'), d.get('Shop_Donor_ID'), d.get('Quantity')
-    if not code or not donor_id or not quantity: return jsonify({'error':'Fill all required fields'}), 400
+    if not chk('godown', 'hostel', 'head'): return jsonify({'error':'Unauthorized'}), 403
+    
+    # Multipart form or JSON
+    if request.content_type and 'multipart/form-data' in request.content_type:
+        code = request.form.get('Grocery_Code')
+        donor_id = request.form.get('Shop_Donor_ID')
+        quantity = request.form.get('Quantity')
+        rate = float(request.form.get('Purchase_Rate') or 0.0)
+        remarks = request.form.get('Remarks') or ''
+        purch_don = request.form.get('Purchased_Donation') or 'Purchase'
+        date_str = request.form.get('Date') or datetime.now().strftime('%Y-%m-%d')
+        bill_no = request.form.get('Bill_No') or ''
+        bill_date = request.form.get('Bill_Date') or ''
+        bill_amount = float(request.form.get('Bill_Amount') or 0.0)
+        inst_id = request.form.get('Inst_ID') or session.get('inst_id')
+        fy = request.form.get('year') or ''
+        bill_file = request.files.get('Bill_File')
+    else:
+        d = request.json or {}
+        code = d.get('Grocery_Code')
+        donor_id = d.get('Shop_Donor_ID')
+        quantity = d.get('Quantity')
+        rate = float(d.get('Purchase_Rate') or 0.0)
+        remarks = d.get('Remarks') or ''
+        purch_don = d.get('Purchased_Donation') or 'Purchase'
+        date_str = d.get('Date') or datetime.now().strftime('%Y-%m-%d')
+        bill_no = d.get('Bill_No') or ''
+        bill_date = d.get('Bill_Date') or ''
+        bill_amount = float(d.get('Bill_Amount') or 0.0)
+        inst_id = d.get('Inst_ID') or session.get('inst_id')
+        fy = d.get('year') or ''
+        bill_file = None
+
+    if not code or not quantity: return jsonify({'error':'Fill all required fields'}), 400
     try:
-        qty = float(quantity); rate = float(d.get('Purchase_Rate', 0.0))
+        qty = float(quantity)
         if qty <= 0: raise ValueError
-    except ValueError: return jsonify({'error':'Quantity must be a positive number'}), 400
-    date_str = d.get('Date') or datetime.now().strftime('%Y-%m-%d')
+    except ValueError: return jsonify({'error':'Quantity must be positive'}), 400
+
+    active_year = get_fy_prefix(fy)
+
+    # Handle file upload
+    file_path = None
+    if bill_file and bill_file.filename:
+        ext = os.path.splitext(bill_file.filename)[1].lower()
+        if ext not in ['.jpg', '.png', '.jpeg', '.pdf']:
+            return jsonify({'error': 'Invalid file format. Supported formats: JPG, PNG, PDF'}), 400
+        filename = f"{uuid.uuid4().hex}{ext}"
+        bill_file.save(os.path.join(UPLOAD_FOLDER, filename))
+        file_path = f"/static/uploads/bills/{filename}"
+
     try:
-        db_query("INSERT INTO Stock_Issue (Year1,Date1,Grocery_Code,Shop_Donor_ID,Purchase_Rate,Purchase_Amount,Stock,Issue,Remarks,Purchased_Donation,Bill_No,Bill_Date,DateStamp) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-            (datetime.now().year, date_str, code, donor_id, rate, qty*rate, qty, 0.0, d.get('Remarks',''), d.get('Purchased_Donation','Donation'), d.get('Bill_No',''), d.get('Bill_Date',''), datetime.now().strftime('%Y-%m-%d %H:%M:%S')), fetch=False)
-        db_query("UPDATE Grocery_Items SET Tot_Stock=Tot_Stock+%s WHERE Grocery_Code=%s", (qty, code), fetch=False)
+        # Insert into Stock_Issue
+        db_query("""
+            INSERT INTO Stock_Issue (Year1, Date1, Grocery_Code, Shop_Donor_ID, Purchase_Rate, Purchase_Amount, Stock, Issue, Remarks, Purchased_Donation, Bill_No, Bill_Date, File_Path, DateStamp, Issue_Inst_ID)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (active_year, date_str, code, donor_id, rate, qty*rate, qty, 0.0, remarks, purch_don, bill_no, bill_date, file_path, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), inst_id), fetch=False)
+
+        # Update Stock levels
+        if inst_id:
+            col = INST_ID_TO_COLUMN.get(int(inst_id))
+            if col:
+                db_query(f"UPDATE Grocery_Items SET {col} = COALESCE({col}, 0) + %s WHERE Grocery_Code = %s", (qty, code), fetch=False)
+        else:
+            db_query("UPDATE Grocery_Items SET Tot_Stock = Tot_Stock + %s WHERE Grocery_Code = %s", (qty, code), fetch=False)
+
+        # Create matching bill if bill number is provided
+        if bill_no:
+            db_query("""
+                INSERT INTO Bills (Year1, Shop_Donor_ID, Bill_Date, Bill_No, Bill_Amount, Remarks, DateAdded, File_Path, Inst_ID)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (active_year, donor_id, bill_date or date_str, bill_no, bill_amount or (qty*rate), remarks, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), file_path, inst_id), fetch=False)
+
         log_audit('Inward', 'Add', code, '', f'{qty}')
         return jsonify({'success': True})
-    except Exception as e: return jsonify({'error': str(e)}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
+# --- STOCK OUTWARD ---
+
+@app.route('/api/outwards', methods=['GET'])
+def get_outwards():
+    df = request.args.get('from',''); dt = request.args.get('to','')
+    fy = request.args.get('year', '')
+    inst_id = request.args.get('inst_id') or session.get('inst_id')
+    wheres = ["si.Issue > 0", "si.Purchased_Donation != 'Consumption'"]; args = []
+    
+    if df: wheres.append("si.Date1 >= %s"); args.append(df)
+    if dt: wheres.append("si.Date1 <= %s"); args.append(dt)
+    if fy: wheres.append("si.Year1 LIKE %s"); args.append(get_fy_prefix(fy) + "%")
+    
+    # Store Manager can only view their own store outward entries
+    if session.get('role') == 'hostel':
+        wheres.append("si.Issue_Inst_ID = %s")
+        args.append(inst_id)
+    elif inst_id:
+        wheres.append("si.Issue_Inst_ID = %s")
+        args.append(inst_id)
+    else:
+        wheres.append("si.Issue_Inst_ID IS NULL")
+
+    logs = db_query(f"""SELECT si.Rec,si.Date1,si.Grocery_Code,gi.Grocery_Items_Kan,gi.Grocery_Items_Eng,
+        gi.Qtl_Kg_Ltr,si.Issue,si.Purchase_Rate,(si.Issue*si.Purchase_Rate) AS Amount,
+        si.Remarks,si.Purchased_Donation
+        FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code=gi.Grocery_Code
+        WHERE {' AND '.join(wheres)} ORDER BY si.Rec DESC""", tuple(args))
+    return jsonify(logs)
+
+@app.route('/api/outwards', methods=['POST'])
+def add_outward():
+    if not chk('godown', 'hostel', 'head'): return jsonify({'error':'Unauthorized'}), 403
+    d = request.json or {}
+    code = d.get('Grocery_Code')
+    quantity = d.get('Quantity')
+    remarks = d.get('Remarks') or 'Outward'
+    date_str = d.get('Date') or datetime.now().strftime('%Y-%m-%d')
+    inst_id = d.get('Inst_ID') or session.get('inst_id')
+    target_inst_id = d.get('Target_Inst_ID') # for store-to-store transfer
+    fy = d.get('year') or ''
+    
+    if not code or not quantity: return jsonify({'error':'Item and Quantity are required'}), 400
+    try:
+        qty = float(quantity)
+        if qty <= 0: raise ValueError
+    except ValueError: return jsonify({'error':'Quantity must be positive'}), 400
+
+    active_year = get_fy_prefix(fy)
+
+    try:
+        # Check current stock balance before issuing
+        if inst_id:
+            col = INST_ID_TO_COLUMN.get(int(inst_id))
+            if not col: return jsonify({'error':'Invalid hostel'}), 400
+            row = db_query(f"SELECT {col}, Std_Rate FROM Grocery_Items WHERE Grocery_Code=%s", (code,))
+            avail = row[0][col] if row and row[0][col] is not None else 0.0
+            rate = row[0]['Std_Rate'] or 0.0
+        else:
+            row = db_query("SELECT Tot_Stock, Std_Rate FROM Grocery_Items WHERE Grocery_Code=%s", (code,))
+            avail = row[0]['Tot_Stock'] if row and row[0]['Tot_Stock'] is not None else 0.0
+            rate = row[0]['Std_Rate'] or 0.0
+
+        if avail < qty:
+            return jsonify({'error': f'Insufficient stock. Available: {avail}'}), 400
+
+        # Insert into Stock_Issue
+        db_query("""
+            INSERT INTO Stock_Issue (Year1, Date1, Grocery_Code, Issue_Inst_ID, Issue, Issue_Amount, Purchase_Rate, Remarks, Purchased_Donation, DateStamp)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (active_year, date_str, code, inst_id, qty, qty*rate, rate, remarks, 'Transfer' if target_inst_id else 'Outward', datetime.now().strftime('%Y-%m-%d %H:%M:%S')), fetch=False)
+
+        # Update Grocery_Items stock levels (subtract from source)
+        if inst_id:
+            col = INST_ID_TO_COLUMN.get(int(inst_id))
+            db_query(f"UPDATE Grocery_Items SET {col} = {col} - %s WHERE Grocery_Code = %s", (qty, code), fetch=False)
+        else:
+            db_query("UPDATE Grocery_Items SET Tot_Stock = Tot_Stock - %s, Tot_Issue = Tot_Issue + %s WHERE Grocery_Code = %s", (qty, qty, code), fetch=False)
+
+        # If it is a store-to-store transfer, add to target store
+        if target_inst_id:
+            target_col = INST_ID_TO_COLUMN.get(int(target_inst_id))
+            if target_col:
+                db_query(f"UPDATE Grocery_Items SET {target_col} = COALESCE({target_col}, 0) + %s WHERE Grocery_Code = %s", (qty, code), fetch=False)
+                # Also record receiving entry
+                db_query("""
+                    INSERT INTO Stock_Issue (Year1, Date1, Grocery_Code, Issue_Inst_ID, Stock, Purchase_Rate, Purchase_Amount, Remarks, Purchased_Donation, DateStamp)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, (active_year, date_str, code, target_inst_id, qty, rate, qty*rate, f"Transfer from inst {inst_id}", 'Transfer_Receipt', datetime.now().strftime('%Y-%m-%d %H:%M:%S')), fetch=False)
+
+        log_audit('Outward', 'Add', code, '', f'{qty}')
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # --- INDENTS ---
 
@@ -266,11 +445,22 @@ def add_godown_stock():
 def get_indents():
     hid = request.args.get('hostel_id'); sf = request.args.get('status','')
     df = request.args.get('from',''); dt = request.args.get('to','')
+    fy = request.args.get('year', '')
     wheres = []; args = []
-    if hid: wheres.append("ind.Inst_ID=%s"); args.append(hid)
+    
+    # Store Manager can only view their own store data
+    if session.get('role') == 'hostel':
+        wheres.append("ind.Inst_ID=%s")
+        args.append(session.get('inst_id'))
+    elif hid:
+        wheres.append("ind.Inst_ID=%s")
+        args.append(hid)
+        
     if sf: wheres.append("ind.Sanctioned=%s"); args.append(sf)
     if df: wheres.append("ind.Indent_Date>=%s"); args.append(df)
     if dt: wheres.append("ind.Indent_Date<=%s"); args.append(dt)
+    if fy: wheres.append("ind.Year1 LIKE %s"); args.append(get_fy_prefix(fy) + "%")
+    
     where_sql = ("WHERE " + " AND ".join(wheres)) if wheres else ""
     logs = db_query(f"""SELECT ind.Rec,ind.Indent_Date,ind.Grocery_Code,
         gi.Grocery_Items_Kan,gi.Grocery_Items_Eng,gi.Qtl_Kg_Ltr,
@@ -287,15 +477,17 @@ def create_indent():
     d = request.json or {}
     inst_id = d.get('Inst_ID') or session.get('inst_id')
     code, quantity = d.get('Grocery_Code'), d.get('Quantity')
+    fy = d.get('year') or ''
     if not inst_id or not code or not quantity: return jsonify({'error':'Fill all required fields'}), 400
     try:
         qty = float(quantity)
         if qty <= 0: raise ValueError
     except ValueError: return jsonify({'error':'Quantity must be positive'}), 400
     indent_no = f"IND-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    active_year = get_fy_prefix(fy)
     try:
         db_query("INSERT INTO Indents (Year1,Indent_Date,Grocery_Code,Inst_ID,Quantity,Indent_no,Sanctioned,Remarks,DateStamp) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-            (datetime.now().year, datetime.now().strftime('%Y-%m-%d'), code, inst_id, qty, indent_no, 'Pending', d.get('Remarks',''), datetime.now().strftime('%Y-%m-%d')), fetch=False)
+            (active_year, datetime.now().strftime('%Y-%m-%d'), code, inst_id, qty, indent_no, 'Pending', d.get('Remarks',''), datetime.now().strftime('%Y-%m-%d')), fetch=False)
         log_audit('Indents', 'Create', indent_no, '', f'{qty} of {code}')
         return jsonify({'success': True, 'indent_no': indent_no})
     except Exception as e: return jsonify({'error': str(e)}), 500
@@ -320,7 +512,7 @@ def approve_indent(indent_rec):
             (sq, datetime.now().strftime('%Y-%m-%d'), indent_rec), fetch=False)
         rate = item['Std_Rate'] or 0.0
         db_query("INSERT INTO Stock_Issue (Year1,Date1,Grocery_Code,Issue_Inst_ID,Issue,Issue_Amount,Remarks,Purchased_Donation,DateStamp) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-            (datetime.now().year, datetime.now().strftime('%Y-%m-%d'), code, indent['Inst_ID'], sq, sq*rate, f"Indent {indent['Indent_no']}", 'Issue', datetime.now().strftime('%Y-%m-%d')), fetch=False)
+            (indent['Year1'], datetime.now().strftime('%Y-%m-%d'), code, indent['Inst_ID'], sq, sq*rate, f"Indent {indent['Indent_no']}", 'Issue', datetime.now().strftime('%Y-%m-%d')), fetch=False)
         db_query("UPDATE Grocery_Items SET Tot_Stock=Tot_Stock-%s,Tot_Issue=Tot_Issue+%s WHERE Grocery_Code=%s", (sq,sq,code), fetch=False)
         log_audit('Indents', 'Approve', indent['Indent_no'], indent['Quantity'], sq)
         return jsonify({'success': True})
@@ -359,15 +551,16 @@ def acknowledge_indent(indent_rec):
         return jsonify({'success': True})
     except Exception as e: return jsonify({'error': str(e)}), 500
 
-
 # --- HOSTEL STOCK ---
 
 @app.route('/api/hostel-stock/<int:inst_id>', methods=['GET'])
 def get_hostel_stock(inst_id):
+    # Store manager can only view their own store data
+    if session.get('role') == 'hostel' and session.get('inst_id') != inst_id:
+        return jsonify({'error':'Unauthorized'}), 403
     col = INST_ID_TO_COLUMN.get(inst_id)
     if not col: return jsonify([])
     return jsonify(db_query(f"SELECT Grocery_Code,Grocery_Items_Kan,Grocery_Items_Eng,Grocery_Category,Qtl_Kg_Ltr,{col} AS CurrentBalance,Std_Rate FROM Grocery_Items WHERE {col}>=0 ORDER BY Grocery_Category,Grocery_Code"))
-
 
 # --- DAILY USAGE ---
 
@@ -377,6 +570,7 @@ def add_daily_usage():
     d = request.json or {}
     inst_id = d.get('Inst_ID') or session.get('inst_id')
     code, quantity = d.get('Grocery_Code'), d.get('Quantity')
+    fy = d.get('year') or ''
     if not inst_id or not code or not quantity: return jsonify({'error':'Fill all required fields'}), 400
     try:
         qty = float(quantity)
@@ -389,21 +583,27 @@ def add_daily_usage():
     item = rows[0]
     if (item[col] or 0) < qty: return jsonify({'error':f'Insufficient. Available: {item[col]}'}), 400
     date_str = d.get('Date') or datetime.now().strftime('%Y-%m-%d')
+    active_year = get_fy_prefix(fy)
     try:
         db_query(f"UPDATE Grocery_Items SET {col}={col}-%s WHERE Grocery_Code=%s", (qty,code), fetch=False)
         rate = item['Std_Rate'] or 0.0
         db_query("INSERT INTO Stock_Issue (Year1,Date1,Grocery_Code,Issue_Inst_ID,Issue,Issue_Amount,Remarks,Purchased_Donation,DateStamp) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-            (datetime.now().year, date_str, code, inst_id, qty, qty*rate, d.get('Remarks','Consumption'), 'Consumption', datetime.now().strftime('%Y-%m-%d')), fetch=False)
+            (active_year, date_str, code, inst_id, qty, qty*rate, d.get('Remarks','Consumption'), 'Consumption', datetime.now().strftime('%Y-%m-%d')), fetch=False)
         log_audit('Consumption', 'Add', code, '', f'{qty} by inst {inst_id}')
         return jsonify({'success': True})
     except Exception as e: return jsonify({'error': str(e)}), 500
 
 @app.route('/api/daily-usage/<int:inst_id>', methods=['GET'])
 def get_daily_usage_logs(inst_id):
+    # Store manager can only view their own store data
+    if session.get('role') == 'hostel' and session.get('inst_id') != inst_id:
+        return jsonify({'error':'Unauthorized'}), 403
     df = request.args.get('from',''); dt = request.args.get('to','')
+    fy = request.args.get('year', '')
     extra = ""; args = [inst_id]
     if df: extra += " AND si.Date1>=%s"; args.append(df)
     if dt: extra += " AND si.Date1<=%s"; args.append(dt)
+    if fy: extra += " AND si.Year1 LIKE %s"; args.append(get_fy_prefix(fy) + "%")
     return jsonify(db_query(f"""SELECT si.Rec,si.Date1,si.Grocery_Code,gi.Grocery_Items_Kan,gi.Grocery_Items_Eng,
         gi.Qtl_Kg_Ltr,si.Issue AS QuantityUsed,si.Issue_Amount,si.Remarks
         FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code=gi.Grocery_Code
@@ -436,13 +636,16 @@ def delete_daily_usage(rec_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
 # --- LOW STOCK ALERTS ---
 
 @app.route('/api/low-stock-alerts', methods=['GET'])
 def get_low_stock_alerts():
     alerts = []
+    role = session.get('role')
+    user_inst = session.get('inst_id')
     for inst_id, col in INST_ID_TO_COLUMN.items():
+        if role == 'hostel' and user_inst != inst_id:
+            continue
         inst_rows = db_query("SELECT Institution FROM Institutions WHERE Inst_ID=%s", (inst_id,))
         if not inst_rows: continue
         inst_name = inst_rows[0]['Institution']
@@ -450,16 +653,26 @@ def get_low_stock_alerts():
             alerts.append({'Inst_ID':inst_id,'Institution':inst_name,'Grocery_Code':item['Grocery_Code'],'Grocery_Items_Kan':item['Grocery_Items_Kan'],'Qtl_Kg_Ltr':item['Qtl_Kg_Ltr'],'CurrentBalance':item['CurrentBalance']})
     return jsonify(alerts)
 
-
 # --- VEGETABLES ---
 
 @app.route('/api/vegetables', methods=['GET'])
 def get_vegetables():
     iid = request.args.get('inst_id'); df = request.args.get('from',''); dt = request.args.get('to','')
+    fy = request.args.get('year', '')
     wheres = []; args = []
-    if iid: wheres.append("v.Inst_ID=%s"); args.append(iid)
+    
+    # Store manager can only view their own store data
+    if session.get('role') == 'hostel':
+        wheres.append("v.Inst_ID=%s")
+        args.append(session.get('inst_id'))
+    elif iid:
+        wheres.append("v.Inst_ID=%s")
+        args.append(iid)
+        
     if df: wheres.append("v.Purchase_On>=%s"); args.append(df)
     if dt: wheres.append("v.Purchase_On<=%s"); args.append(dt)
+    if fy: wheres.append("v.Year1 LIKE %s"); args.append(get_fy_prefix(fy) + "%")
+    
     where_sql = ("WHERE " + " AND ".join(wheres)) if wheres else ""
     return jsonify(db_query(f"SELECT v.*,i.Institution FROM Vegetable v JOIN Institutions i ON v.Inst_ID=i.Inst_ID {where_sql} ORDER BY v.Rec DESC", tuple(args)))
 
@@ -467,34 +680,91 @@ def get_vegetables():
 def add_vegetable():
     if not chk('head','godown','hostel'): return jsonify({'error':'Unauthorized'}), 403
     d = request.json or {}
+    fy = d.get('year') or ''
+    active_year = get_fy_prefix(fy)
     try:
         db_query("INSERT INTO Vegetable (Inst_ID,Year1,Purchase_On,V_Code,Quantity,Bill_Date,Bill_No,Rate,Remarks,Issue_Place,Purchased_Donation) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-            (d.get('Inst_ID') or session.get('inst_id'), datetime.now().year, d.get('Purchase_On'), d.get('V_Code'), d.get('Quantity',0.0), d.get('Bill_Date'), d.get('Bill_No'), d.get('Rate',0.0), d.get('Remarks'), d.get('Issue_Place'), d.get('Purchased_Donation','Purchase')), fetch=False)
+            (d.get('Inst_ID') or session.get('inst_id'), active_year, d.get('Purchase_On'), d.get('V_Code'), d.get('Quantity',0.0), d.get('Bill_Date'), d.get('Bill_No'), d.get('Rate',0.0), d.get('Remarks'), d.get('Issue_Place'), d.get('Purchased_Donation','Purchase')), fetch=False)
         log_audit('Vegetables','Add',d.get('V_Code',''),'',d.get('Quantity',''))
         return jsonify({'success': True})
     except Exception as e: return jsonify({'error': str(e)}), 500
-
 
 # --- BILLS ---
 
 @app.route('/api/bills', methods=['GET'])
 def get_bills():
     df = request.args.get('from',''); dt = request.args.get('to',''); dn = request.args.get('donor','')
+    fy = request.args.get('year', '')
+    inst_id = request.args.get('inst_id') or session.get('inst_id')
     wheres = []; args = []
+    
+    # Store Manager can only view their own store data
+    if session.get('role') == 'hostel':
+        wheres.append("b.Inst_ID=%s")
+        args.append(inst_id)
+    elif inst_id:
+        wheres.append("b.Inst_ID=%s")
+        args.append(inst_id)
+        
     if df: wheres.append("b.Bill_Date>=%s"); args.append(df)
     if dt: wheres.append("b.Bill_Date<=%s"); args.append(dt)
     if dn: wheres.append("b.Shop_Donor_ID=%s"); args.append(dn)
+    if fy: wheres.append("b.Year1 LIKE %s"); args.append(get_fy_prefix(fy) + "%")
+    
     where_sql = ("WHERE " + " AND ".join(wheres)) if wheres else ""
-    return jsonify(db_query(f"SELECT b.*,sd.Shop_Donor_Name,sd.Place FROM Bills b LEFT JOIN Shops_Donors sd ON b.Shop_Donor_ID=sd.Shop_Donor_ID {where_sql} ORDER BY b.Rec DESC", tuple(args)))
+    return jsonify(db_query(f"SELECT b.*,sd.Shop_Donor_Name,sd.Place,inst.Institution FROM Bills b LEFT JOIN Shops_Donors sd ON b.Shop_Donor_ID=sd.Shop_Donor_ID LEFT JOIN Institutions inst ON b.Inst_ID=inst.Inst_ID {where_sql} ORDER BY b.Rec DESC", tuple(args)))
 
 @app.route('/api/bills', methods=['POST'])
 def add_bill():
-    if not chk('head','accounts','godown'): return jsonify({'error':'Unauthorized'}), 403
-    d = request.json or {}
+    if not chk('head','accounts','godown','hostel'): return jsonify({'error':'Unauthorized'}), 403
+    
+    # Handle multipart form or JSON
+    if request.content_type and 'multipart/form-data' in request.content_type:
+        donor_id = request.form.get('Shop_Donor_ID')
+        bill_date = request.form.get('Bill_Date')
+        bill_no = request.form.get('Bill_No')
+        amount = float(request.form.get('Bill_Amount') or 0.0)
+        paid_by = request.form.get('Paid_By') or ''
+        ch_date = request.form.get('Ch_Date') or ''
+        ch_no = request.form.get('Ch_No') or ''
+        ch_amount = float(request.form.get('Ch_Amount') or 0.0)
+        remarks = request.form.get('Remarks') or ''
+        inst_id = request.form.get('Inst_ID') or session.get('inst_id')
+        fy = request.form.get('year') or ''
+        bill_file = request.files.get('Bill_File')
+    else:
+        d = request.json or {}
+        donor_id = d.get('Shop_Donor_ID')
+        bill_date = d.get('Bill_Date')
+        bill_no = d.get('Bill_No')
+        amount = float(d.get('Bill_Amount') or 0.0)
+        paid_by = d.get('Paid_By') or ''
+        ch_date = d.get('Ch_Date') or ''
+        ch_no = d.get('Ch_No') or ''
+        ch_amount = float(d.get('Ch_Amount') or 0.0)
+        remarks = d.get('Remarks') or ''
+        inst_id = d.get('Inst_ID') or session.get('inst_id')
+        fy = d.get('year') or ''
+        bill_file = None
+
+    if not bill_no or not donor_id: return jsonify({'error':'Bill number and Donor/Vendor required'}), 400
+    
+    active_year = get_fy_prefix(fy)
+
+    # Handle file upload
+    file_path = None
+    if bill_file and bill_file.filename:
+        ext = os.path.splitext(bill_file.filename)[1].lower()
+        if ext not in ['.jpg', '.png', '.jpeg', '.pdf']:
+            return jsonify({'error': 'Invalid file format. Supported formats: JPG, PNG, PDF'}), 400
+        filename = f"{uuid.uuid4().hex}{ext}"
+        bill_file.save(os.path.join(UPLOAD_FOLDER, filename))
+        file_path = f"/static/uploads/bills/{filename}"
+
     try:
-        db_query("INSERT INTO Bills (Year1,Shop_Donor_ID,Bill_Date,Bill_No,Bill_Amount,Paid_By,Ch_Date,Ch_No,Ch_Amount,Remarks,DateAdded) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-            (datetime.now().year, d.get('Shop_Donor_ID'), d.get('Bill_Date'), d.get('Bill_No'), d.get('Bill_Amount',0.0), d.get('Paid_By'), d.get('Ch_Date'), d.get('Ch_No'), d.get('Ch_Amount',0.0), d.get('Remarks'), datetime.now().strftime('%Y-%m-%d %H:%M:%S')), fetch=False)
-        log_audit('Bills','Add',d.get('Bill_No',''),'',d.get('Bill_Amount',''))
+        db_query("INSERT INTO Bills (Year1,Shop_Donor_ID,Bill_Date,Bill_No,Bill_Amount,Paid_By,Ch_Date,Ch_No,Ch_Amount,Remarks,DateAdded,File_Path,Inst_ID) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+            (active_year, donor_id, bill_date, bill_no, amount, paid_by, ch_date, ch_no, ch_amount, remarks, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), file_path, inst_id), fetch=False)
+        log_audit('Bills','Add',bill_no,'',str(amount))
         return jsonify({'success': True})
     except Exception as e: return jsonify({'error': str(e)}), 500
 
@@ -506,6 +776,269 @@ def delete_bill(rec):
         log_audit('Bills','Delete',rec)
         return jsonify({'success': True})
     except Exception as e: return jsonify({'error': str(e)}), 500
+
+
+# --- BUDGET MANAGEMENT ---
+
+@app.route('/api/budgets/store', methods=['GET'])
+def get_store_budgets():
+    year = request.args.get('year') or str(datetime.now().year)
+    year_prefix = get_fy_prefix(year)
+    
+    # Store Manager can only view their own store budget data
+    role = session.get('role')
+    user_inst = session.get('inst_id')
+    inst_where = ""
+    args = [year_prefix]
+    if role == 'hostel' and user_inst:
+        inst_where = "WHERE i.Inst_ID = %s"
+        args.append(user_inst)
+
+    stores = db_query(f"""
+        SELECT i.Inst_ID, i.Institution, COALESCE(sb.Allocated_Amount, 0.0) AS Allocated_Amount
+        FROM Institutions i
+        LEFT JOIN Store_Budgets sb ON i.Inst_ID = sb.Inst_ID AND sb.Year1 = %s
+        {inst_where}
+        ORDER BY i.Inst_ID
+    """, tuple(args))
+    
+    # Utilized budget calculation
+    # 1. Grocery Issues
+    grocery_spends = db_query("""
+        SELECT Issue_Inst_ID, SUM(Issue_Amount) AS spent
+        FROM Stock_Issue
+        WHERE Purchased_Donation = 'Issue' AND Year1 = %s AND Issue_Inst_ID IS NOT NULL
+        GROUP BY Issue_Inst_ID
+    """, (year_prefix,))
+    g_spend_map = {row['Issue_Inst_ID']: row['spent'] for row in grocery_spends}
+    
+    # 2. Vegetable Purchases
+    veg_spends = db_query("""
+        SELECT Inst_ID, SUM(Quantity * Rate) AS spent
+        FROM Vegetable
+        WHERE Year1 = %s AND Inst_ID IS NOT NULL
+        GROUP BY Inst_ID
+    """, (year_prefix,))
+    v_spend_map = {row['Inst_ID']: row['spent'] for row in veg_spends}
+    
+    for s in stores:
+        iid = s['Inst_ID']
+        spent = g_spend_map.get(iid, 0.0) + v_spend_map.get(iid, 0.0)
+        s['Used_Amount'] = spent
+        s['Remaining_Amount'] = s['Allocated_Amount'] - spent
+        
+    return jsonify(stores)
+
+@app.route('/api/budgets/store', methods=['POST'])
+def set_store_budget():
+    if not chk('head'): return jsonify({'error':'Unauthorized'}), 403
+    d = request.json or {}
+    inst_id = d.get('Inst_ID')
+    amount = float(d.get('Allocated_Amount') or 0.0)
+    year = get_fy_prefix(d.get('year') or '')
+    if not inst_id: return jsonify({'error':'Institution ID required'}), 400
+    
+    try:
+        db_query("DELETE FROM Store_Budgets WHERE Year1=%s AND Inst_ID=%s", (year, inst_id), fetch=False)
+        db_query("INSERT INTO Store_Budgets (Year1, Inst_ID, Allocated_Amount) VALUES (%s, %s, %s)", (year, inst_id, amount), fetch=False)
+        log_audit('Budgets', 'SetStore', inst_id, '', str(amount))
+        return jsonify({'success': True})
+    except Exception as e: return jsonify({'error': str(e)}), 500
+
+@app.route('/api/budgets/user', methods=['GET'])
+def get_user_budgets():
+    year = request.args.get('year') or str(datetime.now().year)
+    year_prefix = get_fy_prefix(year)
+    
+    # Store Manager can only view their own budget allocation
+    role = session.get('role')
+    user_name = session.get('username')
+    user_where = ""
+    args = [year_prefix]
+    if role == 'hostel' and user_name:
+        user_where = "WHERE u.username = %s"
+        args.append(user_name)
+
+    users = db_query(f"""
+        SELECT u.username, u.name, u.role, u.inst_id, COALESCE(ub.Allocated_Amount, 0.0) AS Allocated_Amount
+        FROM Users u
+        LEFT JOIN User_Budgets ub ON u.username = ub.Username AND ub.Year1 = %s
+        {user_where}
+        ORDER BY u.username
+    """, tuple(args))
+    
+    # Spends
+    grocery_spends = db_query("""
+        SELECT Issue_Inst_ID, SUM(Issue_Amount) AS spent
+        FROM Stock_Issue
+        WHERE Purchased_Donation = 'Issue' AND Year1 = %s AND Issue_Inst_ID IS NOT NULL
+        GROUP BY Issue_Inst_ID
+    """, (year_prefix,))
+    g_spend_map = {row['Issue_Inst_ID']: row['spent'] for row in grocery_spends}
+    
+    veg_spends = db_query("""
+        SELECT Inst_ID, SUM(Quantity * Rate) AS spent
+        FROM Vegetable
+        WHERE Year1 = %s AND Inst_ID IS NOT NULL
+        GROUP BY Inst_ID
+    """, (year_prefix,))
+    v_spend_map = {row['Inst_ID']: row['spent'] for row in veg_spends}
+    
+    for u in users:
+        iid = u['inst_id']
+        if iid:
+            spent = g_spend_map.get(iid, 0.0) + v_spend_map.get(iid, 0.0)
+        else:
+            spent = 0.0
+        u['Used_Amount'] = spent
+        u['Remaining_Amount'] = u['Allocated_Amount'] - spent
+        
+    return jsonify(users)
+
+@app.route('/api/budgets/user', methods=['POST'])
+def set_user_budget():
+    if not chk('head'): return jsonify({'error':'Unauthorized'}), 403
+    d = request.json or {}
+    username = d.get('Username')
+    amount = float(d.get('Allocated_Amount') or 0.0)
+    year = get_fy_prefix(d.get('year') or '')
+    if not username: return jsonify({'error':'Username required'}), 400
+    
+    try:
+        db_query("DELETE FROM User_Budgets WHERE Year1=%s AND Username=%s", (year, username), fetch=False)
+        db_query("INSERT INTO User_Budgets (Year1, Username, Allocated_Amount) VALUES (%s, %s, %s)", (year, username, amount), fetch=False)
+        log_audit('Budgets', 'SetUser', username, '', str(amount))
+        return jsonify({'success': True})
+    except Exception as e: return jsonify({'error': str(e)}), 500
+
+
+# --- ANALYTICS DASHBOARD ---
+
+@app.route('/api/analytics', methods=['GET'])
+def get_analytics():
+    year = request.args.get('year') or str(datetime.now().year)
+    year_prefix = get_fy_prefix(year)
+    role = session.get('role', 'hostel')
+    inst_id = session.get('inst_id')
+    
+    # 1. Central Stock Value
+    val_row = db_query("SELECT SUM(Tot_Stock * Std_Rate) AS val FROM Grocery_Items")
+    central_stock_val = val_row[0]['val'] or 0.0 if val_row else 0.0
+    
+    # 2. Store stock value
+    store_stock_vals = {}
+    for iid, col in INST_ID_TO_COLUMN.items():
+        if role == 'hostel' and inst_id != iid:
+            continue
+        r = db_query(f"SELECT SUM({col} * Std_Rate) AS val FROM Grocery_Items WHERE {col} > 0")
+        store_stock_vals[iid] = r[0]['val'] or 0.0 if r else 0.0
+
+    # 3. Budget totals
+    budget_summary = {}
+    if role == 'head' or role == 'accounts':
+        total_allocated_row = db_query("SELECT SUM(Allocated_Amount) AS val FROM Store_Budgets WHERE Year1=%s", (year_prefix,))
+        total_allocated = total_allocated_row[0]['val'] or 0.0 if total_allocated_row else 0.0
+        
+        spent_g = db_query("SELECT SUM(Issue_Amount) AS val FROM Stock_Issue WHERE Purchased_Donation='Issue' AND Year1=%s", (year_prefix,))
+        spent_v = db_query("SELECT SUM(Quantity * Rate) AS val FROM Vegetable WHERE Year1=%s", (year_prefix,))
+        total_spent = (spent_g[0]['val'] or 0.0) + (spent_v[0]['val'] or 0.0)
+        
+        budget_summary = {
+            'Total_Budget': total_allocated,
+            'Total_Utilized': total_spent,
+            'Remaining_Budget': total_allocated - total_spent
+        }
+    elif inst_id:
+        allocated_row = db_query("SELECT Allocated_Amount AS val FROM Store_Budgets WHERE Year1=%s AND Inst_ID=%s", (year_prefix, inst_id))
+        allocated = allocated_row[0]['val'] or 0.0 if allocated_row else 0.0
+        
+        spent_g = db_query("SELECT SUM(Issue_Amount) AS val FROM Stock_Issue WHERE Purchased_Donation='Issue' AND Year1=%s AND Issue_Inst_ID=%s", (year_prefix, inst_id))
+        spent_v = db_query("SELECT SUM(Quantity * Rate) AS val FROM Vegetable WHERE Year1=%s AND Inst_ID=%s", (year_prefix, inst_id))
+        spent = (spent_g[0]['val'] or 0.0) + (spent_v[0]['val'] or 0.0)
+        
+        budget_summary = {
+            'Total_Budget': allocated,
+            'Total_Utilized': spent,
+            'Remaining_Budget': allocated - spent
+        }
+        
+    # 4. Monthly Spending Graph (calculate in python for dual db compatibility)
+    if role == 'head' or role == 'accounts':
+        all_issues = db_query("SELECT Date1, Issue_Amount FROM Stock_Issue WHERE Purchased_Donation='Issue' AND Year1=%s", (year_prefix,))
+        all_vegs = db_query("SELECT Purchase_On AS Date1, (Quantity * Rate) AS Issue_Amount FROM Vegetable WHERE Year1=%s", (year_prefix,))
+    else:
+        all_issues = db_query("SELECT Date1, Issue_Amount FROM Stock_Issue WHERE Purchased_Donation='Issue' AND Year1=%s AND Issue_Inst_ID=%s", (year_prefix, inst_id))
+        all_vegs = db_query("SELECT Purchase_On AS Date1, (Quantity * Rate) AS Issue_Amount FROM Vegetable WHERE Year1=%s AND Inst_ID=%s", (year_prefix, inst_id))
+        
+    month_totals = {f"{m:02d}": 0.0 for m in range(1, 13)}
+    for row in all_issues + all_vegs:
+        dt = row['Date1']
+        if dt and len(dt) >= 7:
+            m = dt[5:7]
+            if m in month_totals:
+                month_totals[m] += row['Issue_Amount'] or 0.0
+                
+    monthly_spend = [{'Month': m, 'Amount': amt} for m, amt in sorted(month_totals.items())]
+
+    # 5. Consumption Analytics (Item wise)
+    if role == 'head' or role == 'accounts':
+        top_consumed = db_query("""
+            SELECT gi.Grocery_Items_Kan, SUM(si.Issue) AS TotalQty
+            FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code = gi.Grocery_Code
+            WHERE si.Purchased_Donation = 'Consumption' AND si.Year1 = %s
+            GROUP BY gi.Grocery_Code, gi.Grocery_Items_Kan
+            ORDER BY TotalQty DESC LIMIT 10
+        """, (year_prefix,))
+    else:
+        top_consumed = db_query("""
+            SELECT gi.Grocery_Items_Kan, SUM(si.Issue) AS TotalQty
+            FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code = gi.Grocery_Code
+            WHERE si.Purchased_Donation = 'Consumption' AND si.Year1 = %s AND si.Issue_Inst_ID = %s
+            GROUP BY gi.Grocery_Code, gi.Grocery_Items_Kan
+            ORDER BY TotalQty DESC LIMIT 10
+        """, (year_prefix, inst_id))
+
+    # 6. Fast/Slow Central Items (Admin Only)
+    fast_moving = []
+    slow_moving = []
+    if role == 'head':
+        fast_moving = db_query("""
+            SELECT gi.Grocery_Items_Kan, SUM(si.Issue) AS TotalQty
+            FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code = gi.Grocery_Code
+            WHERE si.Purchased_Donation = 'Issue' AND si.Year1 = %s
+            GROUP BY gi.Grocery_Code, gi.Grocery_Items_Kan
+            ORDER BY TotalQty DESC LIMIT 5
+        """, (year_prefix,))
+        
+        slow_moving = db_query("""
+            SELECT gi.Grocery_Items_Kan, gi.Tot_Stock
+            FROM Grocery_Items gi
+            WHERE gi.Tot_Stock > 0 AND gi.Grocery_Code NOT IN (
+                SELECT DISTINCT Grocery_Code FROM Stock_Issue WHERE Purchased_Donation='Issue' AND Year1=%s
+            )
+            ORDER BY gi.Tot_Stock DESC LIMIT 5
+        """, (year_prefix,))
+
+    # 7. User Action stats (Admin Only)
+    user_stats = []
+    if role == 'head':
+        user_stats = db_query("""
+            SELECT Username, Action, COUNT(*) AS ActionCount
+            FROM Audit_Logs
+            GROUP BY Username, Action
+            ORDER BY ActionCount DESC LIMIT 30
+        """)
+
+    return jsonify({
+        'Central_Stock_Value': central_stock_val,
+        'Store_Stock_Values': store_stock_vals,
+        'Budget_Summary': budget_summary,
+        'Monthly_Spend': monthly_spend,
+        'Top_Consumed': top_consumed,
+        'Fast_Moving': fast_moving,
+        'Slow_Moving': slow_moving,
+        'User_Stats': user_stats
+    })
 
 
 # --- REPORTS ---
@@ -520,11 +1053,14 @@ def report_stock():
 @app.route('/api/reports/purchases', methods=['GET'])
 def report_purchases():
     df = request.args.get('from',''); dt = request.args.get('to',''); dn = request.args.get('donor',''); tp = request.args.get('type','')
+    fy = request.args.get('year', '')
     wheres = ["si.Stock>0"]; args = []
     if df: wheres.append("si.Date1>=%s"); args.append(df)
     if dt: wheres.append("si.Date1<=%s"); args.append(dt)
     if dn: wheres.append("si.Shop_Donor_ID=%s"); args.append(dn)
     if tp: wheres.append("si.Purchased_Donation=%s"); args.append(tp)
+    if fy: wheres.append("si.Year1 LIKE %s"); args.append(get_fy_prefix(fy) + "%")
+    
     return jsonify(db_query(f"""SELECT si.Date1,si.Grocery_Code,gi.Grocery_Items_Kan,gi.Grocery_Items_Eng,
         gi.Qtl_Kg_Ltr,si.Stock AS Quantity,si.Purchase_Rate,(si.Stock*si.Purchase_Rate) AS Amount,
         sd.Shop_Donor_Name,si.Bill_No,si.Purchased_Donation,si.Remarks
@@ -535,11 +1071,14 @@ def report_purchases():
 @app.route('/api/reports/indents', methods=['GET'])
 def report_indents():
     df = request.args.get('from',''); dt = request.args.get('to',''); sf = request.args.get('status',''); iid = request.args.get('inst_id','')
+    fy = request.args.get('year', '')
     wheres = []; args = []
     if df: wheres.append("ind.Indent_Date>=%s"); args.append(df)
     if dt: wheres.append("ind.Indent_Date<=%s"); args.append(dt)
     if sf: wheres.append("ind.Sanctioned=%s"); args.append(sf)
     if iid: wheres.append("ind.Inst_ID=%s"); args.append(iid)
+    if fy: wheres.append("ind.Year1 LIKE %s"); args.append(get_fy_prefix(fy) + "%")
+    
     where_sql = ("WHERE " + " AND ".join(wheres)) if wheres else ""
     return jsonify(db_query(f"""SELECT ind.Indent_Date,ind.Indent_no,inst.Institution,
         gi.Grocery_Items_Kan,gi.Grocery_Items_Eng,gi.Qtl_Kg_Ltr,
@@ -552,11 +1091,13 @@ def report_indents():
 def report_consumption():
     df = request.args.get('from',''); dt = request.args.get('to',''); iid = request.args.get('inst_id','')
     item_code = request.args.get('item_code','')
+    fy = request.args.get('year', '')
     wheres = ["si.Purchased_Donation='Consumption'"]; args = []
     if df: wheres.append("si.Date1>=%s"); args.append(df)
     if dt: wheres.append("si.Date1<=%s"); args.append(dt)
     if iid: wheres.append("si.Issue_Inst_ID=%s"); args.append(iid)
     if item_code: wheres.append("si.Grocery_Code=%s"); args.append(item_code)
+    if fy: wheres.append("si.Year1 LIKE %s"); args.append(get_fy_prefix(fy) + "%")
     
     logs = db_query(f"""SELECT si.Date1,inst.Institution,gi.Grocery_Code,gi.Grocery_Items_Kan,gi.Grocery_Items_Eng,
         gi.Qtl_Kg_Ltr,gi.Grocery_Category,si.Issue AS QuantityUsed,si.Issue_Amount,si.Remarks,
@@ -579,10 +1120,13 @@ def report_consumption():
 @app.route('/api/reports/donations', methods=['GET'])
 def report_donations():
     df = request.args.get('from',''); dt = request.args.get('to',''); dn = request.args.get('donor','')
+    fy = request.args.get('year', '')
     wheres = ["si.Purchased_Donation='Donation'"]; args = []
     if df: wheres.append("si.Date1>=%s"); args.append(df)
     if dt: wheres.append("si.Date1<=%s"); args.append(dt)
     if dn: wheres.append("si.Shop_Donor_ID=%s"); args.append(dn)
+    if fy: wheres.append("si.Year1 LIKE %s"); args.append(get_fy_prefix(fy) + "%")
+    
     return jsonify(db_query(f"""SELECT si.Date1,sd.Shop_Donor_Name,sd.Place,
         gi.Grocery_Items_Kan,gi.Grocery_Items_Eng,gi.Qtl_Kg_Ltr,si.Stock AS Quantity,si.Remarks
         FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code=gi.Grocery_Code
@@ -651,7 +1195,20 @@ def delete_user(username):
 def init_db():
     try:
         db_query("CREATE TABLE IF NOT EXISTS Users (username VARCHAR(50) PRIMARY KEY, password VARCHAR(100) NOT NULL, role VARCHAR(20) NOT NULL, inst_id INT, name VARCHAR(100) NOT NULL)", fetch=False)
-        db_query("CREATE TABLE IF NOT EXISTS Audit_Logs (Rec INTEGER PRIMARY KEY AUTOINCREMENT, Timestamp TEXT NOT NULL, Username TEXT NOT NULL, Module TEXT NOT NULL, Action TEXT NOT NULL, Target_ID TEXT, Old_Value TEXT, New_Value TEXT)", fetch=False)
+        
+        # Determine database connection type to run appropriate autoincrement commands
+        conn, db_type = get_db_connection()
+        conn.close()
+        
+        if db_type == "sqlite":
+            db_query("CREATE TABLE IF NOT EXISTS Audit_Logs (Rec INTEGER PRIMARY KEY AUTOINCREMENT, Timestamp TEXT NOT NULL, Username TEXT NOT NULL, Module TEXT NOT NULL, Action TEXT NOT NULL, Target_ID TEXT, Old_Value TEXT, New_Value TEXT)", fetch=False)
+            db_query("CREATE TABLE IF NOT EXISTS Store_Budgets (Rec INTEGER PRIMARY KEY AUTOINCREMENT, Year1 TEXT NOT NULL, Inst_ID INTEGER NOT NULL, Allocated_Amount REAL DEFAULT 0.0, FOREIGN KEY(Inst_ID) REFERENCES Institutions(Inst_ID))", fetch=False)
+            db_query("CREATE TABLE IF NOT EXISTS User_Budgets (Rec INTEGER PRIMARY KEY AUTOINCREMENT, Year1 TEXT NOT NULL, Username TEXT NOT NULL, Allocated_Amount REAL DEFAULT 0.0, FOREIGN KEY(Username) REFERENCES Users(username))", fetch=False)
+        else:
+            db_query("CREATE TABLE IF NOT EXISTS Audit_Logs (Rec SERIAL PRIMARY KEY, Timestamp VARCHAR(50) NOT NULL, Username VARCHAR(100) NOT NULL, Module VARCHAR(100) NOT NULL, Action VARCHAR(100) NOT NULL, Target_ID VARCHAR(100), Old_Value TEXT, New_Value TEXT)", fetch=False)
+            db_query("CREATE TABLE IF NOT EXISTS Store_Budgets (Rec SERIAL PRIMARY KEY, Year1 VARCHAR(10) NOT NULL, Inst_ID INTEGER NOT NULL, Allocated_Amount REAL DEFAULT 0.0, FOREIGN KEY(Inst_ID) REFERENCES Institutions(Inst_ID))", fetch=False)
+            db_query("CREATE TABLE IF NOT EXISTS User_Budgets (Rec SERIAL PRIMARY KEY, Year1 VARCHAR(10) NOT NULL, Username VARCHAR(50) NOT NULL, Allocated_Amount REAL DEFAULT 0.0, FOREIGN KEY(Username) REFERENCES Users(username))", fetch=False)
+            
         existing = db_query("SELECT COUNT(*) as cnt FROM Users")
         count = existing[0].get('cnt', 0) if existing else 0
         if count == 0:
