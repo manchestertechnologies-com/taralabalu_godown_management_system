@@ -127,6 +127,10 @@
                 </a>
             </div>
         </div>
+        <!-- Floating Sidebar Pull/Slide Toggle Handle -->
+        <button id="sidebarToggleHandle" onclick="toggleSidebar()" class="absolute top-1/2 right-[-24px] transform -translate-y-1/2 w-6 h-12 bg-emerald-950 hover:bg-emerald-900 border-y border-r border-emerald-800 rounded-r-xl flex items-center justify-center text-emerald-200 hover:text-white transition-all shadow-md z-50 focus:outline-none" title="Toggle Sidebar">
+            <span id="sidebarToggleArrow" class="text-[10px] font-bold">◀</span>
+        </button>
     </aside>
 
     <!-- Main Workspace Area -->
@@ -1244,6 +1248,7 @@
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
             const mainWorkspace = document.getElementById('mainWorkspace');
+            const arrow = document.getElementById('sidebarToggleArrow');
             if (!sidebar || !mainWorkspace) return;
 
             const isMobile = window.innerWidth < 768;
@@ -1257,6 +1262,7 @@
                 // Open sidebar
                 sidebar.classList.remove('-translate-x-full');
                 sidebar.classList.add('translate-x-0');
+                if (arrow) arrow.innerText = '◀';
                 if (isMobile) {
                     if (overlay) overlay.classList.remove('hidden');
                 } else {
@@ -1267,10 +1273,55 @@
                 // Close/Collapse sidebar
                 sidebar.classList.add('-translate-x-full');
                 sidebar.classList.remove('translate-x-0');
+                if (arrow) arrow.innerText = '▶';
                 if (overlay) overlay.classList.add('hidden');
                 if (!isMobile) {
                     mainWorkspace.classList.remove('md:pl-64');
                     localStorage.setItem('sidebarCollapsed', 'true');
+                }
+            }
+        }
+
+        // Touch Swipe Gestures to Open/Close Sidebar
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].clientX;
+            touchStartY = e.changedTouches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].clientX;
+            touchEndY = e.changedTouches[0].clientY;
+            handleSwipeGesture();
+        }, { passive: true });
+
+        function handleSwipeGesture() {
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            // Ensure swipe is mostly horizontal
+            if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+                const sidebar = document.getElementById('sidebar');
+                if (!sidebar) return;
+                const isOpened = sidebar.classList.contains('translate-x-0') || !sidebar.classList.contains('-translate-x-full');
+                
+                // Swipe Left: Close/Collapse Sidebar
+                if (deltaX < -60) {
+                    if (isOpened) {
+                        toggleSidebar(false);
+                        showToast(currentLang === 'en' ? "Sidebar slided away" : "ಪಕ್ಕದ ಪಟ್ಟಿಯನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ", "info");
+                    }
+                }
+                // Swipe Right: Open Sidebar (start near left edge)
+                else if (deltaX > 60) {
+                    if (!isOpened && touchStartX < 100) {
+                        toggleSidebar(true);
+                        showToast(currentLang === 'en' ? "Sidebar slided open" : "ಪಕ್ಕದ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಲಾಗಿದೆ", "info");
+                    }
                 }
             }
         }
