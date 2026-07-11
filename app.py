@@ -1563,6 +1563,10 @@ def init_db():
         # Check and load all register records if empty
         check_and_load_registers()
         
+        # Bulk approve all historical pending indents up to 2026-07-12
+        print("Bulk approving historical pending indents...")
+        db_query("UPDATE Indents SET Sanctioned = 'Sanctioned', Sanctioned_Quantity = Quantity WHERE Sanctioned = 'Pending' AND Indent_Date <= '2026-07-12'", fetch=False)
+        
     except Exception as e:
         print(f"DB init error: {e}")
 

@@ -1946,7 +1946,7 @@
                             let badge = 'bg-slate-100 text-slate-600';
                             if (row.Sanctioned === 'Pending') badge = 'bg-amber-50 text-amber-700';
                             else if (row.Sanctioned === 'Sent') badge = 'bg-blue-50 text-blue-700';
-                            else if (row.Sanctioned === 'Received') badge = 'bg-emerald-50 text-emerald-700';
+                            else if (row.Sanctioned === 'Received' || row.Sanctioned === 'Sanctioned') badge = 'bg-emerald-50 text-emerald-700';
                             else if (row.Sanctioned === 'Rejected') badge = 'bg-red-50 text-red-700';
 
                             // Acknowledge Receipt or Delete action button
