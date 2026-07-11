@@ -4,7 +4,11 @@ from flask import Flask, render_template, jsonify, request, session, redirect, u
 from datetime import datetime
 import sqlite3
 import uuid
-from PIL import Image
+
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
 
 try:
     import psycopg2
@@ -19,6 +23,9 @@ UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def compress_image(file_path):
+    if Image is None:
+        print("Pillow is not installed. Skipping image compression.")
+        return
     try:
         ext = os.path.splitext(file_path)[1].lower()
         if ext not in ['.jpg', '.jpeg', '.png']:
