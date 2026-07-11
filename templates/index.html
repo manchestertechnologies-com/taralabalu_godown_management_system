@@ -349,6 +349,7 @@
                                         <th class="px-4 py-3 text-left font-bold text-slate-600">Rate</th>
                                         <th class="px-4 py-3 text-left font-bold text-slate-600">Bill No</th>
                                         <th class="px-4 py-3 text-left font-bold text-slate-600">Bill Attachment</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tblInwardGroceryLog" class="divide-y divide-slate-100">
@@ -430,6 +431,7 @@
                                         <th class="px-4 py-3 text-left font-bold text-slate-600">Rate</th>
                                         <th class="px-4 py-3 text-left font-bold text-slate-600">Bill No</th>
                                         <th class="px-4 py-3 text-left font-bold text-slate-600">Remarks</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tblInwardVegetableLog" class="divide-y divide-slate-100">
@@ -488,6 +490,7 @@
                                         <th class="px-4 py-3 text-left font-bold text-slate-600">Quantity</th>
                                         <th class="px-4 py-3 text-left font-bold text-slate-600">Type</th>
                                         <th class="px-4 py-3 text-left font-bold text-slate-600">Remarks</th>
+                                        <th class="px-4 py-3 text-left font-bold text-slate-600">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tblOutwardLog" class="divide-y divide-slate-100">
@@ -1753,7 +1756,7 @@
                     const tbody = document.getElementById('tblInwardGroceryLog');
                     if (!tbody) return;
                     if (logs.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">No inward logs.</td></tr>`;
+                        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">No inward logs.</td></tr>`;
                     } else {
                         tbody.innerHTML = logs.map(row => `
                             <tr class="hover:bg-slate-50 border-b">
@@ -1765,6 +1768,9 @@
                                 <td class="px-4 py-3 font-bold">${row.Bill_No || ''}</td>
                                 <td class="px-4 py-3">
                                     ${row.File_Path ? `<button onclick="viewBillAttachment('${row.File_Path}')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold text-[10px] transition">👁️ View</button>` : '<span class="text-slate-400 italic">None</span>'}
+                                </td>
+                                <td class="px-4 py-3">
+                                    ${currentRole === 'head' || currentRole === 'godown' ? `<button onclick="deleteInwardEntry(${row.Rec})" class="text-red-700 hover:text-red-900 font-bold">Delete</button>` : '<span class="text-slate-400 italic">-</span>'}
                                 </td>
                             </tr>
                         `).join('');
@@ -1778,7 +1784,7 @@
                     const tbody = document.getElementById('tblInwardVegetableLog');
                     if (!tbody) return;
                     if (logs.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">No vegetable logs.</td></tr>`;
+                        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">No vegetable logs.</td></tr>`;
                     } else {
                         tbody.innerHTML = logs.map(row => `
                             <tr class="hover:bg-slate-50 border-b">
@@ -1789,6 +1795,9 @@
                                 <td class="px-4 py-3">₹${row.Rate}</td>
                                 <td class="px-4 py-3 font-bold">${row.Bill_No || ''}</td>
                                 <td class="px-4 py-3 text-slate-400">${row.Remarks}</td>
+                                <td class="px-4 py-3">
+                                    ${currentRole === 'head' || currentRole === 'godown' ? `<button onclick="deleteVegetableEntry(${row.Rec})" class="text-red-700 hover:text-red-900 font-bold">Delete</button>` : '<span class="text-slate-400 italic">-</span>'}
+                                </td>
                             </tr>
                         `).join('');
                     }
@@ -1859,7 +1868,7 @@
                     const tbody = document.getElementById('tblOutwardLog');
                     if (!tbody) return;
                     if (logs.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No outward logs.</td></tr>`;
+                        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">No outward logs.</td></tr>`;
                     } else {
                         tbody.innerHTML = logs.map(row => `
                             <tr class="hover:bg-slate-50 border-b">
@@ -1868,6 +1877,9 @@
                                 <td class="px-4 py-3 font-black text-red-800">${row.Issue} ${row.Qtl_Kg_Ltr}</td>
                                 <td class="px-4 py-3"><span class="px-2 py-0.5 bg-red-50 text-red-700 rounded font-bold text-[9px] uppercase">${row.Purchased_Donation}</span></td>
                                 <td class="px-4 py-3 text-slate-400">${row.Remarks}</td>
+                                <td class="px-4 py-3">
+                                    ${currentRole === 'head' || currentRole === 'godown' ? `<button onclick="deleteOutwardEntry(${row.Rec})" class="text-red-700 hover:text-red-900 font-bold">Delete</button>` : '<span class="text-slate-400 italic">-</span>'}
+                                </td>
                             </tr>
                         `).join('');
                     }
@@ -1937,10 +1949,10 @@
                             else if (row.Sanctioned === 'Received') badge = 'bg-emerald-50 text-emerald-700';
                             else if (row.Sanctioned === 'Rejected') badge = 'bg-red-50 text-red-700';
 
-                            // Acknowledge Receipt action button
+                            // Acknowledge Receipt or Delete action button
                             const actionBtn = row.Sanctioned === 'Sent' ? 
                                 `<button onclick="acknowledgeIndentReceipt(${row.Rec})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg transition shadow">Acknowledge</button>` : 
-                                '<span class="text-slate-400 italic">None</span>';
+                                (row.Sanctioned === 'Pending' ? `<button onclick="deleteIndentEntry(${row.Rec})" class="text-red-700 hover:text-red-950 font-bold">Delete</button>` : '<span class="text-slate-400 italic">None</span>');
 
                             return `
                                 <tr class="hover:bg-slate-50 border-b">
@@ -1981,6 +1993,7 @@
                                 <td class="px-4 py-3 flex gap-2">
                                     <button onclick="approveStoreIndent(${row.Rec})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg transition shadow flex items-center gap-1">Approve</button>
                                     <button onclick="rejectStoreIndent(${row.Rec})" class="bg-red-800 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg transition shadow flex items-center gap-1">Reject</button>
+                                    <button onclick="deleteIndentEntry(${row.Rec})" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-1.5 rounded-lg transition shadow flex items-center gap-1">Delete</button>
                                 </td>
                             </tr>
                         `).join('');
@@ -2280,6 +2293,66 @@
                     else {
                         showToast("Bill successfully deleted!");
                         loadBillsLogsList();
+                    }
+                })
+                .catch(err => showToast(err.message, "error"));
+        }
+
+        function deleteInwardEntry(rec) {
+            if (!confirm("Are you sure you want to delete this inward stock entry? This will adjust the godown inventory balance.")) return;
+            fetch(`/api/godown-stock/${rec}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) showToast(data.error, "error");
+                    else {
+                        showToast("Inward entry deleted successfully!", "success");
+                        loadInwardLogs();
+                    }
+                })
+                .catch(err => showToast(err.message, "error"));
+        }
+
+        function deleteVegetableEntry(rec) {
+            if (!confirm("Are you sure you want to delete this vegetable entry?")) return;
+            fetch(`/api/vegetables/${rec}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) showToast(data.error, "error");
+                    else {
+                        showToast("Vegetable entry deleted successfully!", "success");
+                        loadInwardLogs();
+                    }
+                })
+                .catch(err => showToast(err.message, "error"));
+        }
+
+        function deleteOutwardEntry(rec) {
+            if (!confirm("Are you sure you want to delete this outward log? This will restore the stock quantity to the central godown and deduct it from the hostel.")) return;
+            fetch(`/api/outwards/${rec}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) showToast(data.error, "error");
+                    else {
+                        showToast("Outward entry deleted successfully!", "success");
+                        loadOutwardLogs();
+                    }
+                })
+                .catch(err => showToast(err.message, "error"));
+        }
+
+        function deleteIndentEntry(rec) {
+            if (!confirm("Are you sure you want to delete this indent entry?")) return;
+            fetch(`/api/indents/${rec}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) showToast(data.error, "error");
+                    else {
+                        showToast("Indent deleted successfully!", "success");
+                        if (currentRole === 'hostel') {
+                            loadHostelIndentsHistory();
+                        } else {
+                            loadPendingIndents();
+                        }
                     }
                 })
                 .catch(err => showToast(err.message, "error"));

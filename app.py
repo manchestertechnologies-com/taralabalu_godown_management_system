@@ -385,6 +385,23 @@ def add_godown_stock():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/godown-stock/<int:rec>', methods=['DELETE'])
+def delete_godown_stock(rec):
+    if not chk('head', 'godown'): return jsonify({'error': 'Unauthorized'}), 403
+    try:
+        rows = db_query("SELECT Grocery_Code, Stock FROM Stock_Issue WHERE Rec=%s", (rec,))
+        if not rows: return jsonify({'error': 'Transaction not found'}), 404
+        t = rows[0]
+        code, qty = t['Grocery_Code'], float(t['Stock'] or 0.0)
+        
+        # Deduct from central stock
+        db_query("UPDATE Grocery_Items SET Tot_Stock = Tot_Stock - %s WHERE Grocery_Code = %s", (qty, code), fetch=False)
+        db_query("DELETE FROM Stock_Issue WHERE Rec=%s", (rec,), fetch=False)
+        log_audit('Inward', 'Delete', rec, f'{qty}', '')
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # --- STOCK OUTWARD ---
 
 @app.route('/api/outwards', methods=['GET'])
@@ -478,6 +495,31 @@ def add_outward():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/outwards/<int:rec>', methods=['DELETE'])
+def delete_outward(rec):
+    if not chk('head', 'godown'): return jsonify({'error': 'Unauthorized'}), 403
+    try:
+        rows = db_query("SELECT Grocery_Code, Issue, Issue_Inst_ID, Purchased_Donation FROM Stock_Issue WHERE Rec=%s", (rec,))
+        if not rows: return jsonify({'error': 'Transaction not found'}), 404
+        t = rows[0]
+        code, qty = t['Grocery_Code'], float(t['Issue'] or 0.0)
+        inst_id = t['Issue_Inst_ID']
+        
+        # Central adjustments
+        db_query("UPDATE Grocery_Items SET Tot_Stock = Tot_Stock + %s, Tot_Issue = Tot_Issue - %s WHERE Grocery_Code = %s", (qty, qty, code), fetch=False)
+        
+        # Hostel adjustments
+        if inst_id:
+            col = INST_ID_TO_COLUMN.get(int(inst_id))
+            if col:
+                db_query(f"UPDATE Grocery_Items SET {col} = {col} - %s WHERE Grocery_Code = %s", (qty, code), fetch=False)
+                
+        db_query("DELETE FROM Stock_Issue WHERE Rec=%s", (rec,), fetch=False)
+        log_audit('Outward', 'Delete', rec, f'{qty}', '')
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # --- INDENTS ---
 
 @app.route('/api/indents', methods=['GET'])
@@ -544,6 +586,22 @@ def create_indent():
         log_audit('Indents', 'Create', indent_no, '', f'{qty} of {code}')
         return jsonify({'success': True, 'indent_no': indent_no})
     except Exception as e: return jsonify({'error': str(e)}), 500
+
+@app.route('/api/indents/<int:rec>', methods=['DELETE'])
+def delete_indent(rec):
+    if not chk('head', 'godown', 'hostel'): return jsonify({'error': 'Unauthorized'}), 403
+    try:
+        rows = db_query("SELECT Indent_no, Sanctioned FROM Indents WHERE Rec=%s", (rec,))
+        if not rows: return jsonify({'error': 'Indent not found'}), 404
+        t = rows[0]
+        if session.get('role') == 'hostel' and t['Sanctioned'] != 'Pending':
+            return jsonify({'error': 'Cannot delete approved or processed indents'}), 400
+            
+        db_query("DELETE FROM Indents WHERE Rec=%s", (rec,), fetch=False)
+        log_audit('Indents', 'Delete', rec, t['Indent_no'], '')
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/indents/<int:indent_rec>/approve', methods=['POST'])
 def approve_indent(indent_rec):
@@ -743,6 +801,19 @@ def add_vegetable():
         log_audit('Vegetables','Add',d.get('V_Code',''),'',d.get('Quantity',''))
         return jsonify({'success': True})
     except Exception as e: return jsonify({'error': str(e)}), 500
+
+@app.route('/api/vegetables/<int:rec>', methods=['DELETE'])
+def delete_vegetable(rec):
+    if not chk('head', 'godown'): return jsonify({'error': 'Unauthorized'}), 403
+    try:
+        rows = db_query("SELECT V_Code, Quantity FROM Vegetable WHERE Rec=%s", (rec,))
+        if not rows: return jsonify({'error': 'Vegetable log not found'}), 404
+        t = rows[0]
+        db_query("DELETE FROM Vegetable WHERE Rec=%s", (rec,), fetch=False)
+        log_audit('Vegetables', 'Delete', rec, t['V_Code'], str(t['Quantity']))
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # --- BILLS ---
 
