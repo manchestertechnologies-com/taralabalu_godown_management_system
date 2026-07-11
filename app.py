@@ -846,46 +846,114 @@ def get_store_budgets():
     # Store Manager can only view their own store budget data
     role = session.get('role')
     user_inst = session.get('inst_id')
-    inst_where = ""
-    args = [year_prefix]
-    if role == 'hostel' and user_inst:
-        inst_where = "WHERE i.Inst_ID = %s"
-        args.append(user_inst)
-
-    stores = db_query(f"""
-        SELECT i.Inst_ID, i.Institution, COALESCE(sb.Allocated_Amount, 0.0) AS Allocated_Amount
-        FROM Institutions i
-        LEFT JOIN Store_Budgets sb ON i.Inst_ID = sb.Inst_ID AND sb.Year1 = %s
-        {inst_where}
-        ORDER BY i.Inst_ID
-    """, tuple(args))
     
-    # Utilized budget calculation
-    # 1. Grocery Issues
+    # Get all institutions (filter for hostel role)
+    if role == 'hostel' and user_inst:
+        stores_raw = db_query("SELECT Inst_ID, Institution FROM Institutions WHERE Inst_ID = %s ORDER BY Inst_ID", (user_inst,))
+    else:
+        stores_raw = db_query("SELECT Inst_ID, Institution FROM Institutions ORDER BY Inst_ID")
+
+    # Compute sanctioned budget PER STORE from Grocery_Items budget columns
+    # Each store's sanctioned budget = SUM(store_budget_qty * Std_Rate) across all items
+    sanctioned_map = {}
+    for iid, budget_col in INST_ID_TO_BUDGET_COLUMN.items():
+        rows = db_query(f"SELECT COALESCE(SUM({budget_col} * Std_Rate), 0) AS sanctioned FROM Grocery_Items WHERE {budget_col} > 0")
+        sanctioned_map[iid] = rows[0]['sanctioned'] if rows else 0.0
+
+    # Utilized budget calculation from actual issues this year
     grocery_spends = db_query("""
         SELECT Issue_Inst_ID, SUM(Issue_Amount) AS spent
         FROM Stock_Issue
-        WHERE Purchased_Donation = 'Issue' AND Year1 = %s AND Issue_Inst_ID IS NOT NULL
+        WHERE Purchased_Donation = 'Issue' AND Year1 LIKE %s AND Issue_Inst_ID IS NOT NULL
         GROUP BY Issue_Inst_ID
-    """, (year_prefix,))
+    """, (year_prefix + '%',))
     g_spend_map = {row['Issue_Inst_ID']: row['spent'] for row in grocery_spends}
     
-    # 2. Vegetable Purchases
     veg_spends = db_query("""
         SELECT Inst_ID, SUM(Quantity * Rate) AS spent
         FROM Vegetable
-        WHERE Year1 = %s AND Inst_ID IS NOT NULL
+        WHERE Year1 LIKE %s AND Inst_ID IS NOT NULL
         GROUP BY Inst_ID
-    """, (year_prefix,))
+    """, (year_prefix + '%',))
     v_spend_map = {row['Inst_ID']: row['spent'] for row in veg_spends}
     
-    for s in stores:
+    stores = []
+    for s in stores_raw:
         iid = s['Inst_ID']
-        spent = g_spend_map.get(iid, 0.0) + v_spend_map.get(iid, 0.0)
-        s['Used_Amount'] = spent
-        s['Remaining_Amount'] = s['Allocated_Amount'] - spent
+        sanctioned = sanctioned_map.get(iid, 0.0)
+        spent = (g_spend_map.get(iid, 0.0) or 0) + (v_spend_map.get(iid, 0.0) or 0)
+        stores.append({
+            'Inst_ID': iid,
+            'Institution': s['Institution'],
+            'Allocated_Amount': sanctioned,       # Sanctioned from item budget × rate
+            'Used_Amount': spent,
+            'Remaining_Amount': sanctioned - spent
+        })
         
     return jsonify(stores)
+
+
+@app.route('/api/budgets/store-items/<int:inst_id>', methods=['GET'])
+def get_store_item_budgets(inst_id):
+    """Return item-wise sanctioned budget list for a specific store."""
+    if session.get('role') == 'hostel' and session.get('inst_id') != inst_id:
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    budget_col = INST_ID_TO_BUDGET_COLUMN.get(inst_id)
+    qty_col = INST_ID_TO_COLUMN.get(inst_id)
+    if not budget_col:
+        return jsonify([])
+    
+    year = request.args.get('year') or str(datetime.now().year)
+    year_prefix = get_fy_prefix(year)
+
+    # Item-level sanctioned quantities and amounts
+    items = db_query(f"""
+        SELECT Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category,
+               Qtl_Kg_Ltr, Std_Rate,
+               {budget_col} AS Sanctioned_Qty,
+               {budget_col} * Std_Rate AS Sanctioned_Amount,
+               {qty_col} AS Current_Stock
+        FROM Grocery_Items
+        WHERE {budget_col} > 0
+        ORDER BY Grocery_Category, Grocery_Code
+    """)
+
+    # Actual issues per item for this store this year
+    issues = db_query("""
+        SELECT Grocery_Code, SUM(Issue) AS Issued_Qty, SUM(Issue_Amount) AS Issued_Amount
+        FROM Stock_Issue
+        WHERE Issue_Inst_ID = %s AND Purchased_Donation = 'Issue' AND Year1 LIKE %s
+        GROUP BY Grocery_Code
+    """, (inst_id, year_prefix + '%'))
+    issue_map = {r['Grocery_Code']: r for r in issues}
+
+    result = []
+    for item in items:
+        code = item['Grocery_Code']
+        iss = issue_map.get(code, {})
+        sanctioned_qty = item['Sanctioned_Qty'] or 0
+        issued_qty = iss.get('Issued_Qty') or 0
+        issued_amt = iss.get('Issued_Amount') or 0
+        sanctioned_amt = item['Sanctioned_Amount'] or 0
+        result.append({
+            'Grocery_Code': code,
+            'Grocery_Items_Kan': item['Grocery_Items_Kan'],
+            'Grocery_Items_Eng': item['Grocery_Items_Eng'],
+            'Grocery_Category': item['Grocery_Category'],
+            'Qtl_Kg_Ltr': item['Qtl_Kg_Ltr'],
+            'Std_Rate': item['Std_Rate'],
+            'Sanctioned_Qty': sanctioned_qty,
+            'Sanctioned_Amount': sanctioned_amt,
+            'Issued_Qty': issued_qty,
+            'Issued_Amount': issued_amt,
+            'Remaining_Qty': sanctioned_qty - issued_qty,
+            'Remaining_Amount': sanctioned_amt - issued_amt,
+            'Current_Stock': item['Current_Stock'] or 0,
+            'Pct_Used': round((issued_qty / sanctioned_qty * 100), 1) if sanctioned_qty > 0 else 0
+        })
+    return jsonify(result)
+
 
 @app.route('/api/budgets/store', methods=['POST'])
 def set_store_budget():

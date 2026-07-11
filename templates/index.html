@@ -108,11 +108,11 @@
         <div class="p-4 border-t border-emerald-900 bg-emerald-950/80">
             <div class="flex items-center gap-3 mb-3">
                 <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center font-bold text-xs uppercase shadow">
-                    U
+                    {{ (session.get('name','U') or 'U')[0].upper() }}
                 </div>
                 <div class="overflow-hidden">
-                    <h4 class="text-xs font-black truncate" id="lblSidebarUserName">User Name</h4>
-                    <p class="text-[10px] text-emerald-400 capitalize truncate" id="lblSidebarUserRole">Role</p>
+                    <h4 class="text-xs font-black truncate" id="lblSidebarUserName">{{ session.get('name', 'User Name') }}</h4>
+                    <p class="text-[10px] text-emerald-400 capitalize truncate" id="lblSidebarUserRole">{{ session.get('role', 'Role') }}</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -743,42 +743,52 @@
                 <!-- Budget Tab Navigation -->
                 <div class="flex border-b border-slate-200">
                     <button id="btnTabBudgetStore" onclick="switchBudgetTab('store')" class="py-3 px-6 text-xs font-bold border-b-2 border-emerald-600 text-emerald-800"><span data-kn="ವಸತಿ ನಿಲಯದ ಬಜೆಟ್" data-en="Store-wise Budgets">ವಸತಿ ನಿಲಯದ ಬಜೆಟ್</span></button>
+                    {% if session.get('role') == 'head' %}
                     <button id="btnTabBudgetUser" onclick="switchBudgetTab('user')" class="py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700"><span data-kn="ಬಳಕೆದಾರರ ಬಜೆಟ್" data-en="User-wise Budgets">ಬಳಕೆದಾರರ ಬಜೆಟ್</span></button>
+                    {% endif %}
                     <button id="btnTabBudgetItem" onclick="switchBudgetTab('item')" class="py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700"><span data-kn="ಐಟಂ-ವಾರು ಬಜೆಟ್" data-en="Item-wise Budgets">ಐಟಂ-ವಾರು ಬಜೆಟ್</span></button>
                 </div>
 
                 <!-- Store-wise Budget -->
-                <div id="sectionBudgetStore" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Form (Admin only) -->
-                    <div class="bg-white rounded-2xl border p-6 shadow-sm space-y-4 h-fit admin-only">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Allocate Store Budget</h3>
-                        <form id="formAllocateStoreBudget" onsubmit="submitStoreBudget(event)" class="space-y-4 text-xs">
-                            <div>
-                                <label class="block text-slate-600 font-bold mb-1">Select Store</label>
-                                <select id="budgetStoreSelect" required class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500"></select>
-                            </div>
-                            <div>
-                                <label class="block text-slate-600 font-bold mb-1">Allocation Amount (₹)</label>
-                                <input type="number" step="any" id="budgetStoreAmount" required class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500">
-                            </div>
-                            <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition shadow">Save Budget Allocation</button>
-                        </form>
+                <div id="sectionBudgetStore" class="space-y-5">
+                    <!-- Store Budget Cards Grid -->
+                    <div id="storeBudgetCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <!-- Dynamic store cards -->
                     </div>
-
-                    <!-- Store budgets list -->
-                    <div class="bg-white rounded-2xl border p-4 shadow-sm lg:col-span-2 space-y-4">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Store Budget Tracking</h3>
+                    <!-- Item-wise Drill-down Panel (shown on click) -->
+                    <div id="storeBudgetDrilldown" class="hidden bg-white rounded-2xl border shadow-sm">
+                        <div class="flex items-center justify-between p-4 border-b">
+                            <div>
+                                <h3 id="drilldownTitle" class="font-black text-slate-800 text-sm"></h3>
+                                <p class="text-xs text-slate-400 mt-0.5">ಅನುಮೋದಿತ ಐಟಂ ಬಜೆಟ್ ಪಟ್ಟಿ / Sanctioned Item Budget List</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <input type="text" id="drilldownSearch" onkeyup="filterDrilldown()" placeholder="Search..." class="text-xs p-2 border rounded-xl focus:ring-2 focus:ring-emerald-500 w-40">
+                                <button onclick="closeDrilldown()" class="text-slate-400 hover:text-red-500 text-lg font-bold">✕</button>
+                            </div>
+                        </div>
+                        <!-- Budget summary bar -->
+                        <div id="drilldownSummary" class="px-4 pt-3 pb-2 flex flex-wrap gap-4 text-xs border-b bg-slate-50 rounded-t-none">
+                            <!-- Dynamic -->
+                        </div>
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-slate-200 text-xs">
-                                <thead class="bg-slate-50">
+                            <table class="min-w-full text-[11px]">
+                                <thead class="bg-emerald-50 sticky top-0">
                                     <tr>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600">Store</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600">Allocated Amount</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600">Utilized Amount</th>
-                                        <th class="px-4 py-3 text-left font-bold text-slate-600">Remaining Amount</th>
+                                        <th class="px-3 py-2.5 text-left font-bold text-emerald-800">Code</th>
+                                        <th class="px-3 py-2.5 text-left font-bold text-emerald-800">ವಸ್ತು / Item</th>
+                                        <th class="px-3 py-2.5 text-left font-bold text-emerald-800">ಘಟಕ</th>
+                                        <th class="px-3 py-2.5 text-right font-bold text-emerald-800">ದರ / Rate</th>
+                                        <th class="px-3 py-2.5 text-right font-bold text-slate-600">ಅನುಮೋದಿತ Qty</th>
+                                        <th class="px-3 py-2.5 text-right font-bold text-slate-600">ಅನುಮೋದಿತ ₹</th>
+                                        <th class="px-3 py-2.5 text-right font-bold text-amber-700">ನೀಡಿದ Qty</th>
+                                        <th class="px-3 py-2.5 text-right font-bold text-amber-700">ನೀಡಿದ ₹</th>
+                                        <th class="px-3 py-2.5 text-right font-bold text-emerald-700">ಉಳಿದ Qty</th>
+                                        <th class="px-3 py-2.5 text-right font-bold text-emerald-700">ಉಳಿದ ₹</th>
+                                        <th class="px-3 py-2.5 text-center font-bold text-slate-600">ಬಳಕೆ %</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tblStoreBudgetsList" class="divide-y divide-slate-100">
+                                <tbody id="tblDrilldownItems" class="divide-y divide-slate-100">
                                     <!-- Dynamic -->
                                 </tbody>
                             </table>
@@ -828,14 +838,14 @@
                 <!-- Item-wise Budgets -->
                 <div id="sectionBudgetItem" class="space-y-4 hidden bg-white rounded-2xl border p-5 shadow-sm">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider"><span data-kn="ಪ್ರತಿ ಐಟಂನ ವಾರ್ಷಿಕ ಬಜೆಟ್ ವಿವರ (ಎಲ್ಲಾ ವಸತಿ ನಿಲಯಗಳು)" data-en="Annual Budget Allocation Per Item (All Hostels)">ಪ್ರತಿ ಐಟಂನ ವಾರ್ಷಿಕ ಬಜೆಟ್ ವಿವರ (ಎಲ್ಲಾ ವಸತಿ ನಿಲಯಗಳು)</span></h3>
+                        <h3 id="lblItemBudgetHeading" class="text-xs font-bold text-slate-800 uppercase tracking-wider">ಐಟಂ-ವಾರು ಬಜೆಟ್ ಹಂಚಿಕೆ</h3>
                         <div class="flex gap-2 w-full sm:w-auto">
                             <input type="text" id="inputBudgetItemSearch" onkeyup="filterBudgetItemTable()" placeholder="Search item..." class="p-2 border rounded-xl text-xs w-full sm:w-64 focus:ring-2 focus:ring-emerald-500">
                         </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-slate-200 text-[11px]">
-                            <thead class="bg-slate-50">
+                            <thead id="tblItemBudgetsHead" class="bg-slate-50">
                                 <tr>
                                     <th class="px-2 py-2 text-left font-bold text-slate-600">Code</th>
                                     <th class="px-2 py-2 text-left font-bold text-slate-600">Item Name</th>
@@ -2214,23 +2224,197 @@
             loadItemBudgetsGrid();
         }
 
+        let cachedDrilldownItems = [];
+        let currentDrilldownInstId = null;
+
         function loadStoreBudgetsGrid() {
             const yearParam = `?year=${currentFY}`;
+            const grid = document.getElementById('storeBudgetCardsGrid');
+            if (grid) grid.innerHTML = `<div class="col-span-full text-center text-slate-400 py-8 text-sm">ಲೋಡ್ ಆಗುತ್ತಿದೆ...</div>`;
+
             fetch(`/api/budgets/store${yearParam}`)
                 .then(res => res.ok ? res.json() : [])
                 .then(stores => {
-                    const tbody = document.getElementById('tblStoreBudgetsList');
-                    if (!tbody) return;
-                    tbody.innerHTML = stores.map(s => `
-                        <tr class="hover:bg-slate-50 border-b">
-                            <td class="px-4 py-3 font-bold text-slate-800">${s.Institution}</td>
-                            <td class="px-4 py-3 font-semibold text-slate-700">₹${s.Allocated_Amount.toLocaleString('en-IN')}</td>
-                            <td class="px-4 py-3 font-black text-emerald-800">₹${s.Used_Amount.toLocaleString('en-IN')}</td>
-                            <td class="px-4 py-3 font-extrabold text-slate-600">₹${s.Remaining_Amount.toLocaleString('en-IN')}</td>
-                        </tr>
-                    `).join('');
+                    if (!grid || stores.length === 0) {
+                        if (grid) grid.innerHTML = `<div class="col-span-full text-center text-slate-400 py-8">No store data found.</div>`;
+                        return;
+                    }
+
+                    grid.innerHTML = stores.map(s => {
+                        const alloc = parseFloat(s.Allocated_Amount) || 0;
+                        const used = parseFloat(s.Used_Amount) || 0;
+                        const remaining = parseFloat(s.Remaining_Amount) || 0;
+                        const pct = alloc > 0 ? Math.min(100, Math.round((used / alloc) * 100)) : 0;
+                        const barColor = pct > 90 ? '#ef4444' : pct > 70 ? '#f59e0b' : '#10b981';
+                        const statusBg = pct > 90 ? 'bg-red-50 border-red-200' : pct > 70 ? 'bg-amber-50 border-amber-200' : 'bg-emerald-50 border-emerald-200';
+                        const badgeColor = pct > 90 ? 'text-red-700 bg-red-100' : pct > 70 ? 'text-amber-700 bg-amber-100' : 'text-emerald-700 bg-emerald-100';
+                        const shortName = s.Institution.replace('Stores - ', '').replace('Store - ', '');
+                        return `<div onclick="openStoreDrilldown(${s.Inst_ID}, '${s.Institution}')" 
+                                    class="bg-white rounded-2xl border cursor-pointer hover:shadow-lg hover:border-emerald-400 transition-all duration-200 p-4 space-y-3 ${statusBg}">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">${s.Institution.includes('-') ? s.Institution.split('-')[0].trim() : 'ಭಂಡಾರ'}</p>
+                                    <h4 class="font-black text-slate-800 text-sm leading-tight">${shortName}</h4>
+                                </div>
+                                <span class="text-[10px] font-black px-2 py-1 rounded-full ${badgeColor}">${pct}%</span>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-[10px] text-slate-500">
+                                    <span>ಅನುಮೋದಿತ / Sanctioned</span>
+                                    <span class="font-bold">₹${(alloc/100000).toFixed(2)}L</span>
+                                </div>
+                                <div class="w-full bg-white/60 rounded-full h-2 overflow-hidden border border-slate-200">
+                                    <div class="h-2 rounded-full transition-all" style="width:${pct}%;background:${barColor}"></div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-[10px]">
+                                <div class="bg-white/70 rounded-xl p-2">
+                                    <p class="text-slate-400">ನೀಡಲಾಗಿದೆ</p>
+                                    <p class="font-black text-amber-700">₹${used.toLocaleString('en-IN', {maximumFractionDigits: 0})}</p>
+                                </div>
+                                <div class="bg-white/70 rounded-xl p-2">
+                                    <p class="text-slate-400">ಉಳಿದಿದೆ</p>
+                                    <p class="font-black ${remaining >= 0 ? 'text-emerald-700' : 'text-red-600'}">₹${Math.abs(remaining).toLocaleString('en-IN', {maximumFractionDigits: 0})}</p>
+                                </div>
+                            </div>
+                            <p class="text-[9px] text-slate-400 text-center">ಒತ್ತಿ ಐಟಂ ಪಟ್ಟಿ ನೋಡಿ → Click to view item list</p>
+                        </div>`;
+                    }).join('');
+
+                    // For hostel role, auto-open their store's item list
+                    if (currentRole === 'hostel' && stores.length === 1) {
+                        openStoreDrilldown(stores[0].Inst_ID, stores[0].Institution);
+                    }
                 });
         }
+
+        function openStoreDrilldown(instId, storeName) {
+            currentDrilldownInstId = instId;
+            const panel = document.getElementById('storeBudgetDrilldown');
+            const title = document.getElementById('drilldownTitle');
+            const tbody = document.getElementById('tblDrilldownItems');
+            const summary = document.getElementById('drilldownSummary');
+
+            if (!panel) return;
+            panel.classList.remove('hidden');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            if (title) title.textContent = storeName.replace('Stores - ', '').replace('Store - ', '') + ' — ಅನುಮೋದಿತ ಬಜೆಟ್ ಪಟ್ಟಿ';
+            if (tbody) tbody.innerHTML = `<tr><td colspan="11" class="text-center text-slate-400 py-6">ಲೋಡ್ ಆಗುತ್ತಿದೆ...</td></tr>`;
+
+            fetch(`/api/budgets/store-items/${instId}?year=${currentFY}`)
+                .then(res => res.ok ? res.json() : [])
+                .then(items => {
+                    cachedDrilldownItems = items;
+                    renderDrilldownTable(items, summary, tbody);
+                })
+                .catch(() => {
+                    if (tbody) tbody.innerHTML = `<tr><td colspan="11" class="text-center text-red-400 py-6">ಡೇಟಾ ಲೋಡ್ ವಿಫಲ.</td></tr>`;
+                });
+        }
+
+        function renderDrilldownTable(items, summaryEl, tbodyEl) {
+            const tbody = tbodyEl || document.getElementById('tblDrilldownItems');
+            const summary = summaryEl || document.getElementById('drilldownSummary');
+
+            if (items.length === 0) {
+                if (tbody) tbody.innerHTML = `<tr><td colspan="11" class="text-center text-slate-400 py-8 font-bold">ಯಾವುದೇ ಅನುಮೋದಿತ ಐಟಂ ಇಲ್ಲ</td></tr>`;
+                return;
+            }
+
+            // Summary totals
+            const totSanctioned = items.reduce((a, i) => a + (i.Sanctioned_Amount || 0), 0);
+            const totIssued = items.reduce((a, i) => a + (i.Issued_Amount || 0), 0);
+            const totRemaining = totSanctioned - totIssued;
+            const pct = totSanctioned > 0 ? Math.round((totIssued / totSanctioned) * 100) : 0;
+
+            if (summary) {
+                summary.innerHTML = `
+                    <div class="flex items-center gap-1.5 bg-slate-100 rounded-xl px-3 py-1.5">
+                        <span class="text-slate-500">ಒಟ್ಟು ಐಟಂಗಳು:</span>
+                        <span class="font-black text-slate-800">${items.length}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-blue-50 rounded-xl px-3 py-1.5">
+                        <span class="text-blue-500">ಅನುಮೋದಿತ ಒಟ್ಟು:</span>
+                        <span class="font-black text-blue-700">₹${(totSanctioned/100000).toFixed(2)}L</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-amber-50 rounded-xl px-3 py-1.5">
+                        <span class="text-amber-600">ನೀಡಲಾಗಿದೆ:</span>
+                        <span class="font-black text-amber-700">₹${(totIssued/100000).toFixed(2)}L</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 ${totRemaining >= 0 ? 'bg-emerald-50' : 'bg-red-50'} rounded-xl px-3 py-1.5">
+                        <span class="${totRemaining >= 0 ? 'text-emerald-600' : 'text-red-500'}">ಉಳಿದ ಬಜೆಟ್:</span>
+                        <span class="font-black ${totRemaining >= 0 ? 'text-emerald-700' : 'text-red-600'}">₹${Math.abs(totRemaining/100000).toFixed(2)}L</span>
+                    </div>
+                    <div class="flex items-center gap-2 flex-1 min-w-[200px]">
+                        <div class="flex-1 bg-slate-200 rounded-full h-2">
+                            <div class="h-2 rounded-full ${pct > 90 ? 'bg-red-500' : pct > 70 ? 'bg-amber-500' : 'bg-emerald-500'}" style="width:${pct}%"></div>
+                        </div>
+                        <span class="font-black ${pct > 90 ? 'text-red-600' : pct > 70 ? 'text-amber-600' : 'text-emerald-700'}">${pct}% ಬಳಸಲಾಗಿದೆ</span>
+                    </div>
+                `;
+            }
+
+            // Group by category
+            const categories = [...new Set(items.map(i => i.Grocery_Category))];
+            let rows = '';
+            categories.forEach(cat => {
+                const catItems = items.filter(i => i.Grocery_Category === cat);
+                rows += `<tr class="bg-emerald-100/50">
+                    <td colspan="11" class="px-3 py-1.5 font-black text-emerald-800 text-[10px] uppercase tracking-wider">
+                        📦 ${cat} (${catItems.length} ಐಟಂ)
+                    </td>
+                </tr>`;
+                catItems.forEach(item => {
+                    const pct = item.Pct_Used || 0;
+                    const barColor = pct > 100 ? 'bg-red-500' : pct > 80 ? 'bg-amber-500' : 'bg-emerald-500';
+                    const remColor = item.Remaining_Qty >= 0 ? 'text-emerald-700' : 'text-red-600';
+                    rows += `<tr class="hover:bg-emerald-50/40 border-b border-slate-100 transition">
+                        <td class="px-3 py-2 font-mono text-slate-400">${item.Grocery_Code}</td>
+                        <td class="px-3 py-2">
+                            <div class="font-bold text-slate-800">${item.Grocery_Items_Kan}</div>
+                            <div class="text-slate-400 text-[10px]">${item.Grocery_Items_Eng || ''}</div>
+                        </td>
+                        <td class="px-3 py-2 text-slate-500">${item.Qtl_Kg_Ltr || ''}</td>
+                        <td class="px-3 py-2 text-right text-slate-600">₹${(item.Std_Rate || 0).toLocaleString('en-IN')}</td>
+                        <td class="px-3 py-2 text-right font-bold text-slate-700">${item.Sanctioned_Qty}</td>
+                        <td class="px-3 py-2 text-right text-slate-600">₹${(item.Sanctioned_Amount || 0).toLocaleString('en-IN', {maximumFractionDigits: 0})}</td>
+                        <td class="px-3 py-2 text-right font-bold text-amber-700">${item.Issued_Qty}</td>
+                        <td class="px-3 py-2 text-right text-amber-600">₹${(item.Issued_Amount || 0).toLocaleString('en-IN', {maximumFractionDigits: 0})}</td>
+                        <td class="px-3 py-2 text-right font-bold ${remColor}">${item.Remaining_Qty.toFixed(2)}</td>
+                        <td class="px-3 py-2 text-right ${remColor}">₹${Math.abs(item.Remaining_Amount || 0).toLocaleString('en-IN', {maximumFractionDigits: 0})}</td>
+                        <td class="px-3 py-2">
+                            <div class="flex items-center gap-1.5">
+                                <div class="flex-1 bg-slate-200 rounded-full h-1.5 min-w-[40px]">
+                                    <div class="${barColor} h-1.5 rounded-full" style="width:${Math.min(100, pct)}%"></div>
+                                </div>
+                                <span class="font-bold text-[9px] ${pct > 90 ? 'text-red-600' : 'text-slate-600'}">${pct}%</span>
+                            </div>
+                        </td>
+                    </tr>`;
+                });
+            });
+            if (tbody) tbody.innerHTML = rows;
+        }
+
+        function filterDrilldown() {
+            const search = (document.getElementById('drilldownSearch')?.value || '').toLowerCase();
+            const filtered = cachedDrilldownItems.filter(i =>
+                (i.Grocery_Items_Kan || '').toLowerCase().includes(search) ||
+                (i.Grocery_Items_Eng || '').toLowerCase().includes(search) ||
+                String(i.Grocery_Code).includes(search) ||
+                (i.Grocery_Category || '').toLowerCase().includes(search)
+            );
+            renderDrilldownTable(filtered);
+        }
+
+        function closeDrilldown() {
+            const panel = document.getElementById('storeBudgetDrilldown');
+            if (panel) panel.classList.add('hidden');
+            currentDrilldownInstId = null;
+            cachedDrilldownItems = [];
+        }
+
 
         function loadUserBudgetsGrid() {
             const yearParam = `?year=${currentFY}`;
@@ -2242,9 +2426,9 @@
                     tbody.innerHTML = users.map(u => `
                         <tr class="hover:bg-slate-50 border-b">
                             <td class="px-4 py-3 font-bold text-slate-800">${u.name} (${u.username})</td>
-                            <td class="px-4 py-3 font-semibold text-slate-700">₹${u.Allocated_Amount.toLocaleString('en-IN')}</td>
-                            <td class="px-4 py-3 font-black text-emerald-800">₹${u.Used_Amount.toLocaleString('en-IN')}</td>
-                            <td class="px-4 py-3 font-extrabold text-slate-600">₹${u.Remaining_Amount.toLocaleString('en-IN')}</td>
+                            <td class="px-4 py-3 font-semibold text-slate-700">₹${(u.Allocated_Amount||0).toLocaleString('en-IN')}</td>
+                            <td class="px-4 py-3 font-black text-emerald-800">₹${(u.Used_Amount||0).toLocaleString('en-IN')}</td>
+                            <td class="px-4 py-3 font-extrabold text-slate-600">₹${(u.Remaining_Amount||0).toLocaleString('en-IN')}</td>
                         </tr>
                     `).join('');
                 });
@@ -2257,39 +2441,130 @@
             const secStore = document.getElementById('sectionBudgetStore');
             const secUser = document.getElementById('sectionBudgetUser');
             const secItem = document.getElementById('sectionBudgetItem');
+            const inactiveClass = "py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-750";
+            const activeClass = "py-3 px-6 text-xs font-bold border-b-2 border-emerald-600 text-emerald-800";
 
-            btnStore.className = "py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-750";
-            btnUser.className = "py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-750";
-            btnItem.className = "py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-750";
-            secStore.classList.add('hidden');
-            secUser.classList.add('hidden');
-            secItem.classList.add('hidden');
+            if (btnStore) btnStore.className = inactiveClass;
+            if (btnUser) btnUser.className = inactiveClass;
+            if (btnItem) btnItem.className = inactiveClass;
+            if (secStore) secStore.classList.add('hidden');
+            if (secUser) secUser.classList.add('hidden');
+            if (secItem) secItem.classList.add('hidden');
 
             if (tab === 'store') {
-                btnStore.className = "py-3 px-6 text-xs font-bold border-b-2 border-emerald-600 text-emerald-800";
-                secStore.classList.remove('hidden');
+                if (btnStore) btnStore.className = activeClass;
+                if (secStore) secStore.classList.remove('hidden');
             } else if (tab === 'user') {
-                btnUser.className = "py-3 px-6 text-xs font-bold border-b-2 border-emerald-600 text-emerald-800";
-                secUser.classList.remove('hidden');
+                if (btnUser) btnUser.className = activeClass;
+                if (secUser) secUser.classList.remove('hidden');
             } else if (tab === 'item') {
-                btnItem.className = "py-3 px-6 text-xs font-bold border-b-2 border-emerald-600 text-emerald-800";
-                secItem.classList.remove('hidden');
+                if (btnItem) btnItem.className = activeClass;
+                if (secItem) secItem.classList.remove('hidden');
                 loadItemBudgetsGrid();
             }
         }
 
         let cachedItemBudgets = [];
 
+        // Map from inst_id to the budget column field returned in grocery-items API
+        const INST_BUDGET_FIELD = {
+            1: 'Boys_Hostel_Budget', 2: 'Girls_Hostel_Budget', 3: 'Math_Budget',
+            4: 'Shantivan_Budget_a', 5: 'Shantivan_Budget_a', 6: 'Boys_Hostel_Budget',
+            7: 'Girls_Hostel_Budget', 8: 'Hunnime_Budget', 9: 'AO_Office_Budget', 10: 'Shraddanjali_Budget'
+        };
+        const INST_LABEL = {
+            1: 'Boys Hostel', 2: 'Girls Hostel', 3: 'Math', 4: 'Shantivana Bidara',
+            5: 'Shantivana Gurukula', 6: 'Sirigere BHS', 7: 'Sirigere GHS',
+            8: 'Hunnime', 9: 'AO Office', 10: 'Shraddhajali'
+        };
+
         function loadItemBudgetsGrid() {
-            fetch('/api/grocery-items')
-                .then(res => res.ok ? res.json() : [])
-                .then(items => {
-                    cachedItemBudgets = items;
-                    renderItemBudgetsTable(items);
-                });
+            // Update heading based on role
+            const heading = document.getElementById('lblItemBudgetHeading');
+            
+            if (currentRole === 'hostel') {
+                // Hostel: load only their own store's stock (which includes AllocatedBudget)
+                const instId = loggedInUser.inst_id;
+                const storeLabel = INST_LABEL[instId] || 'My Store';
+                if (heading) heading.textContent = `ನನ್ನ ವಸತಿ ನಿಲಯದ ಐಟಂ ಬಜೆಟ್ - ${storeLabel}`;
+                
+                // Update table header for single-store view
+                const thead = document.getElementById('tblItemBudgetsHead');
+                if (thead) {
+                    thead.innerHTML = `<tr>
+                        <th class="px-3 py-2 text-left font-bold text-slate-600">ಕೋಡ್ / Code</th>
+                        <th class="px-3 py-2 text-left font-bold text-slate-600">ವಸ್ತುವಿನ ಹೆಸರು / Item Name</th>
+                        <th class="px-3 py-2 text-left font-bold text-slate-600">ಪ್ರಸ್ತುತ ದಾಸ್ತಾನು / Current Stock</th>
+                        <th class="px-3 py-2 text-left font-bold text-emerald-700">ಬಜೆಟ್ ಮಿತಿ / Allocated Budget</th>
+                        <th class="px-3 py-2 text-left font-bold text-slate-600">ಘಟಕ / Unit</th>
+                    </tr>`;
+                }
+
+                fetch(`/api/hostel-stock/${instId}`)
+                    .then(res => res.ok ? res.json() : [])
+                    .then(items => {
+                        cachedItemBudgets = items;
+                        renderHostelItemBudgetsTable(items);
+                    });
+            } else {
+                // Admin / other roles: show all stores
+                if (heading) heading.textContent = 'ಪ್ರತಿ ಐಟಂನ ವಾರ್ಷಿಕ ಬಜೆಟ್ ವಿವರ (ಎಲ್ಲಾ ವಸತಿ ನಿಲಯಗಳು)';
+                
+                const thead = document.getElementById('tblItemBudgetsHead');
+                if (thead) {
+                    thead.innerHTML = `<tr>
+                        <th class="px-2 py-2 text-left font-bold text-slate-600">Code</th>
+                        <th class="px-2 py-2 text-left font-bold text-slate-600">Item Name</th>
+                        <th class="px-2 py-2 text-left font-bold text-slate-600">Boys Hostel</th>
+                        <th class="px-2 py-2 text-left font-bold text-slate-600">Girls Hostel</th>
+                        <th class="px-2 py-2 text-left font-bold text-slate-600">Math</th>
+                        <th class="px-2 py-2 text-left font-bold text-slate-600">Shantivana</th>
+                        <th class="px-2 py-2 text-left font-bold text-slate-600">AO Office</th>
+                        <th class="px-2 py-2 text-left font-bold text-slate-600">Shraddhajali</th>
+                        <th class="px-2 py-2 text-left font-bold text-slate-600">Others</th>
+                        <th class="px-2 py-2 text-left font-bold text-slate-600">Total Qty</th>
+                        <th class="px-2 py-2 text-left font-bold text-slate-600">Unit</th>
+                    </tr>`;
+                }
+
+                fetch('/api/grocery-items')
+                    .then(res => res.ok ? res.json() : [])
+                    .then(items => {
+                        cachedItemBudgets = items;
+                        renderAdminItemBudgetsTable(items);
+                    });
+            }
         }
 
-        function renderItemBudgetsTable(items) {
+        function renderHostelItemBudgetsTable(items) {
+            const tbody = document.getElementById('tblItemBudgetsList');
+            if (!tbody) return;
+            if (items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-3 py-3 text-center text-slate-400 font-bold">ಯಾವುದೇ ಐಟಂ ಬಜೆಟ್ ಇಲ್ಲ / No budget items found.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = items.map(i => {
+                const budget = parseFloat(i.AllocatedBudget || 0);
+                const current = parseFloat(i.CurrentBalance || 0);
+                const pct = budget > 0 ? Math.min(100, Math.round((current / budget) * 100)) : 0;
+                const barColor = pct < 30 ? 'bg-red-500' : pct < 70 ? 'bg-amber-500' : 'bg-emerald-500';
+                return `<tr class="hover:bg-slate-50 transition border-b">
+                    <td class="px-3 py-2 font-mono text-slate-500">${i.Grocery_Code}</td>
+                    <td class="px-3 py-2 font-bold text-slate-800">${i.Grocery_Items_Kan}<br><span class="text-[10px] text-slate-400 font-normal">${i.Grocery_Items_Eng || ''}</span></td>
+                    <td class="px-3 py-2 font-semibold text-slate-700">${current}</td>
+                    <td class="px-3 py-2">
+                        <div class="font-black text-emerald-800">${budget}</div>
+                        <div class="w-full bg-slate-200 rounded-full h-1.5 mt-1">
+                            <div class="${barColor} h-1.5 rounded-full" style="width:${pct}%"></div>
+                        </div>
+                        <div class="text-[9px] text-slate-400 mt-0.5">${pct}% used</div>
+                    </td>
+                    <td class="px-3 py-2 text-slate-400">${i.Qtl_Kg_Ltr || ''}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderAdminItemBudgetsTable(items) {
             const tbody = document.getElementById('tblItemBudgetsList');
             if (!tbody) return;
             if (items.length === 0) {
@@ -2299,7 +2574,7 @@
             tbody.innerHTML = items.map(i => `
                 <tr class="hover:bg-slate-50 transition border-b">
                     <td class="px-2 py-2 font-mono">${i.Grocery_Code}</td>
-                    <td class="px-2 py-2 font-bold text-slate-800">${i.Grocery_Items_Kan} <span class="text-slate-400 font-normal">/ ${i.Grocery_Items_Eng || ''}</span></td>
+                    <td class="px-2 py-2 font-bold text-slate-800">${i.Grocery_Items_Kan} <span class="text-slate-400 font-normal text-[10px]">/ ${i.Grocery_Items_Eng || ''}</span></td>
                     <td class="px-2 py-2 font-semibold text-slate-600">${i.Boys_Hostel_Budget || 0}</td>
                     <td class="px-2 py-2 font-semibold text-slate-600">${i.Girls_Hostel_Budget || 0}</td>
                     <td class="px-2 py-2 font-semibold text-slate-600">${i.Math_Budget || 0}</td>
@@ -2316,12 +2591,13 @@
         function filterBudgetItemTable() {
             const search = document.getElementById('inputBudgetItemSearch').value.toLowerCase();
             const filtered = cachedItemBudgets.filter(item => {
-                const nameKan = item.Grocery_Items_Kan.toLowerCase();
+                const nameKan = (item.Grocery_Items_Kan || '').toLowerCase();
                 const nameEng = (item.Grocery_Items_Eng || '').toLowerCase();
                 const code = String(item.Grocery_Code);
                 return nameKan.includes(search) || nameEng.includes(search) || code.includes(search);
             });
-            renderItemBudgetsTable(filtered);
+            if (currentRole === 'hostel') renderHostelItemBudgetsTable(filtered);
+            else renderAdminItemBudgetsTable(filtered);
         }
 
         // ==================== REPORT GENERATOR ====================

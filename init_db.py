@@ -393,21 +393,82 @@ def init_db():
     cursor.executemany("INSERT INTO Institutions (Institution) VALUES (%s)" if db_type == "postgresql" else "INSERT INTO Institutions (Institution) VALUES (?)", institutions)
 
 
-    # Shops / Donors Seed
-    donors = [
-        ('2026', 2001, 'ಕರ್ನಾಟಕ ಆಹಾರ ಮತ್ತು ನಾಗರಿಕ ಸರಬರಾಜು ನಿಗಮ (KFSN)', 1, 'ಬೆಂಗಳೂರು', 'Bengaluru', 'ಬೆಂಗಳೂರು', 'Bengaluru', 'ಬೆಂಗಳೂರು', 'Bengaluru', '560001', 'Karnataka', 'India', '080-22221111', 'ಸರಕಾರಿ ಕೋಟಾ ಸರಬರಾಜು', '2026-07-06'),
-        ('2026', 2002, 'ಶ್ರೀ ತರಳಬಾಳು ಭಕ್ತ ಮಂಡಳಿ', 2, 'ಸಿರಿಗೆರೆ', 'Sirigere', 'ಚಿತ್ರದುರ್ಗ', 'Chitradurga', 'ಚಿತ್ರದುರ್ಗ', 'Chitradurga', '577541', 'Karnataka', 'India', '9876543210', 'ದವಸ ಧಾನ್ಯ ದೇಣಿಗೆ', '2026-07-06'),
-        ('2026', 2003, 'ಸ್ಥಳೀಯ ರೈತ ಸಹಕಾರ ಸಂಘ', 3, 'ಸಿರಿಗೆರೆ', 'Sirigere', 'ಚಿತ್ರದುರ್ಗ', 'Chitradurga', 'ಚಿತ್ರದುರ್ಗ', 'Chitradurga', '577541', 'Karnataka', 'India', '9900112233', 'ತರಕಾರಿ ದಾನಿಗಳು', '2026-07-06')
-    ]
-    cursor.executemany("""
-        INSERT INTO Shops_Donors 
-        (Year1, Shop_Donor_ID, Shop_Donor_Name, Place_ID, Place, Place_Kan, Taluk, Taluk_Kan, Dist, Dist_Kan, Pin, State, Country, Mobile, Remarks, DateStamp)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    """ if db_type == "postgresql" else """
-        INSERT INTO Shops_Donors 
-        (Year1, Shop_Donor_ID, Shop_Donor_Name, Place_ID, Place, Place_Kan, Taluk, Taluk_Kan, Dist, Dist_Kan, Pin, State, Country, Mobile, Remarks, DateStamp)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-    """, donors)
+    # Shops / Donors Seed - Load from Excel Register
+    import os as _os, glob as _glob
+    _base_dir = _os.path.dirname(_os.path.abspath(__file__))
+    _donors_loaded = False
+    _year_now = str(datetime.now().year)
+    _today = datetime.now().strftime('%Y-%m-%d')
+    
+    # Try all xlsx files for a Shops_Donors sheet
+    _xlsx_candidates = [f for f in _os.listdir(_base_dir) if f.endswith('.xlsx') and not f.startswith('~$')]
+    for _xf in sorted(_xlsx_candidates):
+        try:
+            import openpyxl as _oxl
+            _wb = _oxl.load_workbook(_os.path.join(_base_dir, _xf), data_only=True)
+            if 'Shops_Donors' not in _wb.sheetnames:
+                continue
+            _ws = _wb['Shops_Donors']
+            _rows = list(_ws.iter_rows(values_only=True))
+            if len(_rows) < 2:
+                continue
+            _headers = [str(h).strip().lower() if h else '' for h in _rows[0]]
+            def _col(name, alt=None):
+                for n in ([name] + ([alt] if alt else [])):
+                    if n in _headers:
+                        return _headers.index(n)
+                return None
+            _id_col   = _col('shop_donor_id')
+            _name_col = _col('name', 'shop_donor_name')
+            _pid_col  = _col('place_id')
+            _place_col= _col('place')
+            _taluk_col= _col('taluk')
+            _dist_col = _col('dist', 'district')
+            _pin_col  = _col('pin')
+            _mob_col  = _col('mobile')
+            _rem_col  = _col('remarks')
+            if _id_col is None or _name_col is None:
+                continue
+            _donors = []
+            for _r in _rows[1:]:
+                if not _r or all(c is None for c in _r):
+                    continue
+                try:
+                    _did = int(float(_r[_id_col]))
+                except:
+                    continue
+                _dname = str(_r[_name_col] or '').strip()
+                if not _dname:
+                    continue
+                _pid   = int(float(_r[_pid_col])) if _pid_col is not None and _r[_pid_col] else 0
+                _place = str(_r[_place_col] or '').strip() if _place_col is not None else ''
+                _taluk = str(_r[_taluk_col] or '').strip() if _taluk_col is not None else ''
+                _dist  = str(_r[_dist_col] or '').strip() if _dist_col is not None else ''
+                _pin   = str(int(float(_r[_pin_col]))) if _pin_col is not None and _r[_pin_col] else ''
+                _mob   = str(_r[_mob_col] or '').strip() if _mob_col is not None else ''
+                _rem   = str(_r[_rem_col] or '').strip() if _rem_col is not None else ''
+                _donors.append((_year_now, _did, _dname, _pid, _place, _place, _taluk, _taluk, _dist, _dist, _pin, 'Karnataka', 'India', _mob, _rem, _today))
+            if _donors:
+                cursor.executemany("""
+                    INSERT INTO Shops_Donors 
+                    (Year1, Shop_Donor_ID, Shop_Donor_Name, Place_ID, Place, Place_Kan, Taluk, Taluk_Kan, Dist, Dist_Kan, Pin, State, Country, Mobile, Remarks, DateStamp)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                """ if db_type == "postgresql" else """
+                    INSERT INTO Shops_Donors 
+                    (Year1, Shop_Donor_ID, Shop_Donor_Name, Place_ID, Place, Place_Kan, Taluk, Taluk_Kan, Dist, Dist_Kan, Pin, State, Country, Mobile, Remarks, DateStamp)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                """, _donors)
+                print(f"Loaded {len(_donors)} donors from '{_xf}' sheet 'Shops_Donors'.")
+                _donors_loaded = True
+                break
+        except Exception as _de:
+            print(f"Donors load error from {_xf}: {_de}")
+    
+    if not _donors_loaded:
+        # Fallback minimal seed
+        _fallback = [(_year_now, 101, 'Davangere Nagara Baktadigalu', 0, 'Davangere', 'Davangere', 'Davangere Tq', 'Davangere Tq', 'Davangere Dist', 'Davangere Dist', '577001', 'Karnataka', 'India', '', '', _today)]
+        cursor.executemany("""INSERT INTO Shops_Donors (Year1,Shop_Donor_ID,Shop_Donor_Name,Place_ID,Place,Place_Kan,Taluk,Taluk_Kan,Dist,Dist_Kan,Pin,State,Country,Mobile,Remarks,DateStamp) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""" if db_type=="postgresql" else """INSERT INTO Shops_Donors (Year1,Shop_Donor_ID,Shop_Donor_Name,Place_ID,Place,Place_Kan,Taluk,Taluk_Kan,Dist,Dist_Kan,Pin,State,Country,Mobile,Remarks,DateStamp) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""", _fallback)
+        print("Using fallback donor seed.")
 
     # Dynamic CSV & Excel scanner for grocery items
     import csv
