@@ -516,6 +516,8 @@ def init_db():
                     name_idx = h_map.get('grocery_items') or h_map.get('grocery_items_kan') or h_map.get('item_name') or h_map.get('item_name_kannada')
                     if name_idx is not None:
                         name_kan = str(row[name_idx] or '')
+                    if name_kan.lower().strip() == 'x' or not name_kan.strip():
+                        continue
                     
                     # English name
                     name_eng = ""
@@ -631,11 +633,8 @@ def init_db():
                             for h in headers:
                                 if h.lower().replace(" ", "_") in ['grocery_items_kan', 'grocery_items_kannada', 'item_name_kannada', 'kannada_name', 'items_kan', 'grocery_items']:
                                     name_kan = row[h]
-                            if not name_kan:
-                                for h in headers:
-                                    if 'name' in h.lower() or 'item' in h.lower():
-                                        name_kan = row[h]
-                                        break
+                            if name_kan.lower().strip() == 'x' or not name_kan.strip():
+                                continue
                                         
                             # English name
                             name_eng = ""

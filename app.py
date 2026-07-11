@@ -1059,14 +1059,15 @@ def get_analytics():
         r = db_query(f"SELECT SUM({col} * Std_Rate) AS val FROM Grocery_Items WHERE {col} > 0")
         store_stock_vals[iid] = r[0]['val'] or 0.0 if r else 0.0
 
-    # 3. Budget totals
+    # 3. Budget totals (dynamically calculated from item-wise budget columns * Std_Rate)
     budget_summary = {}
     if role == 'head' or role == 'accounts':
-        total_allocated_row = db_query("SELECT SUM(Allocated_Amount) AS val FROM Store_Budgets WHERE Year1=%s", (year_prefix,))
+        # Sum of sanctioned budget across all items and all stores
+        total_allocated_row = db_query("SELECT SUM(Tot_Quantity * Std_Rate) AS val FROM Grocery_Items")
         total_allocated = total_allocated_row[0]['val'] or 0.0 if total_allocated_row else 0.0
         
-        spent_g = db_query("SELECT SUM(Issue_Amount) AS val FROM Stock_Issue WHERE Purchased_Donation='Issue' AND Year1=%s", (year_prefix,))
-        spent_v = db_query("SELECT SUM(Quantity * Rate) AS val FROM Vegetable WHERE Year1=%s", (year_prefix,))
+        spent_g = db_query("SELECT SUM(Issue_Amount) AS val FROM Stock_Issue WHERE Purchased_Donation='Issue' AND Year1 LIKE %s", (year_prefix + '%',))
+        spent_v = db_query("SELECT SUM(Quantity * Rate) AS val FROM Vegetable WHERE Year1 LIKE %s", (year_prefix + '%',))
         total_spent = (spent_g[0]['val'] or 0.0) + (spent_v[0]['val'] or 0.0)
         
         budget_summary = {
@@ -1075,11 +1076,15 @@ def get_analytics():
             'Remaining_Budget': total_allocated - total_spent
         }
     elif inst_id:
-        allocated_row = db_query("SELECT Allocated_Amount AS val FROM Store_Budgets WHERE Year1=%s AND Inst_ID=%s", (year_prefix, inst_id))
-        allocated = allocated_row[0]['val'] or 0.0 if allocated_row else 0.0
-        
-        spent_g = db_query("SELECT SUM(Issue_Amount) AS val FROM Stock_Issue WHERE Purchased_Donation='Issue' AND Year1=%s AND Issue_Inst_ID=%s", (year_prefix, inst_id))
-        spent_v = db_query("SELECT SUM(Quantity * Rate) AS val FROM Vegetable WHERE Year1=%s AND Inst_ID=%s", (year_prefix, inst_id))
+        # Sum of sanctioned budget for this store
+        budget_col = INST_ID_TO_BUDGET_COLUMN.get(int(inst_id))
+        allocated = 0.0
+        if budget_col:
+            allocated_row = db_query(f"SELECT SUM({budget_col} * Std_Rate) AS val FROM Grocery_Items WHERE {budget_col} > 0")
+            allocated = allocated_row[0]['val'] or 0.0 if allocated_row else 0.0
+            
+        spent_g = db_query("SELECT SUM(Issue_Amount) AS val FROM Stock_Issue WHERE Purchased_Donation='Issue' AND Year1 LIKE %s AND Issue_Inst_ID=%s", (year_prefix + '%', inst_id))
+        spent_v = db_query("SELECT SUM(Quantity * Rate) AS val FROM Vegetable WHERE Year1 LIKE %s AND Inst_ID=%s", (year_prefix + '%', inst_id))
         spent = (spent_g[0]['val'] or 0.0) + (spent_v[0]['val'] or 0.0)
         
         budget_summary = {
@@ -1318,6 +1323,102 @@ def delete_user(username):
 
 # --- DB INIT ---
 
+def migrate_and_load_budgets():
+    try:
+        conn, db_type = get_db_connection()
+        cursor = conn.cursor()
+        
+        # 1. Clean up dummy 'x' items
+        print("Cleaning up dummy 'x' items from Grocery_Items...")
+        if db_type == "postgresql":
+            cursor.execute("DELETE FROM Grocery_Items WHERE Grocery_Items_Kan = 'x' OR Grocery_Items_Kan = '' OR Grocery_Items_Kan IS NULL")
+        else:
+            cursor.execute("DELETE FROM Grocery_Items WHERE Grocery_Items_Kan = 'x' OR Grocery_Items_Kan = '' OR Grocery_Items_Kan IS NULL")
+        
+        # 2. Alter table to add budget columns if they don't exist
+        budget_cols = [
+            "Shraddanjali_Budget", "Hunnime_Budget", "Boys_Hostel_Budget",
+            "Girls_Hostel_Budget", "Math_Budget", "Shantivan_Budget_a", "AO_Office_Budget"
+        ]
+        
+        if db_type == "postgresql":
+            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'grocery_items'")
+            existing_cols = {row[0].lower() for row in cursor.fetchall()}
+        else:
+            cursor.execute("PRAGMA table_info(Grocery_Items)")
+            existing_cols = {row[1].lower() for row in cursor.fetchall()}
+            
+        for col in budget_cols:
+            if col.lower() not in existing_cols:
+                print(f"Altering table: Adding column {col} to Grocery_Items...")
+                cursor.execute(f"ALTER TABLE Grocery_Items ADD COLUMN {col} REAL DEFAULT 0.0")
+        
+        conn.commit()
+
+        # 3. Update budget quantities from Excel sheet if available
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        xlsx_path = os.path.join(base_dir, 'Godown & Store.xlsx')
+        if os.path.exists(xlsx_path):
+            import openpyxl
+            wb = openpyxl.load_workbook(xlsx_path, data_only=True)
+            sheet = wb['Grocery_Items'] if 'Grocery_Items' in wb.sheetnames else wb.sheetnames[0]
+            rows = list(sheet.iter_rows(values_only=True))
+            if rows:
+                headers = [str(cell).strip() for cell in rows[0] if cell is not None]
+                h_map = {h.lower().replace(" ", "_"): idx for idx, h in enumerate(headers)}
+                
+                code_idx = h_map.get('grocery_code') or h_map.get('code')
+                if code_idx is not None:
+                    def get_val(row_data, keys, default=0.0):
+                        for k in keys:
+                            k_mod = k.lower().replace(" ", "_")
+                            if k_mod in h_map:
+                                val = row_data[h_map[k_mod]]
+                                try: return float(val or default)
+                                except: pass
+                        return default
+                    
+                    updates = 0
+                    for row in rows[1:]:
+                        if not row or all(c is None for c in row):
+                            continue
+                        try:
+                            code = int(float(row[code_idx]))
+                        except:
+                            continue
+                        
+                        name_kan = str(row[h_map.get('grocery_items') or h_map.get('grocery_items_kan') or 2] or '')
+                        if name_kan.lower().strip() == 'x' or not name_kan.strip():
+                            continue
+                            
+                        shraddanjali = get_val(row, ['shraddanjali', 'store_-_shraddhajali'])
+                        hunnime = get_val(row, ['hunnime', 'stores_-_a'])
+                        boys = get_val(row, ['boys_hostel', 'stores_-_boys_hostel', 'stores_-_sirigere_bhs'])
+                        girls = get_val(row, ['girls_hostel', 'stores_-_girls_hostel', 'stores_-_sirigere_ghs'])
+                        math_val = get_val(row, ['math', 'stores_-_math'])
+                        shantivan = get_val(row, ['shantivana', 'stores_-_shantivana_bidara', 'stores_-_shantivana_gurukula'])
+                        ao_office = get_val(row, ['ao_office', 'stores_-_ao_office'])
+                        
+                        update_query = """
+                            UPDATE Grocery_Items
+                            SET Shraddanjali_Budget = %s, Hunnime_Budget = %s, Boys_Hostel_Budget = %s,
+                                Girls_Hostel_Budget = %s, Math_Budget = %s, Shantivan_Budget_a = %s, AO_Office_Budget = %s
+                            WHERE Grocery_Code = %s
+                        """ if db_type == "postgresql" else """
+                            UPDATE Grocery_Items
+                            SET Shraddanjali_Budget = ?, Hunnime_Budget = ?, Boys_Hostel_Budget = ?,
+                                Girls_Hostel_Budget = ?, Math_Budget = ?, Shantivan_Budget_a = ?, AO_Office_Budget = ?
+                            WHERE Grocery_Code = ?
+                        """
+                        cursor.execute(update_query, (shraddanjali, hunnime, boys, girls, math_val, shantivan, ao_office, code))
+                        updates += 1
+                    conn.commit()
+                    print(f"Successfully loaded and updated budget details for {updates} items from Excel.")
+        
+        conn.close()
+    except Exception as ex:
+        print(f"Error in migrate_and_load_budgets: {ex}")
+
 def init_db():
     try:
         db_query("CREATE TABLE IF NOT EXISTS Users (username VARCHAR(50) PRIMARY KEY, password VARCHAR(100) NOT NULL, role VARCHAR(20) NOT NULL, inst_id INT, name VARCHAR(100) NOT NULL)", fetch=False)
@@ -1342,6 +1443,10 @@ def init_db():
                 db_query("INSERT INTO Users (username,password,role,inst_id,name) VALUES (%s,%s,%s,%s,%s)",
                     (un, info['password'], info['role'], info['inst_id'], info['name']), fetch=False)
             print("Default users seeded.")
+        
+        # Run migrations and seed budgets dynamically
+        migrate_and_load_budgets()
+        
     except Exception as e:
         print(f"DB init error: {e}")
 

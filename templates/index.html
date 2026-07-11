@@ -96,12 +96,14 @@
             <button onclick="showPage('analytics')" data-page="analytics" class="nav-link w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left font-bold transition-all hover:bg-emerald-900/60 text-emerald-100 hover:text-white">
                 <span>📊</span> <span data-kn="ವಿಶ್ಲೇಷಣೆ" data-en="Analytics">ವಿಶ್ಲೇಷಣೆ</span>
             </button>
-            <button onclick="showPage('admin-users')" data-page="admin-users" class="nav-link w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left font-bold transition-all hover:bg-emerald-900/60 text-emerald-100 hover:text-white hidden">
+            {% if session.get('role') == 'head' %}
+            <button onclick="showPage('admin-users')" data-page="admin-users" class="nav-link w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left font-bold transition-all hover:bg-emerald-900/60 text-emerald-100 hover:text-white">
                 <span>👥</span> <span data-kn="ಬಳಕೆದಾರರು" data-en="Users">ಬಳಕೆದಾರರು</span>
             </button>
-            <button onclick="showPage('admin-masters')" data-page="admin-masters" class="nav-link w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left font-bold transition-all hover:bg-emerald-900/60 text-emerald-100 hover:text-white hidden">
+            <button onclick="showPage('admin-masters')" data-page="admin-masters" class="nav-link w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left font-bold transition-all hover:bg-emerald-900/60 text-emerald-100 hover:text-white">
                 <span>⚙️</span> <span data-kn="ಮಾಸ್ಟರ್ಸ್ / ಸೆಟ್ಟಿಂಗ್ಸ್" data-en="Settings">ಮಾಸ್ಟರ್ಸ್ / ಸೆಟ್ಟಿಂಗ್ಸ್</span>
             </button>
+            {% endif %}
         </nav>
 
         <!-- Sidebar Footer / Logged-in User Card -->
@@ -741,16 +743,16 @@
                 </div>
 
                 <!-- Budget Tab Navigation -->
+                {% if session.get('role') == 'head' %}
                 <div class="flex border-b border-slate-200">
                     <button id="btnTabBudgetStore" onclick="switchBudgetTab('store')" class="py-3 px-6 text-xs font-bold border-b-2 border-emerald-600 text-emerald-800"><span data-kn="ವಸತಿ ನಿಲಯದ ಬಜೆಟ್" data-en="Store-wise Budgets">ವಸತಿ ನಿಲಯದ ಬಜೆಟ್</span></button>
-                    {% if session.get('role') == 'head' %}
                     <button id="btnTabBudgetUser" onclick="switchBudgetTab('user')" class="py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700"><span data-kn="ಬಳಕೆದಾರರ ಬಜೆಟ್" data-en="User-wise Budgets">ಬಳಕೆದಾರರ ಬಜೆಟ್</span></button>
-                    {% endif %}
                     <button id="btnTabBudgetItem" onclick="switchBudgetTab('item')" class="py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700"><span data-kn="ಐಟಂ-ವಾರು ಬಜೆಟ್" data-en="Item-wise Budgets">ಐಟಂ-ವಾರು ಬಜೆಟ್</span></button>
                 </div>
+                {% endif %}
 
                 <!-- Store-wise Budget -->
-                <div id="sectionBudgetStore" class="space-y-5">
+                <div id="sectionBudgetStore" class="space-y-5 {% if session.get('role') != 'head' %}hidden{% endif %}">
                     <!-- Store Budget Cards Grid -->
                     <div id="storeBudgetCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         <!-- Dynamic store cards -->
@@ -836,7 +838,7 @@
                 </div>
 
                 <!-- Item-wise Budgets -->
-                <div id="sectionBudgetItem" class="space-y-4 hidden bg-white rounded-2xl border p-5 shadow-sm">
+                <div id="sectionBudgetItem" class="space-y-4 {% if session.get('role') == 'head' %}hidden{% endif %} bg-white rounded-2xl border p-5 shadow-sm">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <h3 id="lblItemBudgetHeading" class="text-xs font-bold text-slate-800 uppercase tracking-wider">ಐಟಂ-ವಾರು ಬಜೆಟ್ ಹಂಚಿಕೆ</h3>
                         <div class="flex gap-2 w-full sm:w-auto">
@@ -2663,17 +2665,24 @@
                             tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">No stock entries found.</td></tr>`;
                             return;
                         }
-                        tbody.innerHTML = data.map(r => `
-                            <tr class="border-b">
-                                <td class="px-4 py-2 font-mono">${r.Grocery_Code}</td>
-                                <td class="px-4 py-2 font-bold">${r.Grocery_Items_Kan}</td>
-                                <td class="px-4 py-2 text-slate-500">${r.Grocery_Category}</td>
-                                <td class="px-4 py-2 text-slate-400">${r.Qtl_Kg_Ltr}</td>
-                                <td class="px-4 py-2">₹${r.Std_Rate}</td>
-                                <td class="px-4 py-2 font-semibold text-emerald-800">${r.Tot_Stock}</td>
-                                <td class="px-4 py-2 font-semibold text-red-800">${r.Tot_Issue}</td>
-                            </tr>
-                        `).join('');
+                        tbody.innerHTML = data
+                            .filter(r => r.Grocery_Items_Kan && r.Grocery_Items_Kan.trim().toLowerCase() !== 'x')
+                            .map(r => {
+                                const stockVal = parseFloat(r.Tot_Stock || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+                                const issueVal = parseFloat(r.Tot_Issue || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+                                const rateVal = parseFloat(r.Std_Rate || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+                                return `
+                                    <tr class="border-b">
+                                        <td class="px-4 py-2 font-mono">${r.Grocery_Code}</td>
+                                        <td class="px-4 py-2 font-bold">${r.Grocery_Items_Kan}</td>
+                                        <td class="px-4 py-2 text-slate-500">${r.Grocery_Category || ''}</td>
+                                        <td class="px-4 py-2 text-slate-400">${r.Qtl_Kg_Ltr || ''}</td>
+                                        <td class="px-4 py-2">₹${rateVal}</td>
+                                        <td class="px-4 py-2 font-semibold text-emerald-800">${stockVal}</td>
+                                        <td class="px-4 py-2 font-semibold text-red-800">${issueVal}</td>
+                                    </tr>
+                                `;
+                            }).join('');
                     });
 
             } else if (currentReportType === 'budget') {
@@ -2728,7 +2737,7 @@
                                 <td class="px-4 py-2 font-bold text-slate-500">${r.Institution || 'Central Godown'}</td>
                                 <td class="px-4 py-2 font-medium">${r.Shop_Donor_Name}</td>
                                 <td class="px-4 py-2 font-mono font-bold">${r.Bill_No}</td>
-                                <td class="px-4 py-2 font-black">₹${r.Bill_Amount}</td>
+                                <td class="px-4 py-2 font-black">₹${parseFloat(r.Bill_Amount || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 2})}</td>
                                 <td class="px-4 py-2 text-slate-400">${r.Remarks || ''}</td>
                             </tr>
                         `).join('');
@@ -2760,8 +2769,8 @@
                                 <td class="px-4 py-2 font-bold text-slate-500">${r.Institution}</td>
                                 <td class="px-4 py-2 font-bold">${r.Grocery_Items_Kan}</td>
                                 <td class="px-4 py-2 text-slate-500">${r.Grocery_Category}</td>
-                                <td class="px-4 py-2 font-black text-amber-800">${r.QuantityUsed} ${r.Qtl_Kg_Ltr}</td>
-                                <td class="px-4 py-2">₹${r.Issue_Amount}</td>
+                                <td class="px-4 py-2 font-black text-amber-800">${parseFloat(r.QuantityUsed || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 2})} ${r.Qtl_Kg_Ltr}</td>
+                                <td class="px-4 py-2">₹${parseFloat(r.Issue_Amount || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 2})}</td>
                                 <td class="px-4 py-2 text-slate-400">${r.Remarks}</td>
                             </tr>
                         `).join('');
