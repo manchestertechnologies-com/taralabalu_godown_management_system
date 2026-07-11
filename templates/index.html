@@ -178,31 +178,13 @@
             <!-- ==================== PAGE: DASHBOARD ==================== -->
             <div id="page-dashboard" class="app-page space-y-6">
                 <!-- Tailored Welcome Card -->
-                <!-- Tailored Welcome Card Container -->
-                <div id="dashboardWelcomeContainer" class="transition-all duration-500 ease-in-out overflow-hidden max-h-[300px] opacity-100">
-                    <div class="bg-gradient-to-r from-emerald-800 to-emerald-950 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
-                        <div class="relative z-10 space-y-2">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h2 class="text-xs font-bold uppercase tracking-widest text-emerald-400" data-kn="ಸ್ವಾಗತ" data-en="Welcome Back">ಸ್ವಾಗತ</h2>
-                                    <h1 class="text-xl sm:text-2xl font-black leading-tight" id="lblDashboardWelcomeUser">ತರಳಬಾಳು ದಾಸ್ತಾನು ವ್ಯವಸ್ಥೆ</h1>
-                                </div>
-                                <!-- Slide Close Button -->
-                                <button onclick="slideDashboardWelcome(false)" class="bg-white/10 hover:bg-white/20 text-white rounded-lg px-2.5 py-1 transition text-[10px] font-bold uppercase tracking-wider" title="Slide Away">
-                                    ✕ Slide Away
-                                </button>
-                            </div>
-                            <p class="text-xs text-emerald-200/90 leading-relaxed max-w-xl" data-kn="ತರಳಬಾಳು ವಿದ್ಯಾ ಸಂಸ್ಥೆಯ ದಾಸ್ತಾನು, ಇನ್ವರ್ಡ್, ಔಟ್ವರ್ಡ್ ಮತ್ತು ಬಜೆಟ್ ನಿರ್ವಹಣೆಯ ಡಿಜಿಟಲ್ ಡ್ಯಾಶ್ಬೋರ್ಡ್." data-en="Digital dashboard for real-time stock balances, inward, outward ledger tracking, and budget utilization.">ತರಳಬಾಳು ವಿದ್ಯಾ ಸಂಸ್ಥೆಯ ದಾಸ್ತಾನು, ಇನ್ವರ್ಡ್, ಔಟ್ವರ್ಡ್ ಮತ್ತು ಬಜೆಟ್ ನಿರ್ವಹಣೆಯ ಡಿಜಿಟಲ್ ಡ್ಯಾಶ್ಬೋರ್ಡ್.</p>
-                        </div>
-                        <div class="absolute right-0 bottom-0 top-0 w-1/3 opacity-10 bg-[radial-gradient(circle_at_bottom_right,var(--tw-gradient-stops))] from-white via-transparent to-transparent hidden md:block"></div>
+                <div class="bg-gradient-to-r from-emerald-800 to-emerald-950 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                    <div class="relative z-10 space-y-2">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-emerald-400" data-kn="ಸ್ವಾಗತ" data-en="Welcome Back">ಸ್ವಾಗತ</h2>
+                        <h1 class="text-xl sm:text-2xl font-black leading-tight" id="lblDashboardWelcomeUser">ತರಳಬಾಳು ದಾಸ್ತಾನು ವ್ಯವಸ್ಥೆ</h1>
+                        <p class="text-xs text-emerald-200/90 leading-relaxed max-w-xl" data-kn="ತರಳಬಾಳು ವಿದ್ಯಾ ಸಂಸ್ಥೆಯ ದಾಸ್ತಾನು, ಇನ್ವರ್ಡ್, ಔಟ್ವರ್ಡ್ ಮತ್ತು ಬಜೆಟ್ ನಿರ್ವಹಣೆಯ ಡಿಜಿಟಲ್ ಡ್ಯಾಶ್ಬೋರ್ಡ್." data-en="Digital dashboard for real-time stock balances, inward, outward ledger tracking, and budget utilization.">ತರಳಬಾಳು ವಿದ್ಯಾ ಸಂಸ್ಥೆಯ ದಾಸ್ತಾನು, ಇನ್ವರ್ಡ್, ಔಟ್ವರ್ಡ್ ಮತ್ತು ಬಜೆಟ್ ನಿರ್ವಹಣೆಯ ಡಿಜಿಟಲ್ ಡ್ಯಾಶ್ಬೋರ್ಡ್.</p>
                     </div>
-                </div>
-                
-                <!-- Trigger to slide it back down -->
-                <div id="dashboardWelcomeTrigger" class="hidden transition-all duration-300">
-                    <button onclick="slideDashboardWelcome(true)" class="bg-emerald-800 hover:bg-emerald-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition shadow flex items-center gap-1">
-                        <span>📖</span> <span data-kn="ಬ್ಯಾನರ್ ತೋರಿಸು" data-en="Show Welcome Banner">Show Welcome Banner</span>
-                    </button>
+                    <div class="absolute right-0 bottom-0 top-0 w-1/3 opacity-10 bg-[radial-gradient(circle_at_bottom_right,var(--tw-gradient-stops))] from-white via-transparent to-transparent hidden md:block"></div>
                 </div>
 
                 <!-- Stats summary grid -->
@@ -3016,25 +2998,6 @@
         }
 
 
-        // ==================== SLIDING WELCOME BANNER ====================
-        function slideDashboardWelcome(show) {
-            const container = document.getElementById('dashboardWelcomeContainer');
-            const trigger = document.getElementById('dashboardWelcomeTrigger');
-            if (!container || !trigger) return;
-            
-            if (show) {
-                container.classList.remove('max-h-0', 'opacity-0');
-                container.classList.add('max-h-[300px]', 'opacity-100');
-                trigger.classList.add('hidden');
-                localStorage.setItem('welcomeBannerVisible', 'true');
-            } else {
-                container.classList.add('max-h-0', 'opacity-0');
-                container.classList.remove('max-h-[300px]', 'opacity-100');
-                trigger.classList.remove('hidden');
-                localStorage.setItem('welcomeBannerVisible', 'false');
-            }
-        }
-
         // ==================== INITIALIZATION ====================
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -3058,10 +3021,6 @@
             
             // Set Year Selector value
             document.getElementById('selectFinancialYear').value = currentFY;
-            
-            // Set banner sliding preference
-            const bannerVisible = localStorage.getItem('welcomeBannerVisible') !== 'false';
-            slideDashboardWelcome(bannerVisible);
         });
     </script>
 </body>
