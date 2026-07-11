@@ -747,7 +747,8 @@
                 <div class="flex border-b border-slate-200">
                     <button id="btnTabBudgetStore" onclick="switchBudgetTab('store')" class="py-3 px-6 text-xs font-bold border-b-2 border-emerald-600 text-emerald-800"><span data-kn="ವಸತಿ ನಿಲಯದ ಬಜೆಟ್" data-en="Store-wise Budgets">ವಸತಿ ನಿಲಯದ ಬಜೆಟ್</span></button>
                     <button id="btnTabBudgetUser" onclick="switchBudgetTab('user')" class="py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700"><span data-kn="ಬಳಕೆದಾರರ ಬಜೆಟ್" data-en="User-wise Budgets">ಬಳಕೆದಾರರ ಬಜೆಟ್</span></button>
-                    <button id="btnTabBudgetItem" onclick="switchBudgetTab('item')" class="py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700"><span data-kn="ಐಟಂ-ವಾರು ಬಜೆಟ್" data-en="Item-wise Budgets">ಐಟಂ-ವಾರು ಬಜೆಟ್</span></button>
+                    <button id="btnTabBudgetOverall" onclick="switchBudgetTab('overall')" class="py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700"><span data-kn="ಒಟ್ಟಾರೆ ಬಜೆಟ್" data-en="Overall Budget">Overall Budget</span></button>
+                    <button id="btnTabBudgetItem" onclick="switchBudgetTab('item')" class="py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700"><span data-kn="ಐಟಂ-ವಾರು ಬಜೆಟ್" data-en="Item-wise Budgets">Item-wise Budgets</span></button>
                 </div>
                 {% endif %}
 
@@ -834,6 +835,33 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Overall Budgets (Overall Item split) -->
+                <div id="sectionBudgetOverall" class="space-y-4 hidden bg-white rounded-2xl border p-5 shadow-sm">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider" data-kn="ಒಟ್ಟಾರೆ ಐಟಂ ಬಜೆಟ್ ವಿವರ" data-en="Overall Item Budgets">Overall Item Budgets</h3>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <input type="text" id="inputBudgetOverallSearch" onkeyup="filterBudgetOverallTable()" placeholder="Search item..." class="p-2 border rounded-xl text-xs w-full sm:w-64 focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200 text-xs">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600">Code</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600">Item Name</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600">Standard Rate</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600">Total Sanctioned Qty</th>
+                                    <th class="px-4 py-3 text-left font-bold text-emerald-700">Overall Budget (₹)</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600">Unit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblOverallBudgetsList" class="divide-y divide-slate-100">
+                                <!-- Dynamic -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -2487,18 +2515,22 @@
             const btnStore = document.getElementById('btnTabBudgetStore');
             const btnUser = document.getElementById('btnTabBudgetUser');
             const btnItem = document.getElementById('btnTabBudgetItem');
+            const btnOverall = document.getElementById('btnTabBudgetOverall');
             const secStore = document.getElementById('sectionBudgetStore');
             const secUser = document.getElementById('sectionBudgetUser');
             const secItem = document.getElementById('sectionBudgetItem');
+            const secOverall = document.getElementById('sectionBudgetOverall');
             const inactiveClass = "py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-750";
             const activeClass = "py-3 px-6 text-xs font-bold border-b-2 border-emerald-600 text-emerald-800";
 
             if (btnStore) btnStore.className = inactiveClass;
             if (btnUser) btnUser.className = inactiveClass;
             if (btnItem) btnItem.className = inactiveClass;
+            if (btnOverall) btnOverall.className = inactiveClass;
             if (secStore) secStore.classList.add('hidden');
             if (secUser) secUser.classList.add('hidden');
             if (secItem) secItem.classList.add('hidden');
+            if (secOverall) secOverall.classList.add('hidden');
 
             if (tab === 'store') {
                 if (btnStore) btnStore.className = activeClass;
@@ -2510,7 +2542,73 @@
                 if (btnItem) btnItem.className = activeClass;
                 if (secItem) secItem.classList.remove('hidden');
                 loadItemBudgetsGrid();
+            } else if (tab === 'overall') {
+                if (btnOverall) btnOverall.className = activeClass;
+                if (secOverall) secOverall.classList.remove('hidden');
+                loadOverallBudgetsGrid();
             }
+        }
+
+        let cachedOverallBudgets = [];
+
+        function loadOverallBudgetsGrid() {
+            fetch('/api/grocery-items')
+                .then(res => res.ok ? res.json() : [])
+                .then(items => {
+                    cachedOverallBudgets = items;
+                    renderOverallBudgetsTable(items);
+                });
+        }
+
+        function renderOverallBudgetsTable(items) {
+            const tbody = document.getElementById('tblOverallBudgetsList');
+            if (!tbody) return;
+            if (items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-3 text-center text-slate-400 font-bold">No items found.</td></tr>`;
+                return;
+            }
+            let grandTotalBudget = 0;
+            let grandTotalQty = 0;
+
+            let html = items.map(i => {
+                const itemBudget = parseFloat(i.Total_Budget || (i.Tot_Quantity * i.Std_Rate) || 0);
+                grandTotalBudget += itemBudget;
+                grandTotalQty += parseFloat(i.Tot_Quantity || 0);
+
+                return `
+                <tr class="hover:bg-slate-50 transition border-b">
+                    <td class="px-4 py-3 font-mono text-slate-500">${i.Grocery_Code}</td>
+                    <td class="px-4 py-3 font-bold text-slate-800">${i.Grocery_Items_Kan} <span class="text-slate-400 font-normal text-[10px]">/ ${i.Grocery_Items_Eng || ''}</span></td>
+                    <td class="px-4 py-3 font-semibold text-slate-650">₹${(i.Std_Rate || 0).toLocaleString('en-IN')}</td>
+                    <td class="px-4 py-3 font-semibold text-slate-700">${(i.Tot_Quantity || 0).toLocaleString('en-IN')}</td>
+                    <td class="px-4 py-3 font-black text-emerald-800">₹${itemBudget.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+                    <td class="px-4 py-3 text-slate-400">${i.Qtl_Kg_Ltr || ''}</td>
+                </tr>
+                `;
+            }).join('');
+
+            // Append grand total footer row
+            html += `
+            <tr class="bg-emerald-50 border-t-2 border-emerald-250 font-bold">
+                <td colspan="3" class="px-4 py-3 text-right text-slate-800 uppercase tracking-wider">Total</td>
+                <td class="px-4 py-3 text-slate-800 font-black">${grandTotalQty.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+                <td class="px-4 py-3 text-emerald-950 font-black text-[14px]">₹${grandTotalBudget.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+                <td></td>
+            </tr>
+            `;
+
+            tbody.innerHTML = html;
+        }
+
+        function filterBudgetOverallTable() {
+            const search = document.getElementById('inputBudgetOverallSearch').value.toLowerCase();
+            const filtered = cachedOverallBudgets.filter(item => {
+                const nameKan = (item.Grocery_Items_Kan || '').toLowerCase();
+                const nameEng = (item.Grocery_Items_Eng || '').toLowerCase();
+                const code = String(item.Grocery_Code);
+                return nameKan.includes(search) || nameEng.includes(search) || code.includes(search);
+            });
+            renderOverallBudgetsTable(filtered);
         }
 
         let cachedItemBudgets = [];
