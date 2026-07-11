@@ -4,6 +4,7 @@ from flask import Flask, render_template, jsonify, request, session, redirect, u
 from datetime import datetime
 import sqlite3
 import uuid
+from PIL import Image
 
 try:
     import psycopg2
@@ -16,6 +17,32 @@ app.secret_key = 'taralabalu_secret_key_87924'
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads', 'bills')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+def compress_image(file_path):
+    try:
+        ext = os.path.splitext(file_path)[1].lower()
+        if ext not in ['.jpg', '.jpeg', '.png']:
+            return
+        
+        with Image.open(file_path) as img:
+            # Convert RGBA/P to RGB for saving as JPEG or standard RGB PNG
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+            
+            # Resize if width > 1600px
+            max_width = 1600
+            if img.width > max_width:
+                ratio = max_width / float(img.width)
+                new_height = int(float(img.height) * ratio)
+                img = img.resize((max_width, new_height), Image.Resampling.LANCZOS)
+            
+            # Save compressed
+            if ext in ['.jpg', '.jpeg']:
+                img.save(file_path, "JPEG", quality=75, optimize=True)
+            elif ext == '.png':
+                img.save(file_path, "PNG", optimize=True)
+    except Exception as e:
+        print(f"Error compressing image {file_path}: {e}")
 
 USERS = {
     "head": {"password": "123", "role": "head", "inst_id": None, "name": "Admin / ಸಂಸ್ಥೆಯ ಆಡಳಿತಗಾರರು"},
@@ -316,6 +343,7 @@ def add_godown_stock():
         filename = f"{uuid.uuid4().hex}{ext}"
         bill_file.save(os.path.join(UPLOAD_FOLDER, filename))
         file_path = f"/static/uploads/bills/{filename}"
+        compress_image(os.path.join(UPLOAD_FOLDER, filename))
 
     try:
         # Insert into Stock_Issue
@@ -760,6 +788,7 @@ def add_bill():
         filename = f"{uuid.uuid4().hex}{ext}"
         bill_file.save(os.path.join(UPLOAD_FOLDER, filename))
         file_path = f"/static/uploads/bills/{filename}"
+        compress_image(os.path.join(UPLOAD_FOLDER, filename))
 
     try:
         db_query("INSERT INTO Bills (Year1,Shop_Donor_ID,Bill_Date,Bill_No,Bill_Amount,Paid_By,Ch_Date,Ch_No,Ch_Amount,Remarks,DateAdded,File_Path,Inst_ID) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
