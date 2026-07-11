@@ -1491,11 +1491,11 @@ def init_db():
 
 def check_and_load_registers():
     try:
-        # Check if already loaded
-        existing = db_query("SELECT COUNT(*) as cnt FROM Stock_Issue")
+        # Check if already loaded (with new Opening Stock records)
+        existing = db_query("SELECT COUNT(*) as cnt FROM Stock_Issue WHERE Purchased_Donation = 'Opening Stock'")
         count = existing[0]['cnt'] if existing else 0
-        if count >= 100:
-            print(f"Historical registers already loaded ({count} issues found). Skipping initial import.")
+        if count > 0:
+            print(f"Historical registers already loaded ({count} opening stocks found). Skipping initial import.")
             return
             
         print("Stock_Issue table is empty. Loading all historical Excel registers into database...")
