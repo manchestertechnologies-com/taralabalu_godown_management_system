@@ -2425,14 +2425,61 @@
                 .then(users => {
                     const tbody = document.getElementById('tblUserBudgetsList');
                     if (!tbody) return;
-                    tbody.innerHTML = users.map(u => `
-                        <tr class="hover:bg-slate-50 border-b">
-                            <td class="px-4 py-3 font-bold text-slate-800">${u.name} (${u.username})</td>
+                    
+                    let totalAlloc = 0;
+                    let totalUsed = 0;
+                    let totalRem = 0;
+
+                    let html = users.map(u => {
+                        totalAlloc += (u.Allocated_Amount || 0);
+                        totalUsed += (u.Used_Amount || 0);
+                        totalRem += (u.Remaining_Amount || 0);
+                        return `
+                        <tr class="hover:bg-slate-50 border-b cursor-pointer" onclick="if(${u.inst_id}) { openAdminStoreItemBudget(${u.inst_id}, '${u.name}'); }">
+                            <td class="px-4 py-3 font-bold text-slate-800">${u.name} (${u.username}) <span class="text-emerald-600 text-[10px] ml-2 font-normal">Click to view items</span></td>
                             <td class="px-4 py-3 font-semibold text-slate-700">₹${(u.Allocated_Amount||0).toLocaleString('en-IN')}</td>
                             <td class="px-4 py-3 font-black text-emerald-800">₹${(u.Used_Amount||0).toLocaleString('en-IN')}</td>
                             <td class="px-4 py-3 font-extrabold text-slate-600">₹${(u.Remaining_Amount||0).toLocaleString('en-IN')}</td>
                         </tr>
-                    `).join('');
+                        `;
+                    }).join('');
+
+                    if (users.length > 0) {
+                        html += `
+                        <tr class="bg-emerald-50 border-t-2 border-emerald-200">
+                            <td class="px-4 py-3 font-bold text-slate-800 text-right uppercase tracking-wider">Overall Total</td>
+                            <td class="px-4 py-3 font-bold text-slate-900">₹${totalAlloc.toLocaleString('en-IN')}</td>
+                            <td class="px-4 py-3 font-black text-emerald-900">₹${totalUsed.toLocaleString('en-IN')}</td>
+                            <td class="px-4 py-3 font-extrabold text-slate-800">₹${totalRem.toLocaleString('en-IN')}</td>
+                        </tr>
+                        `;
+                    }
+
+                    tbody.innerHTML = html;
+                });
+        }
+        
+        function openAdminStoreItemBudget(instId, storeName) {
+            switchBudgetTab('item');
+            const heading = document.getElementById('lblItemBudgetHeading');
+            if (heading) heading.textContent = `ಐಟಂ-ವಾರು ಬಜೆಟ್ - ${storeName} (Admin View)`;
+            
+            const thead = document.getElementById('tblItemBudgetsHead');
+            if (thead) {
+                thead.innerHTML = `<tr>
+                    <th class="px-3 py-2 text-left font-bold text-slate-600">ಕೋಡ್ / Code</th>
+                    <th class="px-3 py-2 text-left font-bold text-slate-600">ವಸ್ತುವಿನ ಹೆಸರು / Item Name</th>
+                    <th class="px-3 py-2 text-left font-bold text-slate-600">ಪ್ರಸ್ತುತ ದಾಸ್ತಾನು / Current Stock</th>
+                    <th class="px-3 py-2 text-left font-bold text-emerald-700">ಬಜೆಟ್ ಮಿತಿ / Allocated Budget</th>
+                    <th class="px-3 py-2 text-left font-bold text-slate-600">ಘಟಕ / Unit</th>
+                </tr>`;
+            }
+
+            fetch(`/api/hostel-stock/${instId}`)
+                .then(res => res.ok ? res.json() : [])
+                .then(items => {
+                    cachedItemBudgets = items;
+                    renderHostelItemBudgetsTable(items);
                 });
         }
 

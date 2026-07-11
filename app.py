@@ -376,9 +376,9 @@ def add_godown_stock():
         # Create matching bill if bill number is provided
         if bill_no:
             db_query("""
-                INSERT INTO Bills (Year1, Shop_Donor_ID, Bill_Date, Bill_No, Bill_Amount, Remarks, DateAdded, File_Path, Inst_ID)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (active_year, donor_id, bill_date or date_str, bill_no, bill_amount or (qty*rate), remarks, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), file_path, inst_id), fetch=False)
+                INSERT INTO Bills (Year1, Shop_Donor_ID, Bill_Date, Bill_No, Bill_Amount, Remarks, DateAdded, File_Path)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (active_year, donor_id, bill_date or date_str, bill_no, bill_amount or (qty*rate), remarks, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), file_path), fetch=False)
 
         log_audit('Inward', 'Add', code, '', f'{qty}')
         return jsonify({'success': True})
@@ -811,8 +811,8 @@ def add_bill():
         compress_image(os.path.join(UPLOAD_FOLDER, filename))
 
     try:
-        db_query("INSERT INTO Bills (Year1,Shop_Donor_ID,Bill_Date,Bill_No,Bill_Amount,Paid_By,Ch_Date,Ch_No,Ch_Amount,Remarks,DateAdded,File_Path,Inst_ID) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-            (active_year, donor_id, bill_date, bill_no, amount, paid_by, ch_date, ch_no, ch_amount, remarks, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), file_path, inst_id), fetch=False)
+        db_query("INSERT INTO Bills (Year1,Shop_Donor_ID,Bill_Date,Bill_No,Bill_Amount,Paid_By,Ch_Date,Ch_No,Ch_Amount,Remarks,DateAdded,File_Path) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+            (active_year, donor_id, bill_date, bill_no, amount, paid_by, ch_date, ch_no, ch_amount, remarks, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), file_path), fetch=False)
         log_audit('Bills','Add',bill_no,'',str(amount))
         return jsonify({'success': True})
     except Exception as e: return jsonify({'error': str(e)}), 500
@@ -1379,7 +1379,19 @@ def migrate_and_load_budgets():
             if col.lower() not in existing_cols:
                 print(f"Altering table: Adding column {col} to Grocery_Items...")
                 cursor.execute(f"ALTER TABLE Grocery_Items ADD COLUMN {col} REAL DEFAULT 0.0")
-        
+
+        # Migrate Bills table to add File_Path
+        if db_type == "postgresql":
+            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'bills'")
+            bill_cols = {row[0].lower() for row in cursor.fetchall()}
+        else:
+            cursor.execute("PRAGMA table_info(Bills)")
+            bill_cols = {row[1].lower() for row in cursor.fetchall()}
+            
+        if 'file_path' not in bill_cols:
+            print("Altering table: Adding column File_Path to Bills...")
+            cursor.execute("ALTER TABLE Bills ADD COLUMN File_Path TEXT DEFAULT NULL")
+                
         conn.commit()
 
         # 3. Update budget quantities from Excel sheet if available
