@@ -750,6 +750,8 @@ def add_vegetable():
 
 @app.route('/api/bills', methods=['GET'])
 def get_bills():
+    if session.get('role') == 'hostel':
+        return jsonify([])
     df = request.args.get('from',''); dt = request.args.get('to',''); dn = request.args.get('donor','')
     fy = request.args.get('year', '')
     wheres = []; args = []

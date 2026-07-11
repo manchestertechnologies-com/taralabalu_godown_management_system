@@ -637,11 +637,10 @@
                 </div>
             </div>
 
-            <!-- ==================== PAGE: BILLS ==================== -->
             <div id="page-bills" class="app-page hidden space-y-6">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div id="divBillsGrid" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Form -->
-                    <div class="bg-white rounded-2xl border p-6 shadow-sm space-y-4 h-fit">
+                    <div id="divBillsFormContainer" class="bg-white rounded-2xl border p-6 shadow-sm space-y-4 h-fit">
                         <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Register New Bill</h3>
                         <form id="formAddBill" onsubmit="submitBillEntry(event)" class="space-y-4 text-xs">
                             <div>
@@ -698,7 +697,7 @@
                     </div>
 
                     <!-- Bills List -->
-                    <div class="bg-white rounded-2xl border p-4 shadow-sm lg:col-span-2 space-y-4">
+                    <div id="divBillsListContainer" class="bg-white rounded-2xl border p-4 shadow-sm lg:col-span-2 space-y-4">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Registered Bills Log</h3>
                             <div class="w-full sm:w-auto">
@@ -2197,14 +2196,28 @@
 
         // Load Bills Page
         function loadBillsData() {
+            const listContainer = document.getElementById('divBillsListContainer');
+            const formContainer = document.getElementById('divBillsFormContainer');
+            
+            if (currentRole === 'hostel') {
+                if (listContainer) listContainer.classList.add('hidden');
+                if (formContainer) {
+                    formContainer.className = "bg-white rounded-2xl border p-6 shadow-sm space-y-4 h-fit max-w-xl mx-auto lg:col-span-3 w-full";
+                }
+            } else {
+                if (listContainer) listContainer.classList.remove('hidden');
+                if (formContainer) {
+                    formContainer.className = "bg-white rounded-2xl border p-6 shadow-sm space-y-4 h-fit";
+                }
+                loadBillsLogsList();
+            }
+
             fetch('/api/donors')
                 .then(res => res.json())
                 .then(donors => {
                     const select = document.getElementById('billDonor');
                     if (select) select.innerHTML = donors.map(d => `<option value="${d.Shop_Donor_ID}">${d.Shop_Donor_Name} (${d.Place})</option>`).join('');
                 });
-
-            loadBillsLogsList();
         }
 
         let cachedBillsLogs = [];
