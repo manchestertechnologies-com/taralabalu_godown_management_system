@@ -1297,6 +1297,9 @@ def report_donations():
 @app.route('/api/audit-logs', methods=['GET'])
 def get_audit_logs():
     if not chk('head'): return jsonify({'error':'Unauthorized'}), 403
+    un = request.args.get('username','')
+    if un:
+        return jsonify(db_query("SELECT * FROM Audit_Logs WHERE Username=%s ORDER BY Rec DESC LIMIT 500", (un,)))
     return jsonify(db_query("SELECT * FROM Audit_Logs ORDER BY Rec DESC LIMIT 500"))
 
 
