@@ -752,24 +752,15 @@ def add_vegetable():
 def get_bills():
     df = request.args.get('from',''); dt = request.args.get('to',''); dn = request.args.get('donor','')
     fy = request.args.get('year', '')
-    inst_id = request.args.get('inst_id') or session.get('inst_id')
     wheres = []; args = []
     
-    # Store Manager can only view their own store data
-    if session.get('role') == 'hostel':
-        wheres.append("b.Inst_ID=%s")
-        args.append(inst_id)
-    elif inst_id:
-        wheres.append("b.Inst_ID=%s")
-        args.append(inst_id)
-        
     if df: wheres.append("b.Bill_Date>=%s"); args.append(df)
     if dt: wheres.append("b.Bill_Date<=%s"); args.append(dt)
     if dn: wheres.append("b.Shop_Donor_ID=%s"); args.append(dn)
     if fy: wheres.append("b.Year1 LIKE %s"); args.append(get_fy_prefix(fy) + "%")
     
     where_sql = ("WHERE " + " AND ".join(wheres)) if wheres else ""
-    return jsonify(db_query(f"SELECT b.*,sd.Shop_Donor_Name,sd.Place,inst.Institution FROM Bills b LEFT JOIN Shops_Donors sd ON b.Shop_Donor_ID=sd.Shop_Donor_ID LEFT JOIN Institutions inst ON b.Inst_ID=inst.Inst_ID {where_sql} ORDER BY b.Rec DESC", tuple(args)))
+    return jsonify(db_query(f"SELECT b.*,sd.Shop_Donor_Name,sd.Place FROM Bills b LEFT JOIN Shops_Donors sd ON b.Shop_Donor_ID=sd.Shop_Donor_ID {where_sql} ORDER BY b.Rec DESC", tuple(args)))
 
 @app.route('/api/bills', methods=['POST'])
 def add_bill():
@@ -1116,7 +1107,7 @@ def get_analytics():
         top_consumed = db_query("""
             SELECT gi.Grocery_Items_Kan, SUM(si.Issue) AS TotalQty
             FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code = gi.Grocery_Code
-            WHERE si.Purchased_Donation = 'Consumption' AND si.Year1 = %s
+            WHERE si.Purchased_Donation IN ('Consumption', 'Issue') AND si.Year1 = %s
             GROUP BY gi.Grocery_Code, gi.Grocery_Items_Kan
             ORDER BY TotalQty DESC LIMIT 10
         """, (year_prefix,))
