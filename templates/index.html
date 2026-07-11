@@ -2572,6 +2572,7 @@
                         <th class="px-2 py-2 text-left font-bold text-slate-600">Shraddhajali</th>
                         <th class="px-2 py-2 text-left font-bold text-slate-600">Others</th>
                         <th class="px-2 py-2 text-left font-bold text-slate-600">Total Qty</th>
+                        <th class="px-2 py-2 text-left font-bold text-emerald-700">Overall Budget (₹)</th>
                         <th class="px-2 py-2 text-left font-bold text-slate-600">Unit</th>
                     </tr>`;
                 }
@@ -2617,10 +2618,18 @@
             const tbody = document.getElementById('tblItemBudgetsList');
             if (!tbody) return;
             if (items.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="11" class="px-2 py-3 text-center text-slate-400 font-bold">No budget items found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="12" class="px-2 py-3 text-center text-slate-400 font-bold">No budget items found.</td></tr>`;
                 return;
             }
-            tbody.innerHTML = items.map(i => `
+            let grandTotalBudget = 0;
+            let grandTotalQty = 0;
+
+            let html = items.map(i => {
+                const itemBudget = parseFloat(i.Total_Budget || (i.Tot_Quantity * i.Std_Rate) || 0);
+                grandTotalBudget += itemBudget;
+                grandTotalQty += parseFloat(i.Tot_Quantity || 0);
+
+                return `
                 <tr class="hover:bg-slate-50 transition border-b">
                     <td class="px-2 py-2 font-mono">${i.Grocery_Code}</td>
                     <td class="px-2 py-2 font-bold text-slate-800">${i.Grocery_Items_Kan} <span class="text-slate-400 font-normal text-[10px]">/ ${i.Grocery_Items_Eng || ''}</span></td>
@@ -2631,10 +2640,24 @@
                     <td class="px-2 py-2 font-semibold text-slate-600">${i.AO_Office_Budget || 0}</td>
                     <td class="px-2 py-2 font-semibold text-slate-600">${i.Shraddanjali_Budget || 0}</td>
                     <td class="px-2 py-2 font-semibold text-slate-600">${i.Hunnime_Budget || 0}</td>
-                    <td class="px-2 py-2 font-black text-emerald-800">${i.Tot_Quantity || 0}</td>
+                    <td class="px-2 py-2 font-bold text-slate-700">${i.Tot_Quantity || 0}</td>
+                    <td class="px-2 py-2 font-black text-emerald-800">₹${itemBudget.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
                     <td class="px-2 py-2 text-slate-400">${i.Qtl_Kg_Ltr || ''}</td>
                 </tr>
-            `).join('');
+                `;
+            }).join('');
+
+            // Append grand total footer row
+            html += `
+            <tr class="bg-emerald-50 border-t-2 border-emerald-250 font-bold">
+                <td colspan="9" class="px-2 py-2.5 text-right text-slate-800 uppercase tracking-wider">Total</td>
+                <td class="px-2 py-2.5 text-slate-800 font-black">${grandTotalQty.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+                <td class="px-2 py-2.5 text-emerald-950 font-black text-[13px]">₹${grandTotalBudget.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+                <td></td>
+            </tr>
+            `;
+
+            tbody.innerHTML = html;
         }
 
         function filterBudgetItemTable() {
