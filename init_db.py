@@ -144,6 +144,13 @@ def init_db():
                 Math_Qty REAL DEFAULT 0.0,
                 Shantivan_Qty_a REAL DEFAULT 0.0,
                 AO_Office_Qty REAL DEFAULT 0.0,
+                Shraddanjali_Budget REAL DEFAULT 0.0,
+                Hunnime_Budget REAL DEFAULT 0.0,
+                Boys_Hostel_Budget REAL DEFAULT 0.0,
+                Girls_Hostel_Budget REAL DEFAULT 0.0,
+                Math_Budget REAL DEFAULT 0.0,
+                Shantivan_Budget_a REAL DEFAULT 0.0,
+                AO_Office_Budget REAL DEFAULT 0.0,
                 Tot_Quantity REAL DEFAULT 0.0,
                 Opening_Stock REAL DEFAULT 0.0,
                 Closing_Stock REAL DEFAULT 0.0,
@@ -174,6 +181,13 @@ def init_db():
                 Math_Qty REAL DEFAULT 0.0,
                 Shantivan_Qty_a REAL DEFAULT 0.0,
                 AO_Office_Qty REAL DEFAULT 0.0,
+                Shraddanjali_Budget REAL DEFAULT 0.0,
+                Hunnime_Budget REAL DEFAULT 0.0,
+                Boys_Hostel_Budget REAL DEFAULT 0.0,
+                Girls_Hostel_Budget REAL DEFAULT 0.0,
+                Math_Budget REAL DEFAULT 0.0,
+                Shantivan_Budget_a REAL DEFAULT 0.0,
+                AO_Office_Budget REAL DEFAULT 0.0,
                 Tot_Quantity REAL DEFAULT 0.0,
                 Opening_Stock REAL DEFAULT 0.0,
                 Closing_Stock REAL DEFAULT 0.0,
@@ -504,6 +518,7 @@ def init_db():
                     items.append((
                         code, name_kan, name_eng, category, cat_code, rate, unit,
                         shraddanjali, hunnime, boys, girls, math_val, shantivan, ao_office,
+                        shraddanjali, hunnime, boys, girls, math_val, shantivan, ao_office,
                         tot_qty, open_stock, close_stock, tot_stock, tot_issue, stock_amt, budget, remarks, datetime.now().strftime('%Y-%m-%d')
                     ))
                 
@@ -513,14 +528,16 @@ def init_db():
                         INSERT INTO Grocery_Items
                         (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
                          Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
+                         Shraddanjali_Budget, Hunnime_Budget, Boys_Hostel_Budget, Girls_Hostel_Budget, Math_Budget, Shantivan_Budget_a, AO_Office_Budget,
                          Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
-                        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                     """ if db_type == "postgresql" else """
                         INSERT INTO Grocery_Items
                         (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
                          Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
+                         Shraddanjali_Budget, Hunnime_Budget, Boys_Hostel_Budget, Girls_Hostel_Budget, Math_Budget, Shantivan_Budget_a, AO_Office_Budget,
                          Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                     """, items)
                     print(f"Successfully loaded {len(items)} items from Excel sheet: {sheet_name}")
                     file_loaded = True
@@ -613,6 +630,7 @@ def init_db():
                             items.append((
                                 code, name_kan, name_eng, category, 'C01', rate, unit,
                                 shraddanjali, hunnime, boys, girls, math_val, shantivan, ao_office,
+                                shraddanjali, hunnime, boys, girls, math_val, shantivan, ao_office,
                                 tot_qty, open_stock, close_stock, tot_stock, tot_issue, stock_amt, budget, remarks, datetime.now().strftime('%Y-%m-%d')
                             ))
                             
@@ -622,14 +640,16 @@ def init_db():
                                 INSERT INTO Grocery_Items
                                 (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
                                  Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
+                                 Shraddanjali_Budget, Hunnime_Budget, Boys_Hostel_Budget, Girls_Hostel_Budget, Math_Budget, Shantivan_Budget_a, AO_Office_Budget,
                                  Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
-                                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                             """ if db_type == "postgresql" else """
                                 INSERT INTO Grocery_Items
                                 (Grocery_Code, Grocery_Items_Kan, Grocery_Items_Eng, Grocery_Category, Category_Code, Std_Rate, Qtl_Kg_Ltr,
                                  Shraddanjali_Qty, Hunnime_Qty, Boys_Hostel_Qty, Girls_Hostel_Qty, Math_Qty, Shantivan_Qty_a, AO_Office_Qty,
+                                 Shraddanjali_Budget, Hunnime_Budget, Boys_Hostel_Budget, Girls_Hostel_Budget, Math_Budget, Shantivan_Budget_a, AO_Office_Budget,
                                  Tot_Quantity, Opening_Stock, Closing_Stock, Tot_Stock, Tot_Issue, Stock_Amt, Total_Budget, Remarks, DateStamp)
-                                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                             """, items)
                             print(f"Successfully loaded {len(items)} items from CSV file: {f_name}")
                             file_loaded = True

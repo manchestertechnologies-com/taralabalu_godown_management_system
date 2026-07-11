@@ -247,6 +247,7 @@
                                     <th class="px-4 py-3 text-left font-bold text-slate-600">Category</th>
                                     <th class="px-4 py-3 text-left font-bold text-slate-600">Standard Rate</th>
                                     <th class="px-4 py-3 text-left font-bold text-slate-600">Available Balance</th>
+                                    <th class="px-4 py-3 text-left font-bold text-slate-600"><span data-kn="ಬಜೆಟ್ ಮಿತಿ" data-en="Allocated Budget">ಬಜೆಟ್ ಮಿತಿ</span></th>
                                     <th class="px-4 py-3 text-left font-bold text-slate-600">Unit</th>
                                 </tr>
                             </thead>
@@ -505,7 +506,8 @@
                         <form id="formCreateIndent" onsubmit="addIndentToCart(event)" class="space-y-4 text-xs">
                             <div>
                                 <label class="block text-slate-600 font-bold mb-1">Select Item (Groceries / Vegetables)</label>
-                                <select id="indentCartItem" required class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500"></select>
+                                <select id="indentCartItem" onchange="updateIndentItemBudgetInfo()" required class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500"></select>
+                                <div id="lblIndentItemBudgetInfo" class="mt-1.5 text-[10px] font-black text-emerald-800 hidden"></div>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
@@ -740,8 +742,9 @@
 
                 <!-- Budget Tab Navigation -->
                 <div class="flex border-b border-slate-200">
-                    <button id="btnTabBudgetStore" onclick="switchBudgetTab('store')" class="py-3 px-6 text-xs font-bold border-b-2 border-emerald-600 text-emerald-800">Store-wise Budgets</button>
-                    <button id="btnTabBudgetUser" onclick="switchBudgetTab('user')" class="py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700">User-wise Budgets</button>
+                    <button id="btnTabBudgetStore" onclick="switchBudgetTab('store')" class="py-3 px-6 text-xs font-bold border-b-2 border-emerald-600 text-emerald-800"><span data-kn="ವಸತಿ ನಿಲಯದ ಬಜೆಟ್" data-en="Store-wise Budgets">ವಸತಿ ನಿಲಯದ ಬಜೆಟ್</span></button>
+                    <button id="btnTabBudgetUser" onclick="switchBudgetTab('user')" class="py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700"><span data-kn="ಬಳಕೆದಾರರ ಬಜೆಟ್" data-en="User-wise Budgets">ಬಳಕೆದಾರರ ಬಜೆಟ್</span></button>
+                    <button id="btnTabBudgetItem" onclick="switchBudgetTab('item')" class="py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700"><span data-kn="ಐಟಂ-ವಾರು ಬಜೆಟ್" data-en="Item-wise Budgets">ಐಟಂ-ವಾರು ಬಜೆಟ್</span></button>
                 </div>
 
                 <!-- Store-wise Budget -->
@@ -819,6 +822,38 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Item-wise Budgets -->
+                <div id="sectionBudgetItem" class="space-y-4 hidden bg-white rounded-2xl border p-5 shadow-sm">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider"><span data-kn="ಪ್ರತಿ ಐಟಂನ ವಾರ್ಷಿಕ ಬಜೆಟ್ ವಿವರ (ಎಲ್ಲಾ ವಸತಿ ನಿಲಯಗಳು)" data-en="Annual Budget Allocation Per Item (All Hostels)">ಪ್ರತಿ ಐಟಂನ ವಾರ್ಷಿಕ ಬಜೆಟ್ ವಿವರ (ಎಲ್ಲಾ ವಸತಿ ನಿಲಯಗಳು)</span></h3>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <input type="text" id="inputBudgetItemSearch" onkeyup="filterBudgetItemTable()" placeholder="Search item..." class="p-2 border rounded-xl text-xs w-full sm:w-64 focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200 text-[11px]">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-2 py-2 text-left font-bold text-slate-600">Code</th>
+                                    <th class="px-2 py-2 text-left font-bold text-slate-600">Item Name</th>
+                                    <th class="px-2 py-2 text-left font-bold text-slate-600">Boys Hostel</th>
+                                    <th class="px-2 py-2 text-left font-bold text-slate-600">Girls Hostel</th>
+                                    <th class="px-2 py-2 text-left font-bold text-slate-600">Math</th>
+                                    <th class="px-2 py-2 text-left font-bold text-slate-600">Shantivana</th>
+                                    <th class="px-2 py-2 text-left font-bold text-slate-600">AO Office</th>
+                                    <th class="px-2 py-2 text-left font-bold text-slate-600">Shraddhajali</th>
+                                    <th class="px-2 py-2 text-left font-bold text-slate-600">Others</th>
+                                    <th class="px-2 py-2 text-left font-bold text-slate-600">Total Qty</th>
+                                    <th class="px-2 py-2 text-left font-bold text-slate-600">Unit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblItemBudgetsList" class="divide-y divide-slate-100">
+                                <!-- Dynamic -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -1560,11 +1595,12 @@
         function renderStockTable(items) {
             const tbody = document.getElementById('tbodyStockList');
             if (items.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 font-bold">No stock items found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 font-bold">No stock items found.</td></tr>`;
                 return;
             }
             tbody.innerHTML = items.map(item => {
                 const bal = currentRole === 'hostel' ? (item.CurrentBalance || 0.0) : (item.Tot_Stock || 0.0);
+                const budget = currentRole === 'hostel' ? (item.AllocatedBudget || 0.0) : (item.Total_Budget || 0.0);
                 const warn = bal < 10.0 ? 'bg-red-50 text-red-800 font-black' : '';
                 return `
                     <tr class="hover:bg-slate-50 transition border-b ${warn}">
@@ -1573,6 +1609,7 @@
                         <td class="px-4 py-3 text-slate-500">${item.Grocery_Category || 'Grocery'}</td>
                         <td class="px-4 py-3 font-semibold">₹${item.Std_Rate}</td>
                         <td class="px-4 py-3 font-black text-sm">${bal}</td>
+                        <td class="px-4 py-3 font-black text-sm text-slate-500">${budget}</td>
                         <td class="px-4 py-3 text-slate-400">${item.Qtl_Kg_Ltr}</td>
                     </tr>
                 `;
@@ -1764,6 +1801,25 @@
                 });
         }
 
+        let hostelStockCache = [];
+
+        function updateIndentItemBudgetInfo() {
+            const select = document.getElementById('indentCartItem');
+            const infoDiv = document.getElementById('lblIndentItemBudgetInfo');
+            if (!select || !infoDiv) return;
+            
+            const code = parseInt(select.value);
+            const item = hostelStockCache.find(i => i.Grocery_Code === code);
+            if (item) {
+                const budget = item.AllocatedBudget || 0.0;
+                const current = item.CurrentBalance || 0.0;
+                infoDiv.innerText = `ಬಜೆಟ್ ಮಿತಿ (Allocated Budget): ${budget} ${item.Qtl_Kg_Ltr} | ಪ್ರಸ್ತುತ ದಾಸ್ತಾನು (Current Stock): ${current} ${item.Qtl_Kg_Ltr}`;
+                infoDiv.classList.remove('hidden');
+            } else {
+                infoDiv.classList.add('hidden');
+            }
+        }
+
         // Load Indents Data
         function loadIndentsData() {
             if (currentRole === 'hostel') {
@@ -1771,11 +1827,15 @@
                 document.getElementById('sectionIndentsAdmin').classList.add('hidden');
                 
                 // Populate Cart Item Selector
-                fetch('/api/grocery-items')
+                fetch(`/api/hostel-stock/${loggedInUser.inst_id}`)
                     .then(res => res.json())
                     .then(items => {
+                        hostelStockCache = items;
                         const cartItem = document.getElementById('indentCartItem');
-                        if (cartItem) cartItem.innerHTML = items.map(i => `<option value="${i.Grocery_Code}">${i.Grocery_Code} - ${i.Grocery_Items_Kan} (${i.Qtl_Kg_Ltr})</option>`).join('');
+                        if (cartItem) {
+                            cartItem.innerHTML = items.map(i => `<option value="${i.Grocery_Code}">${i.Grocery_Code} - ${i.Grocery_Items_Kan} (${i.Qtl_Kg_Ltr})</option>`).join('');
+                            updateIndentItemBudgetInfo();
+                        }
                     });
                 
                 loadHostelIndentsHistory();
@@ -2151,6 +2211,7 @@
             // Load budget grids
             loadStoreBudgetsGrid();
             loadUserBudgetsGrid();
+            loadItemBudgetsGrid();
         }
 
         function loadStoreBudgetsGrid() {
@@ -2192,20 +2253,75 @@
         function switchBudgetTab(tab) {
             const btnStore = document.getElementById('btnTabBudgetStore');
             const btnUser = document.getElementById('btnTabBudgetUser');
+            const btnItem = document.getElementById('btnTabBudgetItem');
             const secStore = document.getElementById('sectionBudgetStore');
             const secUser = document.getElementById('sectionBudgetUser');
+            const secItem = document.getElementById('sectionBudgetItem');
+
+            btnStore.className = "py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-750";
+            btnUser.className = "py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-750";
+            btnItem.className = "py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-750";
+            secStore.classList.add('hidden');
+            secUser.classList.add('hidden');
+            secItem.classList.add('hidden');
 
             if (tab === 'store') {
                 btnStore.className = "py-3 px-6 text-xs font-bold border-b-2 border-emerald-600 text-emerald-800";
-                btnUser.className = "py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-750";
                 secStore.classList.remove('hidden');
-                secUser.classList.add('hidden');
-            } else {
-                btnStore.className = "py-3 px-6 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-750";
+            } else if (tab === 'user') {
                 btnUser.className = "py-3 px-6 text-xs font-bold border-b-2 border-emerald-600 text-emerald-800";
-                secStore.classList.add('hidden');
                 secUser.classList.remove('hidden');
+            } else if (tab === 'item') {
+                btnItem.className = "py-3 px-6 text-xs font-bold border-b-2 border-emerald-600 text-emerald-800";
+                secItem.classList.remove('hidden');
+                loadItemBudgetsGrid();
             }
+        }
+
+        let cachedItemBudgets = [];
+
+        function loadItemBudgetsGrid() {
+            fetch('/api/grocery-items')
+                .then(res => res.ok ? res.json() : [])
+                .then(items => {
+                    cachedItemBudgets = items;
+                    renderItemBudgetsTable(items);
+                });
+        }
+
+        function renderItemBudgetsTable(items) {
+            const tbody = document.getElementById('tblItemBudgetsList');
+            if (!tbody) return;
+            if (items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="11" class="px-2 py-3 text-center text-slate-400 font-bold">No budget items found.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = items.map(i => `
+                <tr class="hover:bg-slate-50 transition border-b">
+                    <td class="px-2 py-2 font-mono">${i.Grocery_Code}</td>
+                    <td class="px-2 py-2 font-bold text-slate-800">${i.Grocery_Items_Kan} <span class="text-slate-400 font-normal">/ ${i.Grocery_Items_Eng || ''}</span></td>
+                    <td class="px-2 py-2 font-semibold text-slate-600">${i.Boys_Hostel_Budget || 0}</td>
+                    <td class="px-2 py-2 font-semibold text-slate-600">${i.Girls_Hostel_Budget || 0}</td>
+                    <td class="px-2 py-2 font-semibold text-slate-600">${i.Math_Budget || 0}</td>
+                    <td class="px-2 py-2 font-semibold text-slate-600">${i.Shantivan_Budget_a || 0}</td>
+                    <td class="px-2 py-2 font-semibold text-slate-600">${i.AO_Office_Budget || 0}</td>
+                    <td class="px-2 py-2 font-semibold text-slate-600">${i.Shraddanjali_Budget || 0}</td>
+                    <td class="px-2 py-2 font-semibold text-slate-600">${i.Hunnime_Budget || 0}</td>
+                    <td class="px-2 py-2 font-black text-emerald-800">${i.Tot_Quantity || 0}</td>
+                    <td class="px-2 py-2 text-slate-400">${i.Qtl_Kg_Ltr || ''}</td>
+                </tr>
+            `).join('');
+        }
+
+        function filterBudgetItemTable() {
+            const search = document.getElementById('inputBudgetItemSearch').value.toLowerCase();
+            const filtered = cachedItemBudgets.filter(item => {
+                const nameKan = item.Grocery_Items_Kan.toLowerCase();
+                const nameEng = (item.Grocery_Items_Eng || '').toLowerCase();
+                const code = String(item.Grocery_Code);
+                return nameKan.includes(search) || nameEng.includes(search) || code.includes(search);
+            });
+            renderItemBudgetsTable(filtered);
         }
 
         // ==================== REPORT GENERATOR ====================

@@ -73,6 +73,12 @@ INST_ID_TO_COLUMN = {
     7: "Girls_Hostel_Qty", 8: "Hunnime_Qty", 9: "AO_Office_Qty", 10: "Shraddanjali_Qty"
 }
 
+INST_ID_TO_BUDGET_COLUMN = {
+    1: "Boys_Hostel_Budget", 2: "Girls_Hostel_Budget", 3: "Math_Budget",
+    4: "Shantivan_Budget_a", 5: "Shantivan_Budget_a", 6: "Boys_Hostel_Budget",
+    7: "Girls_Hostel_Budget", 8: "Hunnime_Budget", 9: "AO_Office_Budget", 10: "Shraddanjali_Budget"
+}
+
 def get_db_connection():
     if 'DATABASE_URL' in os.environ:
         conn_str = os.environ['DATABASE_URL']
@@ -180,7 +186,7 @@ def get_grocery_items():
 
 @app.route('/api/grocery-items', methods=['POST'])
 def add_grocery_item():
-    if not chk('head', 'godown'): return jsonify({'error': 'Unauthorized'}), 403
+    if not chk('head'): return jsonify({'error': 'Unauthorized'}), 403
     d = request.json or {}
     code, name_kan = d.get('Grocery_Code'), d.get('Grocery_Items_Kan')
     if not code or not name_kan: return jsonify({'error': 'Code and Kannada name required'}), 400
@@ -193,7 +199,7 @@ def add_grocery_item():
 
 @app.route('/api/grocery-items/<int:code>', methods=['PUT'])
 def edit_grocery_item(code):
-    if not chk('head', 'godown'): return jsonify({'error': 'Unauthorized'}), 403
+    if not chk('head'): return jsonify({'error': 'Unauthorized'}), 403
     d = request.json or {}
     try:
         db_query("UPDATE Grocery_Items SET Grocery_Items_Kan=%s,Grocery_Items_Eng=%s,Grocery_Category=%s,Category_Code=%s,Std_Rate=%s,Qtl_Kg_Ltr=%s,Remarks=%s WHERE Grocery_Code=%s",
@@ -236,7 +242,7 @@ def get_donors():
 
 @app.route('/api/donors', methods=['POST'])
 def add_donor():
-    if not chk('head','godown','accounts'): return jsonify({'error':'Unauthorized'}), 403
+    if not chk('head'): return jsonify({'error':'Unauthorized'}), 403
     d = request.json or {}
     if not d.get('Shop_Donor_ID') or not d.get('Shop_Donor_Name'): return jsonify({'error':'ID and name required'}), 400
     try:
@@ -248,7 +254,7 @@ def add_donor():
 
 @app.route('/api/donors/<donor_id>', methods=['PUT'])
 def edit_donor(donor_id):
-    if not chk('head','godown','accounts'): return jsonify({'error':'Unauthorized'}), 403
+    if not chk('head'): return jsonify({'error':'Unauthorized'}), 403
     d = request.json or {}
     try:
         db_query("UPDATE Shops_Donors SET Shop_Donor_Name=%s,Place=%s,Mobile=%s,Remarks=%s WHERE Shop_Donor_ID=%s",
@@ -518,8 +524,22 @@ def create_indent():
         qty = float(quantity)
         if qty <= 0: raise ValueError
     except ValueError: return jsonify({'error':'Quantity must be positive'}), 400
-    indent_no = f"IND-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     active_year = get_fy_prefix(fy)
+    indent_no = f"IND-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    
+    # Check hostel item budget allocation limit
+    budget_col = INST_ID_TO_BUDGET_COLUMN.get(int(inst_id))
+    if budget_col:
+        item_rows = db_query(f"SELECT {budget_col} AS budget, Grocery_Items_Kan FROM Grocery_Items WHERE Grocery_Code=%s", (code,))
+        if item_rows:
+            item_info = item_rows[0]
+            budget_val = item_info['budget'] or 0.0
+            if budget_val > 0.0:
+                util_rows = db_query("SELECT SUM(Quantity) AS total_requested FROM Indents WHERE Inst_ID=%s AND Grocery_Code=%s AND Sanctioned IN ('Sent', 'Received', 'Pending') AND Year1=%s", (inst_id, code, active_year))
+                util_val = (util_rows[0]['total_requested'] or 0.0) if util_rows else 0.0
+                if util_val + qty > budget_val:
+                    return jsonify({'error': f"Exceeds item budget limit. Allocated: {budget_val}, Used/Pending: {util_val}, Remaining: {max(0.0, budget_val - util_val)}"}), 400
+
     try:
         db_query("INSERT INTO Indents (Year1,Indent_Date,Grocery_Code,Inst_ID,Quantity,Indent_no,Sanctioned,Remarks,DateStamp) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
             (active_year, datetime.now().strftime('%Y-%m-%d'), code, inst_id, qty, indent_no, 'Pending', d.get('Remarks',''), datetime.now().strftime('%Y-%m-%d')), fetch=False)
@@ -594,8 +614,10 @@ def get_hostel_stock(inst_id):
     if session.get('role') == 'hostel' and session.get('inst_id') != inst_id:
         return jsonify({'error':'Unauthorized'}), 403
     col = INST_ID_TO_COLUMN.get(inst_id)
+    budget_col = INST_ID_TO_BUDGET_COLUMN.get(inst_id)
     if not col: return jsonify([])
-    return jsonify(db_query(f"SELECT Grocery_Code,Grocery_Items_Kan,Grocery_Items_Eng,Grocery_Category,Qtl_Kg_Ltr,{col} AS CurrentBalance,Std_Rate FROM Grocery_Items WHERE {col}>=0 ORDER BY Grocery_Category,Grocery_Code"))
+    select_budget = f"{budget_col} AS AllocatedBudget" if budget_col else "0.0 AS AllocatedBudget"
+    return jsonify(db_query(f"SELECT Grocery_Code,Grocery_Items_Kan,Grocery_Items_Eng,Grocery_Category,Qtl_Kg_Ltr,{col} AS CurrentBalance,{select_budget},Std_Rate FROM Grocery_Items WHERE {col}>=0 ORDER BY Grocery_Category,Grocery_Code"))
 
 # --- DAILY USAGE ---
 
