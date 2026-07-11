@@ -405,8 +405,6 @@ def get_outwards():
     elif inst_id:
         wheres.append("si.Issue_Inst_ID = %s")
         args.append(inst_id)
-    else:
-        wheres.append("si.Issue_Inst_ID IS NULL")
 
     logs = db_query(f"""SELECT si.Rec,si.Date1,si.Grocery_Code,gi.Grocery_Items_Kan,gi.Grocery_Items_Eng,
         gi.Qtl_Kg_Ltr,si.Issue,si.Purchase_Rate,(si.Issue*si.Purchase_Rate) AS Amount,
