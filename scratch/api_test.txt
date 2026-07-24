@@ -1,0 +1,10 @@
+﻿.venv\Scripts\python :   File "<string>", line 9
+At line:1 char:1
++ .venv\Scripts\python -c "
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  File "<string>", line 9:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    print(f'  {s[" Institution\]}:
+          ^
+SyntaxError: unterminated string literal (detected at line 9)

@@ -1,0 +1,44 @@
+﻿Store_Budgets:
+{'Rec': 1, 'Year1': '2025', 'Inst_ID': 1, 'Allocated_Amount': 500000.0}
+{'Rec': 2, 'Year1': '2025', 'Inst_ID': 2, 'Allocated_Amount': 500000.0}
+{'Rec': 3, 'Year1': '2025', 'Inst_ID': 3, 'Allocated_Amount': 500000.0}
+{'Rec': 4, 'Year1': '2025', 'Inst_ID': 4, 'Allocated_Amount': 500000.0}
+{'Rec': 5, 'Year1': '2025', 'Inst_ID': 5, 'Allocated_Amount': 500000.0}
+{'Rec': 6, 'Year1': '2025', 'Inst_ID': 6, 'Allocated_Amount': 500000.0}
+{'Rec': 7, 'Year1': '2025', 'Inst_ID': 7, 'Allocated_Amount': 500000.0}
+{'Rec': 8, 'Year1': '2025', 'Inst_ID': 8, 'Allocated_Amount': 500000.0}
+{'Rec': 9, 'Year1': '2025', 'Inst_ID': 9, 'Allocated_Amount': 500000.0}
+{'Rec': 10, 'Year1': '2025', 'Inst_ID': 10, 'Allocated_Amount': 500000.0}
+
+Grocery_Items columns:
+  Rec (INTEGER)
+  Grocery_Code (INTEGER)
+  Grocery_Items_Kan (TEXT)
+  Grocery_Items_Eng (TEXT)
+  Grocery_Category (TEXT)
+  Category_Code (TEXT)
+  Std_Rate (REAL)
+  Qtl_Kg_Ltr (TEXT)
+  Shraddanjali_Qty (REAL)
+  Hunnime_Qty (REAL)
+  Boys_Hostel_Qty (REAL)
+  Girls_Hostel_Qty (REAL)
+  Math_Qty (REAL)
+  Shantivan_Qty_a (REAL)
+  AO_Office_Qty (REAL)
+  Shraddanjali_Budget (REAL)
+  Hunnime_Budget (REAL)
+  Boys_Hostel_Budget (REAL)
+  Girls_Hostel_Budget (REAL)
+  Math_Budget (REAL)
+  Shantivan_Budget_a (REAL)
+  AO_Office_Budget (REAL)
+  Tot_Quantity (REAL)
+  Opening_Stock (REAL)
+  Closing_Stock (REAL)
+  Tot_Stock (REAL)
+  Tot_Issue (REAL)
+  Stock_Amt (REAL)
+  Total_Budget (REAL)
+  Remarks (TEXT)
+  DateStamp (TEXT)

@@ -1,0 +1,4 @@
+﻿Boys Hostel items count: 124
+ - Code: 101 SanctionedQty: 900.0 Issued: 0 Remaining: 900.0
+ - Code: 102 SanctionedQty: 90.0 Issued: 0 Remaining: 90.0
+ - Code: 103 SanctionedQty: 50.0 Issued: 20.0 Remaining: 30.0

@@ -225,7 +225,8 @@ def init_db():
                 Received_By VARCHAR(100),
                 DateStamp VARCHAR(50),
                 Remarks TEXT,
-                Purchased_Donation VARCHAR(20)
+                Purchased_Donation VARCHAR(20),
+                File_Path TEXT
             );
         """)
     else:
@@ -253,6 +254,7 @@ def init_db():
                 DateStamp TEXT,
                 Remarks TEXT,
                 Purchased_Donation TEXT,
+                File_Path TEXT,
                 FOREIGN KEY(Grocery_Code) REFERENCES Grocery_Items(Grocery_Code),
                 FOREIGN KEY(Issue_Inst_ID) REFERENCES Institutions(Inst_ID)
             );

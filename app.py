@@ -301,7 +301,7 @@ def get_godown_stock():
         sd.Shop_Donor_Name,si.Remarks,si.Purchased_Donation,si.Bill_No,si.File_Path
         FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code=gi.Grocery_Code
         LEFT JOIN Shops_Donors sd ON si.Shop_Donor_ID=sd.Shop_Donor_ID
-        WHERE {' AND '.join(wheres)} ORDER BY si.Rec DESC""", tuple(args))
+        WHERE {' AND '.join(wheres)} ORDER BY si.Rec ASC""", tuple(args))
     return jsonify(logs)
 
 @app.route('/api/godown-stock', methods=['POST'])
@@ -427,7 +427,7 @@ def get_outwards():
         gi.Qtl_Kg_Ltr,si.Issue,si.Purchase_Rate,(si.Issue*si.Purchase_Rate) AS Amount,
         si.Remarks,si.Purchased_Donation
         FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code=gi.Grocery_Code
-        WHERE {' AND '.join(wheres)} ORDER BY si.Rec DESC""", tuple(args))
+        WHERE {' AND '.join(wheres)} ORDER BY si.Rec ASC""", tuple(args))
     return jsonify(logs)
 
 @app.route('/api/outwards', methods=['POST'])
@@ -549,7 +549,7 @@ def get_indents():
         ind.Indent_no,ind.Remarks,inst.Institution,ind.Inst_ID
         FROM Indents ind JOIN Grocery_Items gi ON ind.Grocery_Code=gi.Grocery_Code
         JOIN Institutions inst ON ind.Inst_ID=inst.Inst_ID
-        {where_sql} ORDER BY ind.Rec DESC""", tuple(args))
+        {where_sql} ORDER BY ind.Rec ASC""", tuple(args))
     return jsonify(logs)
 
 @app.route('/api/indents', methods=['POST'])
@@ -787,7 +787,7 @@ def get_vegetables():
     if fy: wheres.append("v.Year1 LIKE %s"); args.append(get_fy_prefix(fy) + "%")
     
     where_sql = ("WHERE " + " AND ".join(wheres)) if wheres else ""
-    return jsonify(db_query(f"SELECT v.*,i.Institution FROM Vegetable v JOIN Institutions i ON v.Inst_ID=i.Inst_ID {where_sql} ORDER BY v.Rec DESC", tuple(args)))
+    return jsonify(db_query(f"SELECT v.*,i.Institution FROM Vegetable v JOIN Institutions i ON v.Inst_ID=i.Inst_ID {where_sql} ORDER BY v.Rec ASC", tuple(args)))
 
 @app.route('/api/vegetables', methods=['POST'])
 def add_vegetable():
@@ -831,7 +831,7 @@ def get_bills():
     if fy: wheres.append("b.Year1 LIKE %s"); args.append(get_fy_prefix(fy) + "%")
     
     where_sql = ("WHERE " + " AND ".join(wheres)) if wheres else ""
-    return jsonify(db_query(f"SELECT b.*,sd.Shop_Donor_Name,sd.Place FROM Bills b LEFT JOIN Shops_Donors sd ON b.Shop_Donor_ID=sd.Shop_Donor_ID {where_sql} ORDER BY b.Rec DESC", tuple(args)))
+    return jsonify(db_query(f"SELECT b.*,sd.Shop_Donor_Name,sd.Place FROM Bills b LEFT JOIN Shops_Donors sd ON b.Shop_Donor_ID=sd.Shop_Donor_ID {where_sql} ORDER BY b.Rec ASC", tuple(args)))
 
 @app.route('/api/bills', methods=['POST'])
 def add_bill():
@@ -1295,7 +1295,7 @@ def report_purchases():
         sd.Shop_Donor_Name,si.Bill_No,si.Purchased_Donation,si.Remarks
         FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code=gi.Grocery_Code
         LEFT JOIN Shops_Donors sd ON si.Shop_Donor_ID=sd.Shop_Donor_ID
-        WHERE {' AND '.join(wheres)} ORDER BY si.Date1 DESC,si.Rec DESC""", tuple(args)))
+        WHERE {' AND '.join(wheres)} ORDER BY si.Date1 ASC,si.Rec ASC""", tuple(args)))
 
 @app.route('/api/reports/indents', methods=['GET'])
 def report_indents():
@@ -1314,7 +1314,7 @@ def report_indents():
         ind.Quantity,ind.Sanctioned_Quantity,ind.Sanctioned,ind.Sanctioned_on,ind.Remarks
         FROM Indents ind JOIN Grocery_Items gi ON ind.Grocery_Code=gi.Grocery_Code
         JOIN Institutions inst ON ind.Inst_ID=inst.Inst_ID {where_sql}
-        ORDER BY ind.Indent_Date DESC,ind.Rec DESC""", tuple(args)))
+        ORDER BY ind.Indent_Date ASC,ind.Rec ASC""", tuple(args)))
 
 @app.route('/api/reports/consumption', methods=['GET'])
 def report_consumption():
@@ -1334,7 +1334,7 @@ def report_consumption():
         si.Issue_Inst_ID
         FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code=gi.Grocery_Code
         JOIN Institutions inst ON si.Issue_Inst_ID=inst.Inst_ID
-        WHERE {' AND '.join(wheres)} ORDER BY si.Date1 DESC,si.Rec DESC""", tuple(args))
+        WHERE {' AND '.join(wheres)} ORDER BY si.Date1 ASC,si.Rec ASC""", tuple(args))
         
     for log in logs:
         inst_id = int(log['Issue_Inst_ID'])
@@ -1360,7 +1360,7 @@ def report_donations():
         gi.Grocery_Items_Kan,gi.Grocery_Items_Eng,gi.Qtl_Kg_Ltr,si.Stock AS Quantity,si.Remarks
         FROM Stock_Issue si JOIN Grocery_Items gi ON si.Grocery_Code=gi.Grocery_Code
         LEFT JOIN Shops_Donors sd ON si.Shop_Donor_ID=sd.Shop_Donor_ID
-        WHERE {' AND '.join(wheres)} ORDER BY si.Date1 DESC""", tuple(args)))
+        WHERE {' AND '.join(wheres)} ORDER BY si.Date1 ASC""", tuple(args)))
 
 
 # --- AUDIT LOGS ---
@@ -1370,8 +1370,8 @@ def get_audit_logs():
     if not chk('head'): return jsonify({'error':'Unauthorized'}), 403
     un = request.args.get('username','')
     if un:
-        return jsonify(db_query("SELECT * FROM Audit_Logs WHERE Username=%s ORDER BY Rec DESC LIMIT 500", (un,)))
-    return jsonify(db_query("SELECT * FROM Audit_Logs ORDER BY Rec DESC LIMIT 500"))
+        return jsonify(db_query("SELECT * FROM Audit_Logs WHERE Username=%s ORDER BY Rec ASC", (un,)))
+    return jsonify(db_query("SELECT * FROM Audit_Logs ORDER BY Rec ASC"))
 
 
 # --- USERS ---
@@ -1465,6 +1465,18 @@ def migrate_and_load_budgets():
         if 'file_path' not in bill_cols:
             print("Altering table: Adding column File_Path to Bills...")
             cursor.execute("ALTER TABLE Bills ADD COLUMN File_Path TEXT DEFAULT NULL")
+            
+        # Migrate Stock_Issue table to add File_Path
+        if db_type == "postgresql":
+            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'stock_issue'")
+            stock_cols = {row[0].lower() for row in cursor.fetchall()}
+        else:
+            cursor.execute("PRAGMA table_info(Stock_Issue)")
+            stock_cols = {row[1].lower() for row in cursor.fetchall()}
+            
+        if 'file_path' not in stock_cols:
+            print("Altering table: Adding column File_Path to Stock_Issue...")
+            cursor.execute("ALTER TABLE Stock_Issue ADD COLUMN File_Path TEXT DEFAULT NULL")
                 
         conn.commit()
 
@@ -1557,6 +1569,9 @@ def init_db():
                     (un, info['password'], info['role'], info['inst_id'], info['name']), fetch=False)
             print("Default users seeded.")
         
+        # Create Loaded_Registers table
+        db_query("CREATE TABLE IF NOT EXISTS Loaded_Registers (filename VARCHAR(150) PRIMARY KEY)", fetch=False)
+
         # Run migrations and seed budgets dynamically
         migrate_and_load_budgets()
         
@@ -1572,35 +1587,14 @@ def init_db():
 
 def check_and_load_registers():
     try:
-        # Check if already loaded (with new Opening Stock records)
-        existing = db_query("SELECT COUNT(*) as cnt FROM Stock_Issue WHERE Purchased_Donation = 'Opening Stock'")
-        count = existing[0]['cnt'] if existing else 0
-        if count > 0:
-            print(f"Historical registers already loaded ({count} opening stocks found). Skipping initial import.")
-            return
-            
-        print("Stock_Issue table is empty. Loading all historical Excel registers into database...")
         conn, db_type = get_db_connection()
         cursor = conn.cursor()
         
-        # Clear any partial loads to ensure clean seeding
-        cursor.execute("DELETE FROM Shops_Donors")
-        cursor.execute("DELETE FROM Bills")
-        cursor.execute("DELETE FROM Indents")
-        cursor.execute("DELETE FROM Stock_Issue")
-        cursor.execute("DELETE FROM Vegetable")
-        conn.commit()
-
         base_dir = os.path.dirname(os.path.abspath(__file__))
         files_map = {
-            '2025': 'Godown Register 2025-26.xlsx',
-            '2026': 'Godown Register 2026-27.xlsx'
+            '2025': 'Godown Register 2025-26_22-07-2026.xlsx',
+            '2026': 'Godown Register 2026-27_22-07-2026.xlsx'
         }
-
-        placeholder_donor_id = 999999
-        q_donor_init = "INSERT INTO Shops_Donors (Year1, Shop_Donor_ID, Shop_Donor_Name, DateStamp) VALUES (%s,%s,%s,%s) ON CONFLICT DO NOTHING" if db_type == "postgresql" else "INSERT OR IGNORE INTO Shops_Donors (Year1, Shop_Donor_ID, Shop_Donor_Name, DateStamp) VALUES (?,?,?,?)"
-        cursor.execute(q_donor_init, ('2025', placeholder_donor_id, 'Fallback General Donor', '2026-07-06'))
-        conn.commit()
 
         # Define inline helper functions
         def format_date(val):
@@ -1621,16 +1615,45 @@ def check_and_load_registers():
             try: return int(float(val))
             except: return default
 
+        def get_val(row, h_map, key, fallback_idx=None, default=None):
+            idx = h_map.get(key)
+            if idx is None:
+                idx = fallback_idx
+            if idx is not None and idx < len(row):
+                val = row[idx]
+                return val if val is not None else default
+            return default
+
         import openpyxl
         import datetime
 
         for year_prefix, filename in files_map.items():
+            # Check if this file has already been successfully loaded
+            res = db_query("SELECT COUNT(*) as cnt FROM Loaded_Registers WHERE filename = %s", (filename,))
+            if res and res[0]['cnt'] > 0:
+                print(f"Excel Register {filename} already loaded. Skipping.")
+                continue
+
             filepath = os.path.join(base_dir, filename)
             if not os.path.exists(filepath):
                 print(f"Excel Register file {filename} not found, skipping...")
                 continue
                 
-            print(f"Importing {filename} for year {year_prefix}...")
+            print(f"Importing new register {filename} for year prefix {year_prefix}...")
+
+            # Clear existing data for this specific year prefix to avoid duplicates
+            cursor.execute("DELETE FROM Shops_Donors WHERE Year1 = %s" if db_type == "postgresql" else "DELETE FROM Shops_Donors WHERE Year1 = ?", (year_prefix,))
+            cursor.execute("DELETE FROM Bills WHERE Year1 = %s" if db_type == "postgresql" else "DELETE FROM Bills WHERE Year1 = ?", (year_prefix,))
+            cursor.execute("DELETE FROM Indents WHERE Year1 = %s" if db_type == "postgresql" else "DELETE FROM Indents WHERE Year1 = ?", (year_prefix,))
+            cursor.execute("DELETE FROM Stock_Issue WHERE Year1 = %s" if db_type == "postgresql" else "DELETE FROM Stock_Issue WHERE Year1 = ?", (year_prefix,))
+            cursor.execute("DELETE FROM Vegetable WHERE Year1 = %s" if db_type == "postgresql" else "DELETE FROM Vegetable WHERE Year1 = ?", (year_prefix,))
+            conn.commit()
+
+            placeholder_donor_id = 999999
+            q_donor_init = "INSERT INTO Shops_Donors (Year1, Shop_Donor_ID, Shop_Donor_Name, DateStamp) VALUES (%s,%s,%s,%s) ON CONFLICT DO NOTHING" if db_type == "postgresql" else "INSERT OR IGNORE INTO Shops_Donors (Year1, Shop_Donor_ID, Shop_Donor_Name, DateStamp) VALUES (?,?,?,?)"
+            cursor.execute(q_donor_init, ('2025', placeholder_donor_id, 'Fallback General Donor', '2026-07-06'))
+            conn.commit()
+
             wb = openpyxl.load_workbook(filepath, data_only=True)
             
             # 1. Shops_Donors
@@ -1855,17 +1878,17 @@ def check_and_load_registers():
                     vegs = []
                     for r in rows[1:]:
                         if not r or all(c is None for c in r): continue
-                        inst_id = clean_int(r[h_map.get('inst_id', 0)])
-                        qty = clean_float(r[h_map.get('quantity', 6)])
-                        v_code = str(r[h_map.get('v_code', 4)] or '').strip()
+                        inst_id = clean_int(get_val(r, h_map, 'inst_id', 0))
+                        qty = clean_float(get_val(r, h_map, 'quantity', 6))
+                        v_code = str(get_val(r, h_map, 'v_code', 4, '')).strip()
                         if not inst_id or not qty or not v_code: continue
-                        purch_on = format_date(r[h_map.get('purchase_on', 2)])
-                        purch_don = str(r[h_map.get('purchased_donation', 3)] or 'Purchase').strip()
-                        bill_date = format_date(r[h_map.get('bill_date', 8)])
-                        bill_no = str(r[h_map.get('bill_no', 9)] or '').strip()
-                        rate = clean_float(r[h_map.get('rate', 10)])
-                        rem = str(r[h_map.get('remarks', 13)] or '').strip()
-                        issue_place = str(r[h_map.get('issue_place', 12)] or '').strip()
+                        purch_on = format_date(get_val(r, h_map, 'purchase_on', 2))
+                        purch_don = str(get_val(r, h_map, 'purchased_donation', 3, 'Purchase')).strip()
+                        bill_date = format_date(get_val(r, h_map, 'bill_date', 8))
+                        bill_no = str(get_val(r, h_map, 'bill_no', 9, '')).strip()
+                        rate = clean_float(get_val(r, h_map, 'rate', 10))
+                        rem = str(get_val(r, h_map, 'remarks', 13, '')).strip()
+                        issue_place = str(get_val(r, h_map, 'issue_place', 12, '')).strip()
                         vegs.append((
                             inst_id, year_prefix, purch_on, v_code, qty, bill_date, bill_no, rate, rem, issue_place, purch_don
                         ))
@@ -1881,6 +1904,12 @@ def check_and_load_registers():
                         for idx in range(0, len(vegs), chunk_size):
                             cursor.executemany(q, vegs[idx : idx + chunk_size])
                             conn.commit()
+
+            # Mark this file as loaded
+            q_mark = "INSERT INTO Loaded_Registers (filename) VALUES (%s)" if db_type == "postgresql" else "INSERT INTO Loaded_Registers (filename) VALUES (?)"
+            cursor.execute(q_mark, (filename,))
+            conn.commit()
+            print(f"Excel Register {filename} loaded and marked successfully.")
                             
         conn.close()
         print("Excel Register files loaded successfully into the database!")

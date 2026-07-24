@@ -417,8 +417,9 @@
 
                     <!-- Log Table -->
                     <div class="bg-white rounded-2xl border p-4 shadow-sm lg:col-span-2 space-y-4">
-                        <div class="flex justify-between items-center">
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
                             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Vegetable Inward Log</h3>
+                            <input type="text" id="inputVegInwardSearch" oninput="filterVegInwardTable()" placeholder="Search vegetable inwards..." class="p-2 border rounded-xl text-xs w-full sm:w-64 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-slate-200 text-xs">
@@ -478,8 +479,9 @@
 
                     <!-- Outward History Table -->
                     <div class="bg-white rounded-2xl border p-4 shadow-sm lg:col-span-2 space-y-4">
-                        <div class="flex justify-between items-center">
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
                             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Outward Log</h3>
+                            <input type="text" id="inputOutwardSearch" oninput="filterOutwardTable()" placeholder="Search outward..." class="p-2 border rounded-xl text-xs w-full sm:w-64 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-slate-200 text-xs">
@@ -540,7 +542,10 @@
 
                     <!-- Indents History List -->
                     <div class="bg-white rounded-2xl border p-4 shadow-sm lg:col-span-2 space-y-4">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Our Indents History</h3>
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
+                            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Our Indents History</h3>
+                            <input type="text" id="inputHostelIndentsSearch" oninput="filterHostelIndentsTable()" placeholder="Search indents..." class="p-2 border rounded-xl text-xs w-full sm:w-64 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-slate-200 text-xs">
                                 <thead class="bg-slate-50">
@@ -565,7 +570,10 @@
                 <!-- Admin/Godown specific indents verification/approval section -->
                 <div id="sectionIndentsAdmin" class="space-y-6 hidden">
                     <div class="bg-white rounded-2xl border p-4 shadow-sm space-y-4">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Pending Store Indents</h3>
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
+                            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Pending Store Indents</h3>
+                            <input type="text" id="inputPendingIndentsSearch" oninput="filterPendingIndentsTable()" placeholder="Search pending..." class="p-2 border rounded-xl text-xs w-full sm:w-64 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-slate-200 text-xs">
                                 <thead class="bg-slate-50">
@@ -1110,8 +1118,9 @@
                     </div>
                     
                     <div class="bg-white rounded-2xl border p-4 shadow-sm lg:col-span-2 space-y-4">
-                        <div class="flex justify-between items-center">
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
                             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider font-bold">Catalog Items</h3>
+                            <input type="text" id="inputSettingsItemsSearch" oninput="filterSettingsItemsTable()" placeholder="Search items..." class="p-2 border rounded-xl text-xs w-full sm:w-64 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                         </div>
                         <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
                             <table class="min-w-full divide-y divide-slate-200 text-xs">
@@ -1165,7 +1174,10 @@
                     </div>
 
                     <div class="bg-white rounded-2xl border p-4 shadow-sm lg:col-span-2 space-y-4">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider font-bold">Catalog Donors/Vendors</h3>
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
+                            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider font-bold">Catalog Donors/Vendors</h3>
+                            <input type="text" id="inputSettingsDonorsSearch" oninput="filterSettingsDonorsTable()" placeholder="Search vendors..." class="p-2 border rounded-xl text-xs w-full sm:w-64 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
                         <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
                             <table class="min-w-full divide-y divide-slate-200 text-xs">
                                 <thead class="bg-slate-50">
@@ -1187,8 +1199,9 @@
 
                 <!-- Settings Tab Content: Audit Logs -->
                 <div id="tabSettingsAudit" class="bg-white rounded-2xl border overflow-hidden hidden">
-                    <div class="p-4 border-b">
+                    <div class="p-4 border-b flex flex-col sm:flex-row justify-between items-center gap-2">
                         <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">System Audit Logs</h3>
+                        <input type="text" id="inputSettingsAuditSearch" oninput="filterSettingsAuditTable()" placeholder="Search audit logs..." class="p-2 border rounded-xl text-xs w-full sm:w-64 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                     </div>
                     <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
                         <table class="min-w-full divide-y divide-slate-200 text-xs">
@@ -1282,6 +1295,14 @@
         let cachedItems = [];
         let cachedDonors = [];
         let cachedInstitutions = [];
+        let cachedInwardGroceryLogs = [];
+        let cachedInwardVegetableLogs = [];
+        let cachedOutwardLogs = [];
+        let cachedHostelIndentsHistory = [];
+        let cachedPendingIndents = [];
+        let cachedSettingsCatalogItems = [];
+        let cachedSettingsDonors = [];
+        let cachedSettingsAuditLogs = [];
         let indentCart = [];
 
         // Chart.js references
@@ -1753,55 +1774,100 @@
             fetch(`/api/godown-stock${yearParam}`)
                 .then(res => res.ok ? res.json() : [])
                 .then(logs => {
-                    const tbody = document.getElementById('tblInwardGroceryLog');
-                    if (!tbody) return;
-                    if (logs.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">No inward logs.</td></tr>`;
-                    } else {
-                        tbody.innerHTML = logs.map(row => `
-                            <tr class="hover:bg-slate-50 border-b">
-                                <td class="px-4 py-3">${row.Date1}</td>
-                                <td class="px-4 py-3 font-bold">${row.Grocery_Items_Kan}</td>
-                                <td class="px-4 py-3 text-slate-500">${row.Shop_Donor_Name || 'Market'}</td>
-                                <td class="px-4 py-3 font-black text-emerald-800">${row.Stock} ${row.Qtl_Kg_Ltr}</td>
-                                <td class="px-4 py-3">₹${row.Purchase_Rate}</td>
-                                <td class="px-4 py-3 font-bold">${row.Bill_No || ''}</td>
-                                <td class="px-4 py-3">
-                                    ${row.File_Path ? `<button onclick="viewBillAttachment('${row.File_Path}')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold text-[10px] transition">👁️ View</button>` : '<span class="text-slate-400 italic">None</span>'}
-                                </td>
-                                <td class="px-4 py-3">
-                                    ${currentRole === 'head' || currentRole === 'godown' ? `<button onclick="deleteInwardEntry(${row.Rec})" class="text-red-700 hover:text-red-900 font-bold">Delete</button>` : '<span class="text-slate-400 italic">-</span>'}
-                                </td>
-                            </tr>
-                        `).join('');
-                    }
+                    cachedInwardGroceryLogs = logs;
+                    renderInwardGroceryTable(logs);
                 });
 
             // 2. Vegetable log
             fetch(`/api/vegetables${yearParam}`)
                 .then(res => res.ok ? res.json() : [])
                 .then(logs => {
-                    const tbody = document.getElementById('tblInwardVegetableLog');
-                    if (!tbody) return;
-                    if (logs.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">No vegetable logs.</td></tr>`;
-                    } else {
-                        tbody.innerHTML = logs.map(row => `
-                            <tr class="hover:bg-slate-50 border-b">
-                                <td class="px-4 py-3">${row.Purchase_On}</td>
-                                <td class="px-4 py-3 font-bold text-slate-500">${row.Institution}</td>
-                                <td class="px-4 py-3 font-bold">${row.V_Code}</td>
-                                <td class="px-4 py-3 font-black text-emerald-800">${row.Quantity} Kg</td>
-                                <td class="px-4 py-3">₹${row.Rate}</td>
-                                <td class="px-4 py-3 font-bold">${row.Bill_No || ''}</td>
-                                <td class="px-4 py-3 text-slate-400">${row.Remarks}</td>
-                                <td class="px-4 py-3">
-                                    ${currentRole === 'head' || currentRole === 'godown' ? `<button onclick="deleteVegetableEntry(${row.Rec})" class="text-red-700 hover:text-red-900 font-bold">Delete</button>` : '<span class="text-slate-400 italic">-</span>'}
-                                </td>
-                            </tr>
-                        `).join('');
-                    }
+                    cachedInwardVegetableLogs = logs;
+                    renderInwardVegetableTable(logs);
                 });
+        }
+
+        function renderInwardGroceryTable(logs) {
+            const tbody = document.getElementById('tblInwardGroceryLog');
+            if (!tbody) return;
+            if (logs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400 font-bold">No inward logs.</td></tr>`;
+            } else {
+                tbody.innerHTML = logs.map(row => `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="px-4 py-3">${row.Date1}</td>
+                        <td class="px-4 py-3 font-bold">${row.Grocery_Items_Kan}</td>
+                        <td class="px-4 py-3 text-slate-500">${row.Shop_Donor_Name || 'Market'}</td>
+                        <td class="px-4 py-3 font-black text-emerald-800">${row.Stock} ${row.Qtl_Kg_Ltr}</td>
+                        <td class="px-4 py-3">₹${row.Purchase_Rate}</td>
+                        <td class="px-4 py-3 font-bold">${row.Bill_No || ''}</td>
+                        <td class="px-4 py-3">
+                            ${row.File_Path ? `<button onclick="viewBillAttachment('${row.File_Path}')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold text-[10px] transition">👁️ View</button>` : '<span class="text-slate-400 italic">None</span>'}
+                        </td>
+                        <td class="px-4 py-3">
+                            ${currentRole === 'head' || currentRole === 'godown' ? `<button onclick="deleteInwardEntry(${row.Rec})" class="text-red-700 hover:text-red-900 font-bold">Delete</button>` : '<span class="text-slate-400 italic">-</span>'}
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function filterInwardTable() {
+            const search = document.getElementById('inputInwardSearch').value.toLowerCase();
+            const filtered = cachedInwardGroceryLogs.filter(row => {
+                const date = (row.Date1 || '').toLowerCase();
+                const itemKan = (row.Grocery_Items_Kan || '').toLowerCase();
+                const itemEng = (row.Grocery_Items_Eng || '').toLowerCase();
+                const code = String(row.Grocery_Code || '');
+                const source = (row.Shop_Donor_Name || 'Market').toLowerCase();
+                const qty = String(row.Stock || '');
+                const rate = String(row.Purchase_Rate || '');
+                const billNo = (row.Bill_No || '').toLowerCase();
+                return date.includes(search) || itemKan.includes(search) || itemEng.includes(search) || 
+                       code.includes(search) || source.includes(search) || qty.includes(search) || 
+                       rate.includes(search) || billNo.includes(search);
+            });
+            renderInwardGroceryTable(filtered);
+        }
+
+        function renderInwardVegetableTable(logs) {
+            const tbody = document.getElementById('tblInwardVegetableLog');
+            if (!tbody) return;
+            if (logs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400 font-bold">No vegetable logs.</td></tr>`;
+            } else {
+                tbody.innerHTML = logs.map(row => `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="px-4 py-3">${row.Purchase_On}</td>
+                        <td class="px-4 py-3 font-bold text-slate-500">${row.Institution}</td>
+                        <td class="px-4 py-3 font-bold">${row.V_Code}</td>
+                        <td class="px-4 py-3 font-black text-emerald-800">${row.Quantity} Kg</td>
+                        <td class="px-4 py-3">₹${row.Rate}</td>
+                        <td class="px-4 py-3 font-bold">${row.Bill_No || ''}</td>
+                        <td class="px-4 py-3 text-slate-400">${row.Remarks}</td>
+                        <td class="px-4 py-3">
+                            ${currentRole === 'head' || currentRole === 'godown' ? `<button onclick="deleteVegetableEntry(${row.Rec})" class="text-red-700 hover:text-red-900 font-bold">Delete</button>` : '<span class="text-slate-400 italic">-</span>'}
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function filterVegInwardTable() {
+            const search = document.getElementById('inputVegInwardSearch').value.toLowerCase();
+            const filtered = cachedInwardVegetableLogs.filter(row => {
+                const date = (row.Purchase_On || '').toLowerCase();
+                const store = (row.Institution || '').toLowerCase();
+                const vcode = (row.V_Code || '').toLowerCase();
+                const qty = String(row.Quantity || '');
+                const rate = String(row.Rate || '');
+                const billNo = (row.Bill_No || '').toLowerCase();
+                const remarks = (row.Remarks || '').toLowerCase();
+                return date.includes(search) || store.includes(search) || vcode.includes(search) || 
+                       qty.includes(search) || rate.includes(search) || billNo.includes(search) || 
+                       remarks.includes(search);
+            });
+            renderInwardVegetableTable(filtered);
         }
 
         // Switch between Inward entry tabs
@@ -1865,25 +1931,46 @@
             fetch(`/api/outwards${yearParam}`)
                 .then(res => res.ok ? res.json() : [])
                 .then(logs => {
-                    const tbody = document.getElementById('tblOutwardLog');
-                    if (!tbody) return;
-                    if (logs.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">No outward logs.</td></tr>`;
-                    } else {
-                        tbody.innerHTML = logs.map(row => `
-                            <tr class="hover:bg-slate-50 border-b">
-                                <td class="px-4 py-3">${row.Date1}</td>
-                                <td class="px-4 py-3 font-bold">${row.Grocery_Items_Kan}</td>
-                                <td class="px-4 py-3 font-black text-red-800">${row.Issue} ${row.Qtl_Kg_Ltr}</td>
-                                <td class="px-4 py-3"><span class="px-2 py-0.5 bg-red-50 text-red-700 rounded font-bold text-[9px] uppercase">${row.Purchased_Donation}</span></td>
-                                <td class="px-4 py-3 text-slate-400">${row.Remarks}</td>
-                                <td class="px-4 py-3">
-                                    ${currentRole === 'head' || currentRole === 'godown' ? `<button onclick="deleteOutwardEntry(${row.Rec})" class="text-red-700 hover:text-red-900 font-bold">Delete</button>` : '<span class="text-slate-400 italic">-</span>'}
-                                </td>
-                            </tr>
-                        `).join('');
-                    }
+                    cachedOutwardLogs = logs;
+                    renderOutwardTable(logs);
                 });
+        }
+
+        function renderOutwardTable(logs) {
+            const tbody = document.getElementById('tblOutwardLog');
+            if (!tbody) return;
+            if (logs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 font-bold">No outward logs.</td></tr>`;
+            } else {
+                tbody.innerHTML = logs.map(row => `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="px-4 py-3">${row.Date1}</td>
+                        <td class="px-4 py-3 font-bold">${row.Grocery_Items_Kan}</td>
+                        <td class="px-4 py-3 font-black text-red-800">${row.Issue} ${row.Qtl_Kg_Ltr}</td>
+                        <td class="px-4 py-3"><span class="px-2 py-0.5 bg-red-50 text-red-700 rounded font-bold text-[9px] uppercase">${row.Purchased_Donation}</span></td>
+                        <td class="px-4 py-3 text-slate-400">${row.Remarks}</td>
+                        <td class="px-4 py-3">
+                            ${currentRole === 'head' || currentRole === 'godown' ? `<button onclick="deleteOutwardEntry(${row.Rec})" class="text-red-700 hover:text-red-900 font-bold">Delete</button>` : '<span class="text-slate-400 italic">-</span>'}
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function filterOutwardTable() {
+            const search = document.getElementById('inputOutwardSearch').value.toLowerCase();
+            const filtered = cachedOutwardLogs.filter(row => {
+                const date = (row.Date1 || '').toLowerCase();
+                const itemKan = (row.Grocery_Items_Kan || '').toLowerCase();
+                const itemEng = (row.Grocery_Items_Eng || '').toLowerCase();
+                const code = String(row.Grocery_Code || '');
+                const qty = String(row.Issue || '');
+                const type = (row.Purchased_Donation || '').toLowerCase();
+                const remarks = (row.Remarks || '').toLowerCase();
+                return date.includes(search) || itemKan.includes(search) || itemEng.includes(search) || 
+                       code.includes(search) || qty.includes(search) || type.includes(search) || remarks.includes(search);
+            });
+            renderOutwardTable(filtered);
         }
 
         let hostelStockCache = [];
@@ -1937,37 +2024,58 @@
             fetch(`/api/indents${yearParam}`)
                 .then(res => res.ok ? res.json() : [])
                 .then(logs => {
-                    const tbody = document.getElementById('tblHostelIndentsHistory');
-                    if (!tbody) return;
-                    if (logs.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">No indents raised.</td></tr>`;
-                    } else {
-                        tbody.innerHTML = logs.map(row => {
-                            let badge = 'bg-slate-100 text-slate-600';
-                            if (row.Sanctioned === 'Pending') badge = 'bg-amber-50 text-amber-700';
-                            else if (row.Sanctioned === 'Sent') badge = 'bg-blue-50 text-blue-700';
-                            else if (row.Sanctioned === 'Received' || row.Sanctioned === 'Sanctioned') badge = 'bg-emerald-50 text-emerald-700';
-                            else if (row.Sanctioned === 'Rejected') badge = 'bg-red-50 text-red-700';
-
-                            // Acknowledge Receipt or Delete action button
-                            const actionBtn = row.Sanctioned === 'Sent' ? 
-                                `<button onclick="acknowledgeIndentReceipt(${row.Rec})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg transition shadow">Acknowledge</button>` : 
-                                (row.Sanctioned === 'Pending' ? `<button onclick="deleteIndentEntry(${row.Rec})" class="text-red-700 hover:text-red-950 font-bold">Delete</button>` : '<span class="text-slate-400 italic">None</span>');
-
-                            return `
-                                <tr class="hover:bg-slate-50 border-b">
-                                    <td class="px-4 py-3">${row.Indent_Date}</td>
-                                    <td class="px-4 py-3 font-mono">${row.Indent_no}</td>
-                                    <td class="px-4 py-3 font-bold">${row.Grocery_Items_Kan}</td>
-                                    <td class="px-4 py-3 font-semibold">${row.Quantity} ${row.Qtl_Kg_Ltr}</td>
-                                    <td class="px-4 py-3 font-bold">${row.Sanctioned_Quantity || '0.00'}</td>
-                                    <td class="px-4 py-3"><span class="px-2 py-0.5 rounded font-extrabold ${badge}">${row.Sanctioned}</span></td>
-                                    <td class="px-4 py-3">${actionBtn}</td>
-                                </tr>
-                            `;
-                        }).join('');
-                    }
+                    cachedHostelIndentsHistory = logs;
+                    renderHostelIndentsHistory(logs);
                 });
+        }
+
+        function renderHostelIndentsHistory(logs) {
+            const tbody = document.getElementById('tblHostelIndentsHistory');
+            if (!tbody) return;
+            if (logs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 font-bold">No indents raised.</td></tr>`;
+            } else {
+                tbody.innerHTML = logs.map(row => {
+                    let badge = 'bg-slate-100 text-slate-600';
+                    if (row.Sanctioned === 'Pending') badge = 'bg-amber-50 text-amber-700';
+                    else if (row.Sanctioned === 'Sent') badge = 'bg-blue-50 text-blue-700';
+                    else if (row.Sanctioned === 'Received' || row.Sanctioned === 'Sanctioned') badge = 'bg-emerald-50 text-emerald-700';
+                    else if (row.Sanctioned === 'Rejected') badge = 'bg-red-50 text-red-700';
+
+                    // Acknowledge Receipt or Delete action button
+                    const actionBtn = row.Sanctioned === 'Sent' ? 
+                        `<button onclick="acknowledgeIndentReceipt(${row.Rec})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg transition shadow">Acknowledge</button>` : 
+                        (row.Sanctioned === 'Pending' ? `<button onclick="deleteIndentEntry(${row.Rec})" class="text-red-700 hover:text-red-950 font-bold">Delete</button>` : '<span class="text-slate-400 italic">None</span>');
+
+                    return `
+                        <tr class="hover:bg-slate-50 border-b">
+                            <td class="px-4 py-3">${row.Indent_Date}</td>
+                            <td class="px-4 py-3 font-mono">${row.Indent_no}</td>
+                            <td class="px-4 py-3 font-bold">${row.Grocery_Items_Kan}</td>
+                            <td class="px-4 py-3 font-semibold">${row.Quantity} ${row.Qtl_Kg_Ltr}</td>
+                            <td class="px-4 py-3 font-bold">${row.Sanctioned_Quantity || '0.00'}</td>
+                            <td class="px-4 py-3"><span class="px-2 py-0.5 rounded font-extrabold ${badge}">${row.Sanctioned}</span></td>
+                            <td class="px-4 py-3">${actionBtn}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        function filterHostelIndentsTable() {
+            const search = document.getElementById('inputHostelIndentsSearch').value.toLowerCase();
+            const filtered = cachedHostelIndentsHistory.filter(row => {
+                const date = (row.Indent_Date || '').toLowerCase();
+                const indentNo = (row.Indent_no || '').toLowerCase();
+                const itemKan = (row.Grocery_Items_Kan || '').toLowerCase();
+                const itemEng = (row.Grocery_Items_Eng || '').toLowerCase();
+                const qty = String(row.Quantity || '');
+                const sancQty = String(row.Sanctioned_Quantity || '');
+                const status = (row.Sanctioned || '').toLowerCase();
+                return date.includes(search) || indentNo.includes(search) || itemKan.includes(search) || 
+                       itemEng.includes(search) || qty.includes(search) || sancQty.includes(search) || status.includes(search);
+            });
+            renderHostelIndentsHistory(filtered);
         }
 
         function loadPendingIndents() {
@@ -1975,30 +2083,51 @@
             fetch(`/api/indents?status=Pending&year=${currentFY}`)
                 .then(res => res.ok ? res.json() : [])
                 .then(logs => {
-                    const tbody = document.getElementById('tblPendingIndentsList');
-                    if (!tbody) return;
-                    if (logs.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 font-bold">No pending indents.</td></tr>`;
-                    } else {
-                        tbody.innerHTML = logs.map(row => `
-                            <tr class="hover:bg-slate-50 border-b">
-                                <td class="px-4 py-3">${row.Indent_Date}</td>
-                                <td class="px-4 py-3 font-mono">${row.Indent_no}</td>
-                                <td class="px-4 py-3 font-bold text-slate-500">${row.Institution}</td>
-                                <td class="px-4 py-3 font-bold">${row.Grocery_Items_Kan}</td>
-                                <td class="px-4 py-3 font-black text-emerald-800 text-sm">${row.Quantity} ${row.Qtl_Kg_Ltr}</td>
-                                <td class="px-4 py-3">
-                                    <input type="number" step="any" value="${row.Quantity}" id="inputSancQty-${row.Rec}" class="p-2 border rounded-lg text-xs w-24 focus:outline-none focus:ring-1 focus:ring-emerald-500 font-bold">
-                                </td>
-                                <td class="px-4 py-3 flex gap-2">
-                                    <button onclick="approveStoreIndent(${row.Rec})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg transition shadow flex items-center gap-1">Approve</button>
-                                    <button onclick="rejectStoreIndent(${row.Rec})" class="bg-red-800 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg transition shadow flex items-center gap-1">Reject</button>
-                                    <button onclick="deleteIndentEntry(${row.Rec})" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-1.5 rounded-lg transition shadow flex items-center gap-1">Delete</button>
-                                </td>
-                            </tr>
-                        `).join('');
-                    }
+                    cachedPendingIndents = logs;
+                    renderPendingIndentsTable(logs);
                 });
+        }
+
+        function renderPendingIndentsTable(logs) {
+            const tbody = document.getElementById('tblPendingIndentsList');
+            if (!tbody) return;
+            if (logs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 font-bold">No pending indents.</td></tr>`;
+            } else {
+                tbody.innerHTML = logs.map(row => `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="px-4 py-3">${row.Indent_Date}</td>
+                        <td class="px-4 py-3 font-mono">${row.Indent_no}</td>
+                        <td class="px-4 py-3 font-bold text-slate-500">${row.Institution}</td>
+                        <td class="px-4 py-3 font-bold">${row.Grocery_Items_Kan}</td>
+                        <td class="px-4 py-3 font-black text-emerald-800 text-sm">${row.Quantity} ${row.Qtl_Kg_Ltr}</td>
+                        <td class="px-4 py-3">
+                            <input type="number" step="any" value="${row.Quantity}" id="inputSancQty-${row.Rec}" class="p-2 border rounded-lg text-xs w-24 focus:outline-none focus:ring-1 focus:ring-emerald-500 font-bold">
+                        </td>
+                        <td class="px-4 py-3 flex gap-2">
+                            <button onclick="approveStoreIndent(${row.Rec})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg transition shadow flex items-center gap-1">Approve</button>
+                            <button onclick="rejectStoreIndent(${row.Rec})" class="bg-red-800 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg transition shadow flex items-center gap-1">Reject</button>
+                            <button onclick="deleteIndentEntry(${row.Rec})" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-1.5 rounded-lg transition shadow flex items-center gap-1">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function filterPendingIndentsTable() {
+            const search = document.getElementById('inputPendingIndentsSearch').value.toLowerCase();
+            const filtered = cachedPendingIndents.filter(row => {
+                const date = (row.Indent_Date || '').toLowerCase();
+                const indentNo = (row.Indent_no || '').toLowerCase();
+                const store = (row.Institution || '').toLowerCase();
+                const itemKan = (row.Grocery_Items_Kan || '').toLowerCase();
+                const itemEng = (row.Grocery_Items_Eng || '').toLowerCase();
+                const code = String(row.Grocery_Code || '');
+                const qty = String(row.Quantity || '');
+                return date.includes(search) || indentNo.includes(search) || store.includes(search) || 
+                       itemKan.includes(search) || itemEng.includes(search) || code.includes(search) || qty.includes(search);
+            });
+            renderPendingIndentsTable(filtered);
         }
 
         // Cart Actions inside Indent raising
@@ -2279,7 +2408,15 @@
                 const billNo = (row.Bill_No || '').toLowerCase();
                 const amount = String(row.Bill_Amount || '');
                 const paidBy = (row.Paid_By || '').toLowerCase();
-                return date.includes(search) || store.includes(search) || vendor.includes(search) || billNo.includes(search) || amount.includes(search) || paidBy.includes(search);
+                const chequeNo = (row.Ch_No || '').toLowerCase();
+                const chequeDate = (row.Ch_Date || '').toLowerCase();
+                const chequeAmt = String(row.Ch_Amount || '');
+                const remarks = (row.Remarks || '').toLowerCase();
+                const status = (row.Paid === 'Yes' ? 'paid' : 'unpaid').toLowerCase();
+                return date.includes(search) || store.includes(search) || vendor.includes(search) || 
+                       billNo.includes(search) || amount.includes(search) || paidBy.includes(search) ||
+                       chequeNo.includes(search) || chequeDate.includes(search) || chequeAmt.includes(search) ||
+                       remarks.includes(search) || status.includes(search);
             });
             renderBillsTable(filtered);
         }
@@ -3355,61 +3492,119 @@
             fetch('/api/grocery-items')
                 .then(res => res.json())
                 .then(items => {
-                    const tbody = document.getElementById('tblSettingsItemsList');
-                    if (!tbody) return;
-                    tbody.innerHTML = items.map(r => `
-                        <tr class="hover:bg-slate-50 border-b">
-                            <td class="px-4 py-2">${r.Grocery_Code}</td>
-                            <td class="px-4 py-2 font-bold">${r.Grocery_Items_Kan}</td>
-                            <td class="px-4 py-2 text-slate-500">${r.Grocery_Category}</td>
-                            <td class="px-4 py-2 text-slate-400">${r.Qtl_Kg_Ltr}</td>
-                            <td class="px-4 py-2">₹${r.Std_Rate}</td>
-                            <td class="px-4 py-2 flex gap-2">
-                                <button onclick="deleteMasterCatalogItem(${r.Grocery_Code})" class="text-red-700 font-bold hover:text-red-900">Delete</button>
-                            </td>
-                        </tr>
-                    `).join('');
+                    cachedSettingsCatalogItems = items;
+                    renderSettingsItems(items);
                 });
+        }
+
+        function renderSettingsItems(items) {
+            const tbody = document.getElementById('tblSettingsItemsList');
+            if (!tbody) return;
+            tbody.innerHTML = items.map(r => `
+                <tr class="hover:bg-slate-50 border-b">
+                    <td class="px-4 py-2">${r.Grocery_Code}</td>
+                    <td class="px-4 py-2 font-bold">${r.Grocery_Items_Kan}</td>
+                    <td class="px-4 py-2 text-slate-500">${r.Grocery_Category}</td>
+                    <td class="px-4 py-2 text-slate-400">${r.Qtl_Kg_Ltr}</td>
+                    <td class="px-4 py-2">₹${r.Std_Rate}</td>
+                    <td class="px-4 py-2 flex gap-2">
+                        <button onclick="deleteMasterCatalogItem(${r.Grocery_Code})" class="text-red-700 font-bold hover:text-red-900">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterSettingsItemsTable() {
+            const search = document.getElementById('inputSettingsItemsSearch').value.toLowerCase();
+            const filtered = cachedSettingsCatalogItems.filter(r => {
+                const code = String(r.Grocery_Code || '');
+                const kan = (r.Grocery_Items_Kan || '').toLowerCase();
+                const eng = (r.Grocery_Items_Eng || '').toLowerCase();
+                const cat = (r.Grocery_Category || '').toLowerCase();
+                const unit = (r.Qtl_Kg_Ltr || '').toLowerCase();
+                const rate = String(r.Std_Rate || '');
+                return code.includes(search) || kan.includes(search) || eng.includes(search) || 
+                       cat.includes(search) || unit.includes(search) || rate.includes(search);
+            });
+            renderSettingsItems(filtered);
         }
 
         function loadSettingsDonors() {
             fetch('/api/donors')
                 .then(res => res.json())
                 .then(donors => {
-                    const tbody = document.getElementById('tblSettingsDonorsList');
-                    if (!tbody) return;
-                    tbody.innerHTML = donors.map(d => `
-                        <tr class="hover:bg-slate-50 border-b">
-                            <td class="px-4 py-2">${d.Shop_Donor_ID}</td>
-                            <td class="px-4 py-2 font-bold">${d.Shop_Donor_Name}</td>
-                            <td class="px-4 py-2 text-slate-500">${d.Place}</td>
-                            <td class="px-4 py-2 text-slate-400 font-mono">${d.Mobile || ''}</td>
-                            <td class="px-4 py-2">
-                                <button onclick="deleteMasterCatalogDonor(${d.Shop_Donor_ID})" class="text-red-700 font-bold hover:text-red-900">Delete</button>
-                            </td>
-                        </tr>
-                    `).join('');
+                    cachedSettingsDonors = donors;
+                    renderSettingsDonors(donors);
                 });
+        }
+
+        function renderSettingsDonors(donors) {
+            const tbody = document.getElementById('tblSettingsDonorsList');
+            if (!tbody) return;
+            tbody.innerHTML = donors.map(d => `
+                <tr class="hover:bg-slate-50 border-b">
+                    <td class="px-4 py-2">${d.Shop_Donor_ID}</td>
+                    <td class="px-4 py-2 font-bold">${d.Shop_Donor_Name}</td>
+                    <td class="px-4 py-2 text-slate-500">${d.Place}</td>
+                    <td class="px-4 py-2 text-slate-400 font-mono">${d.Mobile || ''}</td>
+                    <td class="px-4 py-2">
+                        <button onclick="deleteMasterCatalogDonor(${d.Shop_Donor_ID})" class="text-red-700 font-bold hover:text-red-900">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterSettingsDonorsTable() {
+            const search = document.getElementById('inputSettingsDonorsSearch').value.toLowerCase();
+            const filtered = cachedSettingsDonors.filter(d => {
+                const id = String(d.Shop_Donor_ID || '');
+                const name = (d.Shop_Donor_Name || '').toLowerCase();
+                const place = (d.Place || '').toLowerCase();
+                const mobile = (d.Mobile || '').toLowerCase();
+                return id.includes(search) || name.includes(search) || place.includes(search) || mobile.includes(search);
+            });
+            renderSettingsDonors(filtered);
         }
 
         function loadSettingsAuditLogs() {
             fetch('/api/audit-logs')
                 .then(res => res.json())
                 .then(logs => {
-                    const tbody = document.getElementById('tblSettingsAuditLog');
-                    if (!tbody) return;
-                    tbody.innerHTML = logs.map(row => `
-                        <tr class="hover:bg-slate-50 border-b text-[9px]">
-                            <td class="px-4 py-1.5 font-bold">${row.Timestamp}</td>
-                            <td class="px-4 py-1.5 font-mono text-emerald-800">${row.Username}</td>
-                            <td class="px-4 py-1.5 font-bold text-slate-500 uppercase">${row.Module}</td>
-                            <td class="px-4 py-1.5 font-bold">${row.Action}</td>
-                            <td class="px-4 py-1.5 font-mono">${row.Target_ID || ''}</td>
-                            <td class="px-4 py-1.5 text-slate-400 truncate max-w-[120px]">${row.Old_Value || ''}</td>
-                            <td class="px-4 py-1.5 text-slate-400 truncate max-w-[120px]">${row.New_Value || ''}</td>
-                        </tr>
-                    `).join('');
+                    cachedSettingsAuditLogs = logs;
+                    renderSettingsAuditLogs(logs);
                 });
+        }
+
+        function renderSettingsAuditLogs(logs) {
+            const tbody = document.getElementById('tblSettingsAuditLog');
+            if (!tbody) return;
+            tbody.innerHTML = logs.map(row => `
+                <tr class="hover:bg-slate-50 border-b text-[9px]">
+                    <td class="px-4 py-1.5 font-bold">${row.Timestamp}</td>
+                    <td class="px-4 py-1.5 font-mono text-emerald-800">${row.Username}</td>
+                    <td class="px-4 py-1.5 font-bold text-slate-500 uppercase">${row.Module}</td>
+                    <td class="px-4 py-1.5 font-bold">${row.Action}</td>
+                    <td class="px-4 py-1.5 font-mono">${row.Target_ID || ''}</td>
+                    <td class="px-4 py-1.5 text-slate-400 truncate max-w-[120px]">${row.Old_Value || ''}</td>
+                    <td class="px-4 py-1.5 text-slate-400 truncate max-w-[120px]">${row.New_Value || ''}</td>
+                </tr>
+            `).join('');
+        }
+
+        function filterSettingsAuditTable() {
+            const search = document.getElementById('inputSettingsAuditSearch').value.toLowerCase();
+            const filtered = cachedSettingsAuditLogs.filter(row => {
+                const time = (row.Timestamp || '').toLowerCase();
+                const user = (row.Username || '').toLowerCase();
+                const mod = (row.Module || '').toLowerCase();
+                const act = (row.Action || '').toLowerCase();
+                const target = (row.Target_ID || '').toLowerCase();
+                const oldVal = (row.Old_Value || '').toLowerCase();
+                const newVal = (row.New_Value || '').toLowerCase();
+                return time.includes(search) || user.includes(search) || mod.includes(search) || 
+                       act.includes(search) || target.includes(search) || oldVal.includes(search) || newVal.includes(search);
+            });
+            renderSettingsAuditLogs(filtered);
         }
 
         function deleteMasterCatalogItem(code) {
@@ -3748,6 +3943,75 @@
             });
         }
 
+        // --- DYNAMIC SERIAL NUMBER INJECTOR ---
+        function addSerialNumbersToTable(tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            const table = tbody.closest('table');
+            if (!table) return;
+            
+            // 1. Ensure thead has the Sl. No. column
+            const thead = table.querySelector('thead');
+            if (thead) {
+                const tr = thead.querySelector('tr');
+                if (tr && !tr.querySelector('[data-serial-col]')) {
+                    const th = document.createElement('th');
+                    th.className = "px-4 py-3 text-left font-bold text-slate-600 print-serial";
+                    th.setAttribute('data-serial-col', 'true');
+                    th.setAttribute('data-kn', 'ಕ್ರ.ಸಂ.');
+                    th.setAttribute('data-en', 'Sl.No.');
+                    th.innerText = currentLang === 'en' ? 'Sl.No.' : 'ಕ್ರ.ಸಂ.';
+                    tr.insertBefore(th, tr.firstChild);
+                }
+            }
+            
+            // 2. Add sequential td to each tr in tbody
+            const rows = tbody.querySelectorAll('tr');
+            let idx = 1;
+            rows.forEach(row => {
+                const firstTd = row.querySelector('td');
+                if (firstTd && firstTd.hasAttribute('colspan')) {
+                    const cs = parseInt(firstTd.getAttribute('colspan') || '1');
+                    if (!row.hasAttribute('data-colspan-adjusted')) {
+                        firstTd.setAttribute('colspan', cs + 1);
+                        row.setAttribute('data-colspan-adjusted', 'true');
+                    }
+                    return;
+                }
+                
+                if (row && !row.querySelector('[data-serial-val]')) {
+                    const td = document.createElement('td');
+                    td.className = "px-4 py-3 font-semibold text-slate-500 print-serial";
+                    td.setAttribute('data-serial-val', 'true');
+                    td.innerText = idx++;
+                    row.insertBefore(td, row.firstChild);
+                } else if (row) {
+                    const td = row.querySelector('[data-serial-val]');
+                    if (td) td.innerText = idx++;
+                }
+            });
+        }
+
+        const tableObserver = new MutationObserver((mutations) => {
+            tableObserver.disconnect();
+            try {
+                const tableBodies = [
+                    'tblRecentTransfers', 'tbodyStockList', 'tblInwardGroceryLog',
+                    'tblInwardVegetableLog', 'tblOutwardLog', 'tblHostelIndentsHistory',
+                    'tblPendingIndentsList', 'tblConsumptionLogHistory', 'tblBillsList',
+                    'tblDrilldownItems', 'tblUserBudgetsList', 'tblOverallBudgetsList',
+                    'tblItemBudgetsList', 'tblReportBody', 'tblUsersList',
+                    'tblSettingsItemsList', 'tblSettingsDonorsList', 'tblSettingsAuditLog',
+                    'tblUserActivityList'
+                ];
+                tableBodies.forEach(id => {
+                    addSerialNumbersToTable(id);
+                });
+            } finally {
+                tableObserver.observe(document.body, { childList: true, subtree: true });
+            }
+        });
+        tableObserver.observe(document.body, { childList: true, subtree: true });
 
         // ==================== INITIALIZATION ====================
 

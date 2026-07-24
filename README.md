@@ -1,4 +1,4 @@
-# ತಾರಾಬಾಳು ಗೋದಾಮು ಮತ್ತು ವಸತಿ ನಿಲಯ ದಾಸ್ತಾನು ನಿರ್ವಹಣಾ ವ್ಯವಸ್ಥೆ (Taralabalu Godown Management System)
+# ತರಳಬಾಳು ಗೋದಾಮು ಮತ್ತು ವಸತಿ ನಿಲಯ ದಾಸ್ತಾನು ನಿರ್ವಹಣಾ ವ್ಯವಸ್ಥೆ (Taralabalu Godown Management System)
 
 A responsive, full-stack Inventory Management Web Application optimized for both mobile and desktop devices. It is designed for central warehouse (godown) staff and hostel clerks. The user interface, item names, logs, and generated receipts are in **Kannada**, while the underlying codebase and database schema remain in **English**.
 
